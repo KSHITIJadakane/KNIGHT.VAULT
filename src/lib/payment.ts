@@ -10,6 +10,7 @@ import {
   ConnectedSession,
   fromHex,
   toHex,
+  LOCAL_PROOF_SERVER_URI,
 } from './midnight';
 import { ensureWasmReady, isProofServerReachable } from './wasm-init';
 
@@ -55,17 +56,16 @@ export async function deployPayment(
 
   onStepChange?.('preparing', 'Checking ZK runtime and proof server...');
 
-  // Pre-flight: ensure local proof server is reachable.
-  // Contract deployment REQUIRES the local Docker proof server (port 6300).
-  // On the deployed Vercel site there is no local proof server, so we give
-  // a clear, actionable error instead of a cryptic WASM crash.
-  const proofServerUri = session.config?.proverServerUri ?? 'http://localhost:6300';
+  // Pre-flight: verify the proof server (Railway or localhost) is reachable.
+  // Gives a clear, actionable error instead of a cryptic WASM crash.
+  const proofServerUri = LOCAL_PROOF_SERVER_URI;
   const proofServerUp = await isProofServerReachable(proofServerUri);
   if (!proofServerUp) {
+    const isRailway = !proofServerUri.includes('localhost') && !proofServerUri.includes('127.0.0.1');
     throw new Error(
-      'Local ZK Proof Server is offline.\n\n' +
-      'Contract deployment requires the Midnight Docker proof server running locally on port 6300.\n\n' +
-      'Run: docker compose up -d\nThen retry from http://localhost:5173'
+      isRailway
+        ? `Railway ZK Proof Server is unreachable.\nCheck that your Railway service is running at:\n${proofServerUri}`
+        : 'Local ZK Proof Server is offline.\n\nRun: docker compose up -d\nThen retry from http://localhost:5173'
     );
   }
 

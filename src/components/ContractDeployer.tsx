@@ -61,32 +61,42 @@ export default function ContractDeployer({
     onContractSelected(clean);
   };
 
-  // Deploy requires local Docker proof server — not available on deployed Vercel site
+  // Deployment is allowed when either:
+  //   a) Running locally (localhost / 127.0.0.1), OR
+  //   b) VITE_PROOF_SERVER_URI is set (Railway proof server deployed)
   const isLocalEnv =
     typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
       window.location.hostname.startsWith('192.168.'));
 
+  const railwayProofServer = import.meta.env.VITE_PROOF_SERVER_URI as string | undefined;
+  const proofServerConfigured = isLocalEnv || !!railwayProofServer;
   return (
     <div className="space-y-5 max-w-4xl mx-auto my-4 sm:my-6">
-      {/* Deployed-site notice — deploy requires local Docker proof server */}
-      {!isLocalEnv && (
+      {/* Show notice only when proof server is NOT configured */}
+      {!proofServerConfigured && (
         <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-700/50 flex items-start gap-3 text-xs font-mono text-amber-200">
           <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
           <div className="space-y-1.5">
-            <div className="font-semibold text-amber-100 text-[12px]">🐳 Local Proof Server Required for Deployment</div>
+            <div className="font-semibold text-amber-100 text-[12px]">🐳 Proof Server Not Configured</div>
             <p className="text-amber-300/90 text-[11px] leading-relaxed">
-              Contract deployment generates Zero-Knowledge proofs, which requires the Midnight Docker
-              proof server running locally on <span className="text-amber-200 font-bold">port 6300</span>.
-            </p>
-            <p className="text-amber-300/80 text-[11px] leading-relaxed">
-              To deploy: clone the repo, run <code className="bg-black/30 px-1.5 py-0.5 rounded text-amber-100">docker compose up -d</code>,
-              then open <a href="http://localhost:5173" className="text-amber-200 underline underline-offset-2">localhost:5173</a>
+              Set the <code className="bg-black/30 px-1.5 py-0.5 rounded text-amber-100">VITE_PROOF_SERVER_URI</code> environment variable in Vercel to your Railway proof server URL to enable deployments from this site.
             </p>
             <p className="text-amber-400/80 text-[10px]">
-              Alternatively, paste an existing contract address in the <span className="text-white">"Connect to Vault"</span> panel below to interact with a live vault.
+              Or paste an existing contract address in the <span className="text-white">&ldquo;Connect to Vault&rdquo;</span> panel below.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Show Railway-connected badge when proof server env var is set */}
+      {!isLocalEnv && railwayProofServer && (
+        <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-700/40 flex items-center gap-3 text-xs font-mono text-emerald-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+          <div>
+            <span className="font-semibold text-emerald-300">Railway ZK Proof Server Connected — </span>
+            <span className="text-emerald-400/80 text-[10px]">{railwayProofServer}</span>
           </div>
         </div>
       )}
@@ -138,8 +148,8 @@ export default function ContractDeployer({
           <div className="space-y-2.5">
             <button
               onClick={handleDeploy}
-              disabled={isDeploying || !isLocalEnv}
-              title={!isLocalEnv ? 'Requires local Docker proof server on port 6300. Run from localhost:5173.' : undefined}
+              disabled={isDeploying || !proofServerConfigured}
+              title={!proofServerConfigured ? 'Set VITE_PROOF_SERVER_URI on Vercel to enable cloud deployment.' : undefined}
               className="w-full py-3 px-4 rounded-xl font-bold text-xs text-black bg-white hover:bg-slate-100 active:bg-slate-200 shadow-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono uppercase tracking-widest"
             >
               {isDeploying ? (
@@ -147,10 +157,10 @@ export default function ContractDeployer({
                   <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                   <span>Proving & Deploying...</span>
                 </>
-              ) : !isLocalEnv ? (
+              ) : !proofServerConfigured ? (
                 <>
                   <Zap className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Requires Local Docker</span>
+                  <span>Proof Server Not Configured</span>
                 </>
               ) : (
                 <>

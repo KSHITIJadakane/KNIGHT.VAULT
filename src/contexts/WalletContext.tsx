@@ -3,6 +3,7 @@ import {
   ConnectedSession,
   createConnectedSession,
   createSandboxWalletSession,
+  LOCAL_PROOF_SERVER_URI,
 } from '../lib/midnight';
 
 export type WalletContextType = {
@@ -76,8 +77,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     connectingRef.current = true;
     setIsConnecting(true);
     try {
-      // Proof server always runs locally on the user's machine (port 6300)
-      const proofServerUri = 'http://localhost:6300';
+      // Use VITE_PROOF_SERVER_URI env var (Railway) or fallback to localhost:6300
+      const proofServerUri = LOCAL_PROOF_SERVER_URI;
 
       // Poll up to 2 seconds for wallet injection if not yet ready
       let detected = getAvailableWallet();
@@ -159,8 +160,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     connectingRef.current = true;
     setIsConnecting(true);
     try {
-      // Proof server always runs locally on the user's machine (port 6300)
-      const proofServerUri = 'http://localhost:6300';
+      // Use VITE_PROOF_SERVER_URI env var (Railway) or fallback to localhost:6300
+      const proofServerUri = LOCAL_PROOF_SERVER_URI;
       const sess = await createSandboxWalletSession('/zk/payment', proofServerUri);
       setSession(sess);
       setAddress(sess.unshieldedAddress);
