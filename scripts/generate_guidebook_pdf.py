@@ -34,13 +34,13 @@ class NumberedCanvas(canvas.Canvas):
         # Do not draw on cover page (page 1)
         if self._pageNumber > 1:
             # Header
-            self.drawString(54, 11 * inch - 36, "Midnight Network & Privacy DApp Engineering Guidebook")
+            self.drawString(54, 11 * inch - 36, "KNIGHT.VAULT // Midnight Network & ZK-DApp Engineering Guidebook")
             self.setStrokeColor(colors.HexColor("#e2e8f0"))
             self.setLineWidth(0.5)
             self.line(54, 11 * inch - 42, 8.5 * inch - 54, 11 * inch - 42)
 
             # Footer
-            self.drawString(54, 36, "Confidential & Educational — Midnight Network Workshop Handbook")
+            self.drawString(54, 36, "Confidential & Educational — KNIGHT.VAULT Engineering Reference")
             page_text = f"Page {self._pageNumber} of {page_count}"
             self.drawRightString(8.5 * inch - 54, 36, page_text)
             self.line(54, 46, 8.5 * inch - 54, 46)
@@ -61,8 +61,9 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
 
     # Custom Palette
     C_PRIMARY = colors.HexColor("#0f172a") # Dark Slate
-    C_ACCENT = colors.HexColor("#2563eb")  # Blue
-    C_EMERALD = colors.HexColor("#059669") # Emerald
+    C_ACCENT = colors.HexColor("#0284c7")  # Cyan / Blue
+    C_MINT = colors.HexColor("#059669")    # Mint
+    C_INDIGO = colors.HexColor("#4f46e5")  # Indigo
     C_TEXT = colors.HexColor("#1e293b")    # Dark Body
     C_MUTED = colors.HexColor("#475569")   # Muted Body
     C_BG_CARD = colors.HexColor("#f8fafc") # Card background
@@ -74,8 +75,8 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
         'CoverTitle',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=24,
-        leading=30,
+        fontSize=23,
+        leading=29,
         textColor=C_PRIMARY,
         spaceAfter=12
     )
@@ -84,19 +85,19 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
         'CoverSubtitle',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=12,
+        fontSize=11.5,
         leading=16,
         textColor=C_MUTED,
-        spaceAfter=24
+        spaceAfter=20
     )
 
     h1_style = ParagraphStyle(
         'Heading1_Custom',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=15,
-        leading=19,
-        textColor=C_ACCENT,
+        fontSize=14,
+        leading=18,
+        textColor=C_PRIMARY,
         spaceBefore=16,
         spaceAfter=8,
         keepWithNext=True
@@ -106,9 +107,9 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
         'Heading2_Custom',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=12,
+        fontSize=11.5,
         leading=15,
-        textColor=C_PRIMARY,
+        textColor=C_INDIGO,
         spaceBefore=12,
         spaceAfter=6,
         keepWithNext=True
@@ -197,15 +198,15 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
 
     # ================= COVER / TITLE =================
     story.append(Spacer(1, 10))
-    story.append(Paragraph("THE COMPLETE GUIDEBOOK TO BLOCKCHAIN & ZERO-KNOWLEDGE DAPP ENGINEERING", title_style))
-    story.append(Paragraph("From First Principles of Distributed Systems to Deploying Privacy-Preserving Smart Contracts on Midnight Network", subtitle_style))
+    story.append(Paragraph("THE COMPLETE GUIDEBOOK TO ZERO-KNOWLEDGE BLOCKCHAIN & DAPP ENGINEERING", title_style))
+    story.append(Paragraph("From Distributed Systems First Principles to Production Deployment on Midnight Network with WSL2, Ubuntu, Docker & 1AM Wallet", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=C_ACCENT, spaceBefore=0, spaceAfter=14))
 
     # Metadata Card
     meta_data = [
-        [Paragraph("<b>Target Audience:</b> Developers & Workshop Engineers", body_style), Paragraph("<b>Network:</b> Midnight Blockchain (Preprod / Preview)", body_style)],
-        [Paragraph("<b>Authoring Language:</b> Compact (v0.20+)", body_style), Paragraph("<b>Proof Engine:</b> ZK-SNARK Local ProofServer (Port 6300)", body_style)],
-        [Paragraph("<b>Wallet System:</b> 1AM DApp Connector (0 Gas)", body_style), Paragraph("<b>Frontend:</b> React 18 + Vite + TypeScript", body_style)]
+        [Paragraph("<b>Project:</b> KNIGHT.VAULT Protocol", body_style), Paragraph("<b>Network:</b> Midnight Blockchain (Preprod / Preview)", body_style)],
+        [Paragraph("<b>Smart Contracts:</b> Compact Circuits", body_style), Paragraph("<b>ZK Prover:</b> Local Docker ProofServer (:6300)", body_style)],
+        [Paragraph("<b>Wallet System:</b> 1AM DApp Connector (0 Gas)", body_style), Paragraph("<b>Architect:</b> Kshitij Adakane (Systems Builder)", body_style)]
     ]
     meta_table = Table(meta_data, colWidths=[252, 252])
     meta_table.setStyle(TableStyle([
@@ -220,7 +221,7 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
     story.append(meta_table)
     story.append(Spacer(1, 14))
 
-    # ================= CHAPTER 1 =================
+    # ================= CHAPTER 1: FIRST PRINCIPLES =================
     story.append(Paragraph("Chapter 1: The First Principles of Computing & Blockchains", h1_style))
     story.append(Paragraph(
         "To understand what a decentralized application (DApp) is, we must first break down the concept of a <b>ledger</b> from its most elementary mathematical roots.",
@@ -229,11 +230,7 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
     
     story.append(Paragraph("1.1 What is a Ledger?", h2_style))
     story.append(Paragraph(
-        "At its core, a ledger is simply an append-only chronological record of facts and balance transitions. Throughout human history, ledgers were centralized: a single trusted entity (such as a bank, a government agency, or a database administrator) controlled the master record. If Alice sent $10 to Bob, the bank decreased Alice's balance and increased Bob's balance.",
-        body_style
-    ))
-    story.append(Paragraph(
-        "<b>The Single Point of Failure:</b> If the centralized authority is compromised, censored, or makes a computational mistake, the entire state of the system becomes corrupted. Furthermore, participants must place unconditional trust in that single intermediary.",
+        "At its core, a ledger is an append-only chronological record of facts and balance transitions. Historically, ledgers were centralized: a trusted entity (bank, registry, or database administrator) held the master copy. If the central authority fails, gets censored, or makes an error, the entire system state becomes corrupt.",
         body_style
     ))
 
@@ -242,205 +239,107 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
         "A blockchain is a <b>decentralized, cryptographically-secured distributed ledger</b> maintained by a peer-to-peer (P2P) network of independent nodes without requiring a central coordinator.",
         body_style
     ))
-    story.append(Paragraph("The key mechanics of a blockchain include:", body_style))
-    story.append(Paragraph("• <b>Blocks:</b> Batches of valid transactions bundled together with metadata (timestamp, nonce, block height).", bullet_style))
-    story.append(Paragraph("• <b>Cryptographic Hash Linking:</b> Every block contains a mathematical hash of the immediately preceding block header. If any transaction in a past block is altered by even one bit, the hash of that block changes entirely, breaking the cryptographic chain forward.", bullet_style))
-    story.append(Paragraph("• <b>Consensus Mechanisms:</b> Algorithms (such as AURA, GRANDPA, Proof of Stake, or Proof of Work) that allow distributed nodes across the globe to agree on the exact order and validity of state transitions.", bullet_style))
-    story.append(Paragraph("• <b>Smart Contracts:</b> Deterministic state machines that live on the blockchain and automatically execute predefined rules when triggered by transactions.", bullet_style))
+    story.append(Paragraph("• <b>Blocks:</b> Batches of valid transactions bundled with timestamp, nonce, and root hashes.", bullet_style))
+    story.append(Paragraph("• <b>Cryptographic Hash Linking:</b> Every block contains the hash of the preceding block header, making state immutable.", bullet_style))
+    story.append(Paragraph("• <b>Consensus:</b> Algorithms (AURA, GRANDPA, PoS) enabling global agreement on the valid state order.", bullet_style))
+    story.append(Paragraph("• <b>Smart Contracts:</b> Deterministic state machine programs that run autonomously on-chain.", bullet_style))
 
-    story.append(Paragraph("1.3 The Fundamental Flaw of Traditional Blockchains: Total Exposure", h2_style))
+    # ================= CHAPTER 2: ENVIRONMENT & REAL-WORLD INSTALLATION =================
+    story.append(Paragraph("Chapter 2: Production Development Environment Setup (WSL2, Docker & Tools)", h1_style))
     story.append(Paragraph(
-        "In traditional blockchains like Bitcoin and Ethereum, <b>all data is 100% public</b>. Every validator must see every account balance, every transaction sender, every recipient, and all contract input arguments to verify that a transaction is valid.",
-        body_style
-    ))
-    add_callout("<b>The Transparency Paradox:</b> While total transparency prevents fraud, it completely destroys commercial and personal confidentiality. Businesses cannot put payroll, supply chain bids, trade secrets, or healthcare records on public blockchains because competitors and observers can inspect all data.")
-
-    # ================= CHAPTER 2 =================
-    story.append(Paragraph("Chapter 2: Zero-Knowledge Cryptography (ZK-SNARKs)", h1_style))
-    story.append(Paragraph(
-        "Zero-Knowledge cryptography fundamentally resolves the transparency paradox. It enables a <b>Prover</b> to prove to a <b>Verifier</b> that a statement is mathematically true, without revealing any secret information beyond the validity of the statement itself.",
+        "Building on Midnight Network requires compiling Compact smart contracts, running local Zero-Knowledge proving engines, and orchestrating client SDKs. Below are the precise steps and real-world hurdles encountered when configuring developer workstations.",
         body_style
     ))
 
-    story.append(Paragraph("2.1 The Classic Intuition: The Cave Analogy", h2_style))
+    story.append(Paragraph("2.1 Windows Subsystem for Linux (WSL2) & Ubuntu Setup", h2_style))
     story.append(Paragraph(
-        "Imagine a circular cave with a locked secret door in the middle. Alice knows the secret passcode to unlock the door. Bob wants proof that Alice knows the passcode, but Alice does not want to tell Bob the passcode.",
+        "Because the Compact compiler toolchain and cryptographic ZK-SNARK provers are native Linux binaries, Windows developers must execute their build environments inside <b>WSL2 (Ubuntu 22.04 LTS or 24.04 LTS)</b>.",
         body_style
     ))
-    story.append(Paragraph(
-        "Bob stands outside the cave entrance. Alice walks down Path A or Path B. Bob then calls out: <i>'Alice, come out via Path B!'</i> If Alice knows the passcode, she can always unlock the door and emerge from Path B, regardless of which path she entered. If she repeats this test 40 times in a row, the probability of her guessing without the passcode is 1 in 2^40 (less than one in a trillion). Bob is 100% convinced Alice knows the secret, yet Bob learned nothing about the passcode itself.",
-        body_style
-    ))
+    story.append(Paragraph("1. Open Windows PowerShell as Administrator and enable WSL2:", body_style))
+    add_code("wsl --install -d Ubuntu-22.04\nwsl --set-default-version 2")
+    story.append(Paragraph("2. <b>Crucial Memory Tuning (.wslconfig):</b> ZK-SNARK circuit proving requires substantial memory. Create or edit <code>C:\\Users\\&lt;YourUser&gt;\\.wslconfig</code> to allocate adequate RAM to prevent Out-Of-Memory (OOM) crashes:", body_style))
+    add_code("[wsl2]\nmemory=12GB\nswap=4GB\nlocalhostForwarding=true")
+    story.append(Paragraph("3. Inside Ubuntu, install essential system build dependencies:", body_style))
+    add_code("sudo apt update && sudo apt install -y curl git build-essential pkg-config libssl-dev")
 
-    story.append(Paragraph("2.2 What are ZK-SNARKs?", h2_style))
+    story.append(Paragraph("2.2 Docker Desktop & ProofStation Container Setup", h2_style))
     story.append(Paragraph(
-        "ZK-SNARK stands for <b>Zero-Knowledge Succinct Non-Interactive Argument of Knowledge</b>:",
+        "The Midnight ProofServer is responsible for compiling Halo2 / Plonk zero-knowledge circuits into mathematical proof transcripts on port <b>6300</b>.",
         body_style
     ))
-    story.append(Paragraph("• <b>Zero-Knowledge:</b> No private inputs are revealed.", bullet_style))
-    story.append(Paragraph("• <b>Succinct:</b> The proof is small (often a few hundred bytes) and can be verified in milliseconds, regardless of how complex the underlying computation was.", bullet_style))
-    story.append(Paragraph("• <b>Non-Interactive:</b> The prover generates the proof once; any verifier on earth can verify it without ongoing communication.", bullet_style))
-    story.append(Paragraph("• <b>Argument of Knowledge:</b> It is computationally impossible for someone to construct a valid proof unless they genuinely possess the secret witness.", bullet_style))
+    story.append(Paragraph("• <b>WSL Integration:</b> Open Docker Desktop &rarr; <i>Settings</i> &rarr; <i>Resources</i> &rarr; <i>WSL Integration</i> &rarr; enable <b>Ubuntu-22.04</b>.", bullet_style))
+    story.append(Paragraph("• <b>Starting the ProofServer:</b> Run the official Midnight ProofServer container:", bullet_style))
+    add_code("docker run -d --name proof-server -p 6300:6300 midnightnetwork/proof-server:latest")
+    story.append(Paragraph("• <b>Verify Container Health:</b> Confirm the server is responding on localhost:", bullet_style))
+    add_code("curl http://localhost:6300/health\n# Response: {\"status\":\"ok\",\"service\":\"proof-server\"}")
 
-    # ================= CHAPTER 3 =================
-    story.append(Paragraph("Chapter 3: The Midnight Network Architecture", h1_style))
-    story.append(Paragraph(
-        "Midnight is a next-generation privacy-first blockchain developed by Input Output Global (IOG) within the Cardano ecosystem. It is specifically designed to reconcile <b>data privacy</b> with <b>regulatory compliance</b> and <b>computational integrity</b>.",
-        body_style
-    ))
+    add_callout("<b>Troubleshooting Port 6300:</b> If Docker reports 'port already in use', find the conflicting process with <code>netstat -ano | findstr :6300</code> or kill dangling proof containers with <code>docker rm -f proof-server</code>.", bg_color=colors.HexColor("#fffbeb"), border_color=colors.HexColor("#fcd34d"))
 
-    story.append(Paragraph("3.1 The Dual State Model", h2_style))
+    # ================= CHAPTER 3: 1AM WALLET & DUST RELAY =================
+    story.append(Paragraph("Chapter 3: 1AM Wallet Integration & Sponsored Dust Architecture", h1_style))
     story.append(Paragraph(
-        "Unlike Ethereum where all state is unified and public, Midnight introduces a revolutionary dual-state model:",
-        body_style
-    ))
-    story.append(Paragraph("• <b>1. Public Ledger State:</b> Shared global variables stored on-chain that all network participants agree on (e.g., total vault balance, contract addresses, token total supply).", bullet_style))
-    story.append(Paragraph("• <b>2. Private State (Witnesses):</b> Secret data stored exclusively on the user's local machine (e.g., private spending keys, secret identities, unrevealed bids, credit scores).", bullet_style))
-    story.append(Paragraph("• <b>3. ZK Circuits:</b> Mathematical constraints written in Compact that run off-chain inside the user's proof engine, transforming private states into cryptographically verified public state transitions.", bullet_style))
-
-    story.append(Paragraph("3.2 The Cardano Partnerchain Model & Consensus", h2_style))
-    story.append(Paragraph(
-        "Midnight operates as a high-throughput Substrate-based partnerchain anchored to the Cardano ecosystem. It uses <b>AURA</b> for rapid block production and <b>GRANDPA</b> for deterministic finality, securing privacy-enabled smart contract execution with enterprise-grade finality guarantees.",
+        "Midnight Network introduces a dual-token paradigm: <b>tNIGHT</b> (unshielded/shielded settlement currency) and <b>DUST</b> (non-transferable computational resource used for gas fees).",
         body_style
     ))
 
-    story.append(Paragraph("3.3 Fee Sponsorship & Dust Economics (Zero Gas)", h2_style))
+    story.append(Paragraph("3.1 1AM Browser Wallet Configuration", h2_style))
+    story.append(Paragraph("1. Install the <b>1AM Wallet Extension</b> from the Midnight Developer Portal into Google Chrome, Brave, or Edge.", bullet_style))
+    story.append(Paragraph("2. Switch the active network to <b>Midnight Preprod</b> with the official GraphQL indexer URL: <code>https://indexer.preprod.midnight.network/api/v4/graphql</code>.", bullet_style))
+    story.append(Paragraph("3. Fund your address via the <b>Midnight Testnet Faucet</b> to receive initial tNIGHT.", bullet_style))
+    story.append(Paragraph("4. <b>Handshake Authorization:</b> In TypeScript, the frontend connects to 1AM using:", bullet_style))
+    add_code("const midnightApi = window.midnight?.['1am'];\nif (!midnightApi) throw new Error('1AM wallet not detected');\nconst wallet = await midnightApi.enable();\nconst state = await wallet.state();")
+
+    story.append(Paragraph("3.2 Zero-Gas Dust Balancing Flow", h2_style))
     story.append(Paragraph(
-        "On traditional networks, users must hold native gas tokens (like ETH) in their public wallet to pay for transactions, which exposes their identity through gas fee funding trails. Midnight solves this via <b>DUST</b> fees and sponsor relays (ProofStation). The 1AM wallet balances transactions by adding dust sponsorship, allowing end-users to interact with DApps with <b>zero gas cost</b>.",
+        "Traditional blockchains require every payer to hold gas tokens. In <b>KNIGHT.VAULT</b>, transactions are balanced via <code>balanceUnsealedTransaction</code> through 1AM's ProofStation relay, allowing users to interact with <b>0.00 NIGHT user gas</b>.",
         body_style
     ))
 
-    # ================= CHAPTER 4 =================
-    story.append(Paragraph("Chapter 4: The Developer Toolchain Explained in Detail", h1_style))
+    # ================= CHAPTER 4: SMART CONTRACT ARCHITECTURE =================
+    story.append(Paragraph("Chapter 4: Compact Smart Contract Design & ZK Proofs", h1_style))
     story.append(Paragraph(
-        "Why did the workshop require specific tools like WSL 2, Ubuntu, Docker, and 1AM Wallet? Here is the exact role of every tool:",
+        "The smart contract is written in <b>Compact</b>, Midnight's domain-specific language for zero-knowledge smart contracts.",
         body_style
     ))
 
-    # Tool Table
-    tool_rows = [
-        [Paragraph("<b>Tool / Component</b>", body_style), Paragraph("<b>Exact Function & Purpose</b>", body_style)],
-        [Paragraph("<b>WSL 2 & Ubuntu</b>", body_style), Paragraph("Windows Subsystem for Linux provides a native Linux kernel inside Windows. The Midnight <code>compact</code> smart contract compiler is compiled for Linux environments.", body_style)],
-        [Paragraph("<b>Compact CLI</b>", body_style), Paragraph("Compiles <code>.compact</code> smart contracts into TypeScript bindings, cryptographic verification keys (<code>.verifier</code>), proving keys (<code>.prover</code>), and ZKIR.", body_style)],
-        [Paragraph("<b>Docker Proof Server</b><br/>(port 6300)", body_style), Paragraph("A containerized mathematical engine (<code>midnightntwrk/proof-server:latest</code>) running locally on your computer. It performs the heavy polynomial arithmetic to build ZK proofs on-device.", body_style)],
-        [Paragraph("<b>1AM Wallet Extension</b>", body_style), Paragraph("Browser extension (<code>window.midnight['1am']</code>) that manages cryptographic keys, signs transactions, and communicates with ProofStation for fee sponsorship.", body_style)],
-        [Paragraph("<b>Midnight Indexer v4</b>", body_style), Paragraph("A GraphQL service provided by Midnight that reads raw Substrate blocks and exposes clean querying endpoints for contract states and transaction actions.", body_style)],
-        [Paragraph("<b>Vite + React + TS</b>", body_style), Paragraph("The modern frontend layer configured with WebAssembly (WASM) and top-level await to run Midnight cryptographic libraries in the browser.", body_style)]
-    ]
-    tool_table = Table(tool_rows, colWidths=[140, 364])
-    tool_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e293b")),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-        ('BACKGROUND', (0,1), (-1,-1), C_BG_CARD),
-        ('GRID', (0,0), (-1,-1), 0.5, C_BORDER),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-        ('LEFTPADDING', (0,0), (-1,-1), 6),
-        ('RIGHTPADDING', (0,0), (-1,-1), 6),
-    ]))
-    story.append(tool_table)
-    story.append(Spacer(1, 12))
+    add_code("""// payment.compact (Midnight stdlib)
+contract PaymentVault {
+  ledger balance: Counter;
+  ledger totalDeposited: Counter;
+  ledger ownerCommitment: Bytes<32>;
 
-    # ================= CHAPTER 5 =================
-    story.append(Paragraph("Chapter 5: The Compact Smart Contract Language", h1_style))
-    story.append(Paragraph(
-        "<b>Compact</b> is Midnight's specialized smart contract language designed to write provable Zero-Knowledge programs. Below is the exact architecture of our Payment Vault contract:",
-        body_style
-    ))
+  // Public Payer Inflow (Zero-Gas)
+  export circuit receiveUnshielded(amount: Uint<64>): Void {
+    balance.increment(amount);
+    totalDeposited.increment(amount);
+  }
 
-    add_code("""pragma language_version >= 0.20;
-import CompactStandardLibrary;
-
-// Public On-Chain Ledger State (Visible to all)
-export ledger balance: Uint<128>;
-export ledger totalDeposited: Uint<128>;
-export ledger totalWithdrawn: Uint<128>;
-export ledger owner: Bytes<32>;
-
-// Private Witness (Known ONLY by the user's browser, NEVER sent to network)
-witness ownerKey(): Bytes<32>;
-
-constructor() {
-  balance = 0;
-  totalDeposited = 0;
-  totalWithdrawn = 0;
-  owner = disclose(deriveKey(ownerKey()));
-}
-
-// Deposit Circuit: Accepts unshielded tokens into the vault
-export circuit deposit(amount: Uint<128>): [] {
-  receiveUnshielded(default<Bytes<32>>, disclose(amount));
-  totalDeposited = disclose((totalDeposited + amount) as Uint<128>);
-  balance = disclose((balance + amount) as Uint<128>);
-}
-
-// Withdraw Circuit: Zero-Knowledge authorized payout
-export circuit withdraw(amount: Uint<128>, recipient: UserAddress): [] {
-  assert(deriveKey(ownerKey()) == owner, "Only owner can withdraw");
-  assert(balance >= amount, "Insufficient balance");
-  sendUnshielded(
-    default<Bytes<32>>,
-    disclose(amount),
-    right<ContractAddress, UserAddress>(disclose(recipient))
-  );
-  totalWithdrawn = disclose((totalWithdrawn + amount) as Uint<128>);
-  balance = disclose((balance - amount) as Uint<128>);
-}
-
-// Cryptographic Domain Separation Key Derivation
-pure circuit deriveKey(sk: Bytes<32>): Bytes<32> {
-  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "payment:owner:v1"), sk]);
+  // Confidential Withdrawal (ZK Owner Auth)
+  export circuit withdraw(
+    amount: Uint<64>, 
+    recipient: Either<ZswapCoinPublicKey, ContractAddress>
+  ): Void {
+    witness ownerSecretKey: Bytes<32>;
+    assert persistentCommit(ownerSecretKey) == ownerCommitment;
+    balance.decrement(amount);
+    sendUnshielded(amount, recipient);
+  }
 }""")
 
-    story.append(Paragraph("5.1 How the Compact Circuit Works", h2_style))
-    story.append(Paragraph("• <b><code>disclose()</code>:</b> Explicitly reveals a value to the public ledger. In Compact, all values are private by default unless wrapped in <code>disclose()</code>.", bullet_style))
-    story.append(Paragraph("• <b><code>receiveUnshielded()</code>:</b> A native Midnight standard library primitive that transfers unshielded tNIGHT tokens from the caller's wallet into the smart contract's liquidity account.", bullet_style))
-    story.append(Paragraph("• <b><code>sendUnshielded()</code>:</b> Transfers tokens out of the smart contract to the designated recipient address.", bullet_style))
-    story.append(Paragraph("• <b><code>assert(deriveKey(ownerKey()) == owner)</code>:</b> The mathematical ZK magic. The user's machine computes a hash of their private secret key and proves in zero-knowledge that the hash equals the public <code>owner</code> commitment stored on-chain. If the proof succeeds, the funds release. If an attacker attempts to call withdraw, they cannot generate a valid proof and the transaction fails immediately.", bullet_style))
+    story.append(Paragraph("4.1 How Privacy is Enforced Cryptographically", h2_style))
+    story.append(Paragraph("• <b>Private Witness (<code>witness ownerSecretKey</code>):</b> The secret key is evaluated strictly inside local browser memory. It is never broadcast over RPC or committed to the ledger.", bullet_style))
+    story.append(Paragraph("• <b>Zero-Knowledge Commitment (<code>persistentCommit</code>):</b> The contract asserts that the private witness produces the published owner commitment without revealing the preimage.", bullet_style))
+    story.append(Paragraph("• <b>Deterministic Ledger Counter:</b> The public vault balance increments and decrements transparently, while the withdrawer's identity remains completely shielded.", bullet_style))
 
-    # ================= CHAPTER 6 =================
-    story.append(Paragraph("Chapter 6: End-to-End Transaction Flow & DApp Execution", h1_style))
+    # ================= CHAPTER 5: SUMMARY =================
+    story.append(Paragraph("Chapter 5: Production Summary & Architect Credits", h1_style))
     story.append(Paragraph(
-        "Here is the exact step-by-step pipeline executed when a user interacts with our DApp:",
+        "<b>KNIGHT.VAULT</b> represents an end-to-end realization of institutional privacy. By combining WSL2, Docker ProofServer, Compact Circuits, and the 1AM Wallet, developers can build scalable, privacy-first DeFi applications.",
         body_style
     ))
 
-    flow_data = [
-        [Paragraph("<b>Step</b>", body_style), Paragraph("<b>Phase Name</b>", body_style), Paragraph("<b>What Happens Behind the Scenes</b>", body_style)],
-        [Paragraph("<b>1</b>", body_style), Paragraph("<b>Wallet Connect</b>", body_style), Paragraph("Browser connects to <code>window.midnight['1am']</code>, fetching unshielded address, shielded coin keys, and indexer URLs in parallel.", body_style)],
-        [Paragraph("<b>2</b>", body_style), Paragraph("<b>Parameter Setup</b>", body_style), Paragraph("User inputs token amount (e.g. 50 tNIGHT = 50,000,000 Stars). DApp builds the unproven transaction object.", body_style)],
-        [Paragraph("<b>3</b>", body_style), Paragraph("<b>ZK Proving</b>", body_style), Paragraph("DApp transmits circuit constraints to local Proof Server (<code>localhost:6300</code>). Proof engine generates mathematical proof in ~2–4 seconds.", body_style)],
-        [Paragraph("<b>4</b>", body_style), Paragraph("<b>Fee Balancing</b>", body_style), Paragraph("1AM wallet calls <code>balanceUnsealedTransaction</code>. ProofStation server sponsors the dust fee and wraps the transaction.", body_style)],
-        [Paragraph("<b>5</b>", body_style), Paragraph("<b>Broadcast</b>", body_style), Paragraph("Transaction is submitted to the Midnight network node via RPC. Block validators verify the proof and include it in a block.", body_style)],
-        [Paragraph("<b>6</b>", body_style), Paragraph("<b>Indexer Settlement</b>", body_style), Paragraph("Midnight Indexer indexes the block. DApp's patched GraphQL client polls the latest state and updates the React dashboard.", body_style)]
-    ]
-    flow_table = Table(flow_data, colWidths=[36, 120, 348])
-    flow_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), C_ACCENT),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-        ('BACKGROUND', (0,1), (-1,-1), C_BG_CARD),
-        ('GRID', (0,0), (-1,-1), 0.5, C_BORDER),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-        ('LEFTPADDING', (0,0), (-1,-1), 6),
-        ('RIGHTPADDING', (0,0), (-1,-1), 6),
-    ]))
-    story.append(flow_table)
-    story.append(Spacer(1, 12))
-
-    # ================= CHAPTER 7 =================
-    story.append(Paragraph("Chapter 7: Summary & Real-World Horizons", h1_style))
-    story.append(Paragraph(
-        "By completing this project, you have constructed a full-stack Web3 application operating at the leading edge of blockchain cryptography. You have mastered:",
-        body_style
-    ))
-    story.append(Paragraph("• <b>Writing Zero-Knowledge circuits in Compact.</b>", bullet_style))
-    story.append(Paragraph("• <b>Operating on-device ZK proof generation engines.</b>", bullet_style))
-    story.append(Paragraph("• <b>Integrating dust-free 1AM wallet sponsorship.</b>", bullet_style))
-    story.append(Paragraph("• <b>Querying real-time on-chain states via GraphQL indexers.</b>", bullet_style))
-    story.append(Paragraph("• <b>Building institutional-grade user interfaces that eliminate AI slop and adhere to professional craft floor design standards.</b>", bullet_style))
-
-    add_callout("<b>What Can You Build Next?</b> The exact architecture you built today serves as the foundation for Private Voting, Sealed-Bid Auctions, Decentralized Dark Pools, Private Payroll, and Credit Attestations.", bg_color=colors.HexColor("#f0fdf4"), border_color=colors.HexColor("#86efac"))
+    add_callout("<b>Architect:</b> Kshitij Adakane &bull; <i>Vibe Coder, Systems Builder & Applied AI/ML</i><br/><b>GitHub:</b> https://github.com/KSHITIJadakane/KNIGHT.VAULT", bg_color=colors.HexColor("#f0fdf4"), border_color=colors.HexColor("#86efac"))
 
     # Build Document
     doc.build(story, canvasmaker=NumberedCanvas)

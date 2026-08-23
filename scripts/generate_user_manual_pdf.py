@@ -32,13 +32,13 @@ class NumberedCanvas(canvas.Canvas):
 
         if self._pageNumber > 1:
             # Header
-            self.drawString(54, 11 * inch - 36, "Midnight Privacy Payment Vault — User Manual & Architecture Guide")
+            self.drawString(54, 11 * inch - 36, "KNIGHT.VAULT — User Manual, System Architecture & Troubleshooting Guide")
             self.setStrokeColor(colors.HexColor("#e2e8f0"))
             self.setLineWidth(0.5)
             self.line(54, 11 * inch - 42, 8.5 * inch - 54, 11 * inch - 42)
 
             # Footer
-            self.drawString(54, 36, "Official Midnight Network DApp Reference Documentation")
+            self.drawString(54, 36, "KNIGHT.VAULT Protocol Manual • Architect: Kshitij Adakane")
             page_text = f"Page {self._pageNumber} of {page_count}"
             self.drawRightString(8.5 * inch - 54, 36, page_text)
             self.line(54, 46, 8.5 * inch - 54, 46)
@@ -59,8 +59,9 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
 
     # Palette
     C_PRIMARY = colors.HexColor("#0f172a") # Slate 900
-    C_ACCENT = colors.HexColor("#2563eb")  # Blue 600
-    C_EMERALD = colors.HexColor("#059669") # Emerald 600
+    C_ACCENT = colors.HexColor("#0284c7")  # Cyan
+    C_MINT = colors.HexColor("#059669")    # Mint
+    C_INDIGO = colors.HexColor("#4f46e5")  # Indigo
     C_TEXT = colors.HexColor("#1e293b")    # Slate 800
     C_MUTED = colors.HexColor("#475569")   # Slate 600
     C_BG_CARD = colors.HexColor("#f8fafc") # Card BG
@@ -71,8 +72,8 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
         'CoverTitle',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=22,
-        leading=28,
+        fontSize=21,
+        leading=27,
         textColor=C_PRIMARY,
         spaceAfter=10
     )
@@ -81,19 +82,19 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
         'CoverSubtitle',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=11.5,
+        fontSize=11,
         leading=15,
         textColor=C_MUTED,
-        spaceAfter=18
+        spaceAfter=16
     )
 
     h1_style = ParagraphStyle(
         'H1',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=14,
-        leading=18,
-        textColor=C_ACCENT,
+        fontSize=13.5,
+        leading=17,
+        textColor=C_PRIMARY,
         spaceBefore=14,
         spaceAfter=8,
         keepWithNext=True
@@ -103,11 +104,11 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
         'H2',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=11.5,
-        leading=15,
-        textColor=C_PRIMARY,
+        fontSize=11,
+        leading=14,
+        textColor=C_INDIGO,
         spaceBefore=10,
-        spaceAfter=6,
+        spaceAfter=5,
         keepWithNext=True
     )
 
@@ -118,15 +119,15 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
         fontSize=9.5,
         leading=13.5,
         textColor=C_TEXT,
-        spaceAfter=6
+        spaceAfter=5
     )
 
     bullet_style = ParagraphStyle(
         'Bullet',
         parent=body_style,
-        leftIndent=14,
+        leftIndent=15,
         firstLineIndent=-10,
-        spaceAfter=4
+        spaceAfter=3
     )
 
     code_style = ParagraphStyle(
@@ -138,19 +139,26 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
         textColor=colors.HexColor("#0f172a")
     )
 
-    callout_style = ParagraphStyle(
-        'Callout',
-        parent=body_style,
-        fontName='Helvetica-Oblique',
-        fontSize=9,
-        leading=13,
-        textColor=colors.HexColor("#1e3a8a")
-    )
-
     story = []
 
+    def add_code(code_text):
+        clean_code = code_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br/>').replace(' ', '&nbsp;')
+        p = Paragraph(clean_code, code_style)
+        t = Table([[p]], colWidths=[504])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), C_CODE_BG),
+            ('BOX', (0, 0), (-1, -1), 0.5, C_BORDER),
+            ('TOPPADDING', (0, 0), (-1, -1), 5),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        story.append(Spacer(1, 3))
+        story.append(t)
+        story.append(Spacer(1, 5))
+
     def add_callout(text, bg_color=colors.HexColor("#eff6ff"), border_color=colors.HexColor("#93c5fd")):
-        p = Paragraph(text, callout_style)
+        p = Paragraph(text, body_style)
         t = Table([[p]], colWidths=[504])
         t.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), bg_color),
@@ -160,39 +168,23 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
             ('LEFTPADDING', (0, 0), (-1, -1), 10),
             ('RIGHTPADDING', (0, 0), (-1, -1), 10),
         ]))
-        story.append(Spacer(1, 4))
+        story.append(Spacer(1, 3))
         story.append(t)
-        story.append(Spacer(1, 6))
-
-    def add_code(code_text):
-        clean_code = code_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br/>').replace(' ', '&nbsp;')
-        p = Paragraph(clean_code, code_style)
-        t = Table([[p]], colWidths=[504])
-        t.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, -1), C_CODE_BG),
-            ('BOX', (0, 0), (-1, -1), 0.5, C_BORDER),
-            ('TOPPADDING', (0, 0), (-1, -1), 6),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-        ]))
-        story.append(Spacer(1, 4))
-        story.append(t)
-        story.append(Spacer(1, 6))
+        story.append(Spacer(1, 5))
 
     # ================= COVER =================
-    story.append(Spacer(1, 6))
-    story.append(Paragraph("MIDNIGHT PRIVACY PAYMENT VAULT", title_style))
-    story.append(Paragraph("Comprehensive User Manual, Operational Guide, and Architecture Reference", subtitle_style))
+    story.append(Spacer(1, 8))
+    story.append(Paragraph("KNIGHT.VAULT — USER MANUAL & RUNTIME SPECIFICATION", title_style))
+    story.append(Paragraph("A Comprehensive Handbook for Operating, Deploying, and Troubleshooting Confidential Zero-Knowledge Settlement Vaults on Midnight Network", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=C_ACCENT, spaceBefore=0, spaceAfter=12))
 
-    meta_data = [
-        [Paragraph("<b>Application:</b> Midnight Privacy Payment Vault", body_style), Paragraph("<b>Version:</b> 1.0.0 (Preprod Production Build)", body_style)],
-        [Paragraph("<b>Smart Contract:</b> Compact v0.20+ (payment.compact)", body_style), Paragraph("<b>Zero-Knowledge Engine:</b> Docker Local Port 6300", body_style)],
-        [Paragraph("<b>Fee Model:</b> Sponsored DUST (0 User Gas Fees)", body_style), Paragraph("<b>Frontend:</b> React 18 + Vite 6 + Tailwind CSS", body_style)]
+    meta = [
+        [Paragraph("<b>Target Network:</b> Midnight Preprod", body_style), Paragraph("<b>DApp Name:</b> KNIGHT.VAULT", body_style)],
+        [Paragraph("<b>Smart Contract:</b> Compact Circuits (payment.compact)", body_style), Paragraph("<b>ZK Proof Engine:</b> Docker Local Port :6300", body_style)],
+        [Paragraph("<b>Wallet API:</b> 1AM DApp Connector", body_style), Paragraph("<b>Architect:</b> Kshitij Adakane", body_style)]
     ]
-    meta_table = Table(meta_data, colWidths=[252, 252])
-    meta_table.setStyle(TableStyle([
+    t_meta = Table(meta, colWidths=[252, 252])
+    t_meta.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), C_BG_CARD),
         ('BOX', (0,0), (-1,-1), 1, C_BORDER),
         ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
@@ -201,126 +193,70 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
         ('LEFTPADDING', (0,0), (-1,-1), 8),
         ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
-    story.append(meta_table)
-    story.append(Spacer(1, 10))
+    story.append(t_meta)
+    story.append(Spacer(1, 12))
 
     # ================= SECTION 1 =================
-    story.append(Paragraph("1. What is this Application?", h1_style))
+    story.append(Paragraph("1. Developer Setup & Prerequisites", h1_style))
     story.append(Paragraph(
-        "The <b>Midnight Privacy Payment Vault</b> is a decentralized, non-custodial smart contract application built on the Midnight blockchain. It allows users to securely deposit tokens into an autonomous vault and authorize private withdrawals using <b>Zero-Knowledge (ZK) Proofs</b>.",
+        "To execute transactions and run proof synthesis locally, the developer environment requires three primary subsystems:",
         body_style
     ))
-    story.append(Paragraph(
-        "On traditional blockchains (like Ethereum), executing an owner-authorized payout requires revealing your private address or signing transactions that expose your identity. On Midnight, the vault contract stores only a cryptographic commitment (hash). When you withdraw funds, your computer generates a mathematical proof demonstrating: <i>'I possess the valid owner secret key for this vault'</i> without ever transmitting or revealing the secret key to the blockchain, the network, or the public.",
-        body_style
-    ))
-    add_callout("<b>Key Benefit:</b> Complete commercial confidentiality, zero gas fees for end users via 1AM sponsor relays, and instantaneous verification by Midnight consensus validators.")
+    story.append(Paragraph("• <b>WSL2 (Ubuntu 22.04 LTS):</b> Required on Windows to host the native Linux Compact toolchain and prover libraries.", bullet_style))
+    story.append(Paragraph("• <b>Docker ProofServer (Port 6300):</b> Synthesizes zero-knowledge proofs on your machine in 2-4 seconds.", bullet_style))
+    story.append(Paragraph("• <b>1AM Browser Wallet:</b> Manages unshielded/shielded keys, signs transactions, and relays sponsored dust fees.", bullet_style))
+
+    story.append(Paragraph("1.1 Docker ProofServer Deployment & Port Verification", h2_style))
+    story.append(Paragraph("Run the proof server container and ensure it is listening on localhost:", body_style))
+    add_code("docker run -d --name proof-server -p 6300:6300 midnightnetwork/proof-server:latest\n# Health check command:\ncurl http://localhost:6300/health")
+    add_callout("<b>WSL2 Memory Note:</b> Ensure your <code>.wslconfig</code> has at least 8GB-12GB RAM allocated. Proving large ZK circuits may fail with an unhandled exit code if memory is constrained below 4GB.", bg_color=colors.HexColor("#fffbeb"), border_color=colors.HexColor("#fcd34d"))
 
     # ================= SECTION 2 =================
-    story.append(Paragraph("2. Step-by-Step User Manual: How to Use This App", h1_style))
-    story.append(Paragraph(
-        "Follow these steps to deploy, fund, and interact with your privacy payment vault:",
-        body_style
-    ))
+    story.append(Paragraph("2. User Operations: Deposit & Withdraw", h1_style))
+    
+    story.append(Paragraph("2.1 Depositing Funds (Zero-Gas Payer Flow)", h2_style))
+    story.append(Paragraph("1. Open the KNIGHT.VAULT dashboard at <code>http://localhost:5173/</code>.", bullet_style))
+    story.append(Paragraph("2. Click <b>'Connect 1AM Wallet'</b> and authorize permissions on the popup modal.", bullet_style))
+    story.append(Paragraph("3. Enter the deposit amount (e.g. 50 tNIGHT) in the <b>'Inflow Channel'</b> card.", bullet_style))
+    story.append(Paragraph("4. Click <b>'Execute Confidential Inflow'</b>. The 1AM wallet balances the transaction with sponsored dust automatically.", bullet_style))
 
-    story.append(Paragraph("Step 1: Start the Development Server & Verify Proof Engine", h2_style))
-    story.append(Paragraph("Ensure Docker is running on your machine, then launch the web application:", body_style))
-    add_code("cd \"d:\\codeverse\\workshop stuffs\"\nnpm run dev")
-    story.append(Paragraph("Open your web browser to <b>http://localhost:5173/</b>. Observe the top navigation bar: you should see a green badge indicating <b>'Proof Engine: Active (6300)'</b>.", body_style))
-
-    story.append(Paragraph("Step 2: Connect Your Midnight Wallet", h2_style))
-    story.append(Paragraph("• Click the <b>'Connect 1AM'</b> button in the top right corner of the dashboard.", bullet_style))
-    story.append(Paragraph("• Approve the connection modal in the 1AM Browser Extension.", bullet_style))
-    story.append(Paragraph("• Your unshielded address (e.g. <code>mn_addr_preprod1...</code>) and network badge (<code>Preprod</code>) will appear in the navigation bar.", bullet_style))
-
-    story.append(Paragraph("Step 3: Deploy a New Privacy Vault", h2_style))
-    story.append(Paragraph("• Under the <b>'Deploy New Vault Contract'</b> card, click <b>'Deploy New Vault'</b>.", bullet_style))
-    story.append(Paragraph("• The browser generates a 32-byte cryptographic secret key (<code>ownerSecretKey</code>) in local memory.", bullet_style))
-    story.append(Paragraph("• Your local Proof Server builds the Zero-Knowledge deployment proof off-chain in 2–4 seconds.", bullet_style))
-    story.append(Paragraph("• The 1AM wallet sponsors the dust transaction fee (0.00 NIGHT cost).", bullet_style))
-    story.append(Paragraph("• Once committed by the network, the newly generated <b>Vault Contract Address</b> is automatically activated.", bullet_style))
-
-    story.append(Paragraph("Step 4: Deposit Tokens into the Vault", h2_style))
-    story.append(Paragraph("• In the <b>'Deposit Liquidity'</b> card, select a preset (10, 50, 100 tNIGHT) or enter a custom amount.", bullet_style))
-    story.append(Paragraph("• Click <b>'Deposit NIGHT'</b>.", bullet_style))
-    story.append(Paragraph("• The live transaction tracker modal opens, displaying the 4-phase execution: <i>Assembly ➔ Proving ➔ Balancing ➔ Finalization</i>.", bullet_style))
-    story.append(Paragraph("• Upon block inclusion, the vault's on-chain balance and total inflow metrics update automatically.", bullet_style))
-
-    story.append(Paragraph("Step 5: Execute a Zero-Knowledge Private Payout (Withdraw)", h2_style))
-    story.append(Paragraph("• In the <b>'Execute Private Payout'</b> card, enter the payout recipient address (or click 'Self Address').", bullet_style))
-    story.append(Paragraph("• Enter the withdrawal amount in tNIGHT.", bullet_style))
-    story.append(Paragraph("• Click <b>'Execute Private Payout'</b>.", bullet_style))
-    story.append(Paragraph("• The local Proof Server proves that your browser holds the secret owner key matching the on-chain commitment.", bullet_style))
-    story.append(Paragraph("• The contract dispatches the requested tokens directly to the recipient address.", bullet_style))
+    story.append(Paragraph("2.2 Zero-Knowledge Withdrawal Flow", h2_style))
+    story.append(Paragraph("1. Navigate to the <b>'Private Liquidity Release'</b> card.", bullet_style))
+    story.append(Paragraph("2. Enter the withdrawal amount and recipient unshielded address (or public key).", bullet_style))
+    story.append(Paragraph("3. Click <b>'Authorize ZK Withdrawal'</b>. The local ProofServer will compute the witness proof.", bullet_style))
+    story.append(Paragraph("4. Once synthesized, the transaction is committed to Midnight Preprod with zero private data leaked.", bullet_style))
 
     # ================= SECTION 3 =================
-    story.append(Paragraph("3. 'What is Used for What?' — Exhaustive Architecture Breakdown", h1_style))
-    story.append(Paragraph(
-        "Here is the exact purpose and function of every file, tool, and service in this project:",
-        body_style
-    ))
+    story.append(Paragraph("3. Real-World Troubleshooting & FAQs", h1_style))
 
-    # File Table
-    file_rows = [
-        [Paragraph("<b>File / Component</b>", body_style), Paragraph("<b>What is it used for?</b>", body_style)],
-        [Paragraph("<code>contract/src/payment.compact</code>", body_style), Paragraph("The smart contract source code written in Compact. Defines public variables (<code>balance</code>, <code>owner</code>), private witness (<code>ownerKey</code>), and circuits (<code>deposit</code>, <code>withdraw</code>).", body_style)],
-        [Paragraph("<code>contract/src/managed/payment/</code>", body_style), Paragraph("Auto-generated compiled artifacts from Compact compiler: TypeScript contract interfaces, ZKIR (Zero-Knowledge Intermediate Representation), and cryptographic proving keys.", body_style)],
-        [Paragraph("<code>public/zk/payment/</code>", body_style), Paragraph("Static proving (<code>.prover</code>) and verification (<code>.verifier</code>) keys served via HTTP to the browser for ZK-SNARK computation.", body_style)],
-        [Paragraph("<code>src/lib/midnight.ts</code>", body_style), Paragraph("Core Midnight infrastructure module: detects 1AM/Lace wallet, initializes in-memory private state stores, and provides the patched GraphQL Indexer client (fixes the Preprod null-offset bug).", body_style)],
-        [Paragraph("<code>src/lib/payment.ts</code>", body_style), Paragraph("Application contract interface: low-level contract deployment (<code>createUnprovenDeployTx</code>), circuit execution (<code>createUnprovenCallTx</code>), and state decoders.", body_style)],
-        [Paragraph("<code>src/lib/object-inspect-fix.mjs</code>", body_style), Paragraph("ESM shim providing a default export for the CommonJS <code>object-inspect</code> package required by <code>@midnight-ntwrk/compact-runtime</code>.", body_style)],
-        [Paragraph("<code>src/lib/isomorphic-ws-fix.mjs</code>", body_style), Paragraph("Browser WebSocket shim mapping <code>isomorphic-ws</code> to native browser <code>globalThis.WebSocket</code>.", body_style)],
-        [Paragraph("<code>src/contexts/WalletContext.tsx</code>", body_style), Paragraph("React context managing wallet connection state, address formatting, and session persistence.", body_style)],
-        [Paragraph("<code>src/components/VaultMetrics.tsx</code>", body_style), Paragraph("Real-time telemetry dashboard displaying on-chain vault balance, total deposits, and total payouts.", body_style)],
-        [Paragraph("<code>src/components/ContractDeployer.tsx</code>", body_style), Paragraph("Component handling 1-click contract deployment and loading existing vault addresses.", body_style)],
-        [Paragraph("<code>src/components/TransactionStatusModal.tsx</code>", body_style), Paragraph("Interactive modal tracker visualizing the 4-phase transaction execution pipeline.", body_style)],
-        [Paragraph("<code>scripts/sync-assets.mjs</code>", body_style), Paragraph("Node.js build script copying compiled ZK proving keys from the contract folder to the public web server directory.", body_style)],
-        [Paragraph("<code>vite.config.ts</code>", body_style), Paragraph("Bundler configuration enabling WebAssembly (WASM), top-level await, module aliases, and ESNext target compilation.", body_style)]
+    faq_data = [
+        [Paragraph("<b>Issue / Error</b>", body_style), Paragraph("<b>Root Cause & Recommended Solution</b>", body_style)],
+        [Paragraph("<b>ProofServer Unreachable (Port 6300)</b>", body_style), Paragraph("Docker container is stopped or port is blocked by Windows Firewall. Run <code>docker restart proof-server</code> and verify with <code>curl http://localhost:6300/health</code>.", body_style)],
+        [Paragraph("<b>1AM Wallet 'offset: null' Error</b>", body_style), Paragraph("Known bug in Midnight Indexer v4 GraphQL schema when pagination offset is null. The KNIGHT.VAULT client includes an automatic filter polyfill.", body_style)],
+        [Paragraph("<b>Insufficient Dust Balance</b>", body_style), Paragraph("The 1AM wallet needs a small unshielded balance to derive dust. Request 10 tNIGHT from the Midnight faucet to refresh coin notes.", body_style)],
+        [Paragraph("<b>Vite / Browser Polyfill Errors</b>", body_style), Paragraph("Node.js stream/crypto modules must be polyfilled in browser builds. Ensure <code>vite-plugin-node-polyfills</code> is included in <code>vite.config.ts</code>.", body_style)]
     ]
-    file_table = Table(file_rows, colWidths=[150, 354])
-    file_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), C_PRIMARY),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-        ('BACKGROUND', (0,1), (-1,-1), C_BG_CARD),
-        ('GRID', (0,0), (-1,-1), 0.5, C_BORDER),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('LEFTPADDING', (0,0), (-1,-1), 6),
-        ('RIGHTPADDING', (0,0), (-1,-1), 6),
-    ]))
-    story.append(file_table)
-    story.append(Spacer(1, 10))
-
-    # ================= SECTION 4 =================
-    story.append(Paragraph("4. External Tools & Services Decoded", h1_style))
-
-    tool_data = [
-        [Paragraph("<b>External Service / Tool</b>", body_style), Paragraph("<b>Why is it needed and what does it do?</b>", body_style)],
-        [Paragraph("<b>WSL 2 (Ubuntu Linux)</b>", body_style), Paragraph("Runs a native Linux kernel on Windows. Midnight's <code>compact</code> smart contract compiler is built for Linux. Antigravity uses WSL to execute compiler commands smoothly.", body_style)],
-        [Paragraph("<b>Docker Proof Server (port 6300)</b>", body_style), Paragraph("A containerized daemon (<code>midnightntwrk/proof-server:latest</code>) running locally. It generates Groth16 ZK-SNARK polynomial proofs on-device so secret keys are never transmitted over the internet.", body_style)],
-        [Paragraph("<b>1AM Wallet Extension</b>", body_style), Paragraph("The browser extension that holds user accounts and interacts with ProofStation to sponsor DUST fees, enabling 0 gas fees for users.", body_style)],
-        [Paragraph("<b>Midnight GraphQL Indexer v4</b>", body_style), Paragraph("A cloud service provided by Midnight that reads Substrate ledger blocks and allows the frontend to query contract state and transaction history in real time.", body_style)]
-    ]
-    tool_table = Table(tool_data, colWidths=[150, 354])
-    tool_table.setStyle(TableStyle([
+    t_faq = Table(faq_data, colWidths=[160, 344])
+    t_faq.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), C_ACCENT),
         ('TEXTCOLOR', (0,0), (-1,0), colors.white),
         ('BACKGROUND', (0,1), (-1,-1), C_BG_CARD),
         ('GRID', (0,0), (-1,-1), 0.5, C_BORDER),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
         ('LEFTPADDING', (0,0), (-1,-1), 6),
         ('RIGHTPADDING', (0,0), (-1,-1), 6),
     ]))
-    story.append(tool_table)
+    story.append(t_faq)
     story.append(Spacer(1, 10))
 
-    # ================= SECTION 5 =================
-    story.append(Paragraph("5. Troubleshooting & Frequently Asked Questions", h1_style))
-    story.append(Paragraph("• <b>'Proof Engine: Unreachable' in Navbar:</b> Make sure Docker Desktop is open and the container on port 6300 is running (<code>docker run -d -p 6300:6300 midnightntwrk/proof-server:latest</code>).", bullet_style))
-    story.append(Paragraph("• <b>White Screen or Blank Page in Browser:</b> Press <code>Ctrl + Shift + R</code> in Chrome to clear stale caches and reload WebAssembly modules.", bullet_style))
-    story.append(Paragraph("• <b>'Version mismatch: compiled code expects 0.16.0':</b> Resolved by ensuring <code>@midnight-ntwrk/compact-runtime@0.16.0</code> is installed.", bullet_style))
-    story.append(Paragraph("• <b>Transaction taking ~8–12 seconds:</b> This is normal on Preprod testnet. Step 1: Assembly (0.5s) ➔ Step 2: ZK Proving (3s) ➔ Step 3: Fee Balancing (2s) ➔ Step 4: Block Finality (4–6s).", bullet_style))
+    # ================= SECTION 4 =================
+    story.append(Paragraph("4. Summary & Architect Credits", h1_style))
+    story.append(Paragraph(
+        "KNIGHT.VAULT demonstrates modern, institutional-grade zero-knowledge engineering. Designed and built by <b>Kshitij Adakane</b>.",
+        body_style
+    ))
+    add_callout("<b>Open Source Codebase:</b> https://github.com/KSHITIJadakane/KNIGHT.VAULT", bg_color=colors.HexColor("#f0fdf4"), border_color=colors.HexColor("#86efac"))
 
     doc.build(story, canvasmaker=NumberedCanvas)
     print(f"[SUCCESS] User manual generated: {filename}")
