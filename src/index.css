@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --font-mono: 'Fragment Mono', 'JetBrains Mono', monospace;
+    --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background-color: #08090d;
+    color: #f3f4f6;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', -apple-system, sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Universal GPU acceleration & silky easing */
+  button, a, input, select, textarea {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease,
+                color 0.25s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+  }
+
+  button:active, a:active {
+    transform: scale(0.975);
+    transition: transform 0.12s ease-out;
+  }
+}
+
+/* Institutional Card & Surface Panels */
+.panel-surface {
+  background: rgba(14, 17, 23, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  will-change: transform, box-shadow, border-color;
+  transform: translateZ(0);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.55s cubic-bezier(0.16, 1, 0.3, 1), 
+              background 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel-surface-hover {
+  cursor: default;
+}
+
+.panel-surface-hover:hover {
+  background: rgba(16, 20, 28, 0.88);
+  border-color: rgba(0, 245, 160, 0.3);
+  transform: translateY(-4px) scale(1.008);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 
+              0 0 30px -4px rgba(0, 245, 160, 0.12), 
+              0 0 0 1px rgba(0, 245, 160, 0.18) inset;
+  transition: transform 0.42s cubic-bezier(0.34, 1.45, 0.64, 1), 
+              box-shadow 0.42s ease-out, 
+              border-color 0.35s ease-out, 
+              background 0.35s ease-out;
+}
+
+.panel-surface-subtle {
+  background: rgba(10, 13, 18, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel-surface-subtle:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.6);
+  transition: transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
+              border-color 0.3s ease-out,
+              box-shadow 0.38s ease-out;
+}
+
+.input-surface {
+  background: rgba(7, 9, 13, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.input-surface:focus {
+  border-color: #00f5a0;
+  box-shadow: 0 0 0 1px #00f5a0, 0 0 20px -2px rgba(0, 245, 160, 0.25);
+  outline: none;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle focus ring */
+*:focus-visible {
+  outline: 2px solid #00f5a0;
+  outline-offset: 2px;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(8, 10, 14, 0.7);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Ambient Floating Background Glow Animations */
+@keyframes aurora-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6vw, 4vh) scale(1.1);
+  }
+}
+
+@keyframes aurora-reverse {
+  0%, 100% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate(-6vw, -5vh) scale(0.92);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 0.12;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.18;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+.animate-aurora-slow {
+  animation: aurora-slow 24s ease-in-out infinite;
+}
+
+.animate-aurora-reverse {
+  animation: aurora-reverse 28s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 4s ease-in-out infinite;
+}
+
+/* Pill Tabs Active State */
+.tab-pill-active {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 12px rgba(255, 255, 255, 0.08) inset;
+}
+
+/* Deep Spatial Windows Entrance Animations (Slow Immersive Camera Glide) */
+@keyframes window-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(110px) scale(0.92);
+    filter: blur(14px);
+  }
+  35% {
+    opacity: 0.7;
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+.animate-window-1 {
+  animation: window-enter 2.2s cubic-bezier(0.12, 0.99, 0.28, 1) 0.15s backwards;
+}
+
+.animate-window-2 {
+  animation: window-enter 2.4s cubic-bezier(0.12, 0.99, 0.28, 1) 0.35s backwards;
+}
+
+.animate-window-3 {
+  animation: window-enter 2.6s cubic-bezier(0.12, 0.99, 0.28, 1) 0.55s backwards;
+}
+
+.animate-window-4 {
+  animation: window-enter 2.8s cubic-bezier(0.12, 0.99, 0.28, 1) 0.75s backwards;
+}
+
+
+
