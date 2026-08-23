@@ -20,35 +20,37 @@ export default function IntroSplash({ onComplete, onEntering }: IntroSplashProps
   const [isEnteringSite, setIsEnteringSite] = useState(false);
   const [isFullyLit, setIsFullyLit] = useState(false);
 
-  // Smooth cinematic counter pacing (~2.6s total duration)
+  // Grand cinematic counter pacing (~3.6s total duration for slow majestic entrance)
   useEffect(() => {
     const startTime = performance.now();
-    const duration = 2600; // 2.6s total smooth count
+    const duration = 3600; // 3.6s smooth, deliberate count
 
     const updateCounter = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(1, elapsed / duration);
       
-      // Silky cubic ease-out deceleration
-      const easeProgress = 1 - Math.pow(1 - progress, 2.8);
+      // Majestic cubic ease-out deceleration
+      const easeProgress = 1 - Math.pow(1 - progress, 2.6);
       const currentVal = Math.floor(easeProgress * 100);
       setCount(currentVal);
 
-      if (progress > 0.65) {
+      if (progress > 0.6) {
         setIsFullyLit(true);
       }
 
       if (progress < 1) {
         requestAnimationFrame(updateCounter);
       } else {
-        // Trigger synchronized spatial entrance through the portal
+        // Ignite the background auroras to come to life right at 100%!
         onEntering?.();
+
+        // Hold at 100% for 450ms while background illuminates, then smoothly lift curtain
         setTimeout(() => {
           setIsEnteringSite(true);
           setTimeout(() => {
             onComplete();
-          }, 1100); // Smooth 1.1s glide
-        }, 200);
+          }, 1800); // 1.8s slow, majestic upward flight
+        }, 450);
       }
     };
 
@@ -59,14 +61,14 @@ export default function IntroSplash({ onComplete, onEntering }: IntroSplashProps
   useEffect(() => {
     const wordInterval = setInterval(() => {
       setWordIndex((prev) => (prev + 1) % CYCLING_WORDS.length);
-    }, 420);
+    }, 550);
 
     return () => clearInterval(wordInterval);
   }, []);
 
   return (
     <div
-      className={`fixed inset-0 z-[100] w-full h-full flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#08090d] text-white select-none overflow-hidden transition-all duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`fixed inset-0 z-[100] w-full h-full flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#07090e] text-white select-none overflow-hidden transition-all duration-[1800ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isEnteringSite
           ? '-translate-y-full opacity-0 pointer-events-none'
           : 'translate-y-0 opacity-100'
