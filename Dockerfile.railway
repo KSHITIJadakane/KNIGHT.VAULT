@@ -1,7 +1,6 @@
 FROM midnightntwrk/proof-server:latest
 
-# Expose standard Midnight ProofServer port
+ENV PORT=6300
 EXPOSE 6300
 
-# Pass arguments directly to default container entrypoint
-CMD ["--host", "0.0.0.0", "--port", "6300"]
+CMD ["midnight-proof-server --port ${PORT:-6300}"]
