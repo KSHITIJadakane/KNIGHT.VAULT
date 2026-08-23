@@ -279,17 +279,18 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
 
       {/* Floating Kshitij Adakane Developer Info Modal (Triggered by Holding [ K ]) */}
       {showDeveloperModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-window-1">
-          {/* Backdrop Click Dismissal */}
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity duration-200"
+          onClick={() => setShowDeveloperModal(false)}
+        >
+          {/* Modal Card Content (Stop propagation so clicks inside don't dismiss) */}
           <div 
-            className="absolute inset-0" 
-            onClick={() => setShowDeveloperModal(false)} 
-          />
-
-          {/* Modal Content */}
-          <div className="relative w-full max-w-sm rounded-2xl bg-[#0d1117]/95 border border-white/[0.16] shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_35px_rgba(0,245,160,0.2)] backdrop-blur-2xl p-5 text-left text-slate-200 z-10">
+            className="relative w-full max-w-sm rounded-2xl bg-[#0e1117] border border-white/[0.18] shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_40px_rgba(0,245,160,0.25)] p-5 text-left text-slate-200 z-10 select-text"
+            onClick={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+          >
             {/* Ambient Top Accent */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-1 bg-gradient-to-r from-transparent via-[#00f5a0] to-transparent rounded-full opacity-80 shadow-[0_0_10px_#00f5a0]" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-1 bg-gradient-to-r from-transparent via-[#00f5a0] to-transparent rounded-full opacity-90 shadow-[0_0_12px_#00f5a0]" />
 
             {/* Header */}
             <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/[0.08]">
@@ -312,7 +313,10 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
 
               <button
                 type="button"
-                onClick={() => setShowDeveloperModal(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDeveloperModal(false);
+                }}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
                 title="Close"
               >
