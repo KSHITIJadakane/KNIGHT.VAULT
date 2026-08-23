@@ -207,45 +207,45 @@ contract PaymentVault {
 
       {/* 4. BENCHMARK COMPARISON MATRIX — Glowing Portal Expansion */}
       <ScrollReveal variant="portal-expand" duration={1200}>
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div className="space-y-1">
-            <div className="text-[10px] font-mono uppercase tracking-widest text-[#00f5a0] font-semibold">
+            <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-[#00f5a0] font-semibold">
               SECURITY MATRIX
             </div>
-            <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
+            <h3 className="text-xl sm:text-3xl font-display font-bold text-white">
               Public Ledger vs. Midnight ZK Vault
             </h3>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left font-mono text-xs border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto rounded-xl border border-white/[0.08] shadow-2xl no-scrollbar">
+            <table className="w-full text-left font-mono text-[11px] sm:text-xs min-w-[540px]">
               <thead className="bg-white/[0.03] text-slate-400 border-b border-white/[0.08]">
                 <tr>
-                  <th className="p-4 uppercase font-semibold">Feature / Guarantee</th>
-                  <th className="p-4 uppercase font-semibold text-rose-300">Traditional Public Vaults</th>
-                  <th className="p-4 uppercase font-semibold text-[#00f5a0]">Midnight ZK Vault</th>
+                  <th className="p-3 sm:p-4 uppercase font-semibold">Feature / Guarantee</th>
+                  <th className="p-3 sm:p-4 uppercase font-semibold text-rose-300">Traditional Public Vaults</th>
+                  <th className="p-3 sm:p-4 uppercase font-semibold text-[#00f5a0]">Midnight ZK Vault</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04] bg-[#0c0f16]">
                 <tr className="hover:bg-white/[0.03] transition-colors">
-                  <td className="p-4 text-slate-200 font-medium">Owner Identity Visibility</td>
-                  <td className="p-4 text-slate-400">Publicly linkable to wallet address</td>
-                  <td className="p-4 text-[#00f5a0] font-bold">Shielded via cryptographic witness</td>
+                  <td className="p-3 sm:p-4 text-slate-200 font-medium">Owner Identity Visibility</td>
+                  <td className="p-3 sm:p-4 text-slate-400">Publicly linkable to wallet address</td>
+                  <td className="p-3 sm:p-4 text-[#00f5a0] font-bold">Shielded via cryptographic witness</td>
                 </tr>
                 <tr className="hover:bg-white/[0.03] transition-colors">
-                  <td className="p-4 text-slate-200 font-medium">Payer Cross-Device Friction</td>
-                  <td className="p-4 text-slate-400">Requires gas token in every wallet</td>
-                  <td className="p-4 text-[#00f5a0] font-bold">Zero-gas sponsored checkouts</td>
+                  <td className="p-3 sm:p-4 text-slate-200 font-medium">Payer Cross-Device Friction</td>
+                  <td className="p-3 sm:p-4 text-slate-400">Requires gas token in every wallet</td>
+                  <td className="p-3 sm:p-4 text-[#00f5a0] font-bold">Zero-gas sponsored checkouts</td>
                 </tr>
                 <tr className="hover:bg-white/[0.03] transition-colors">
-                  <td className="p-4 text-slate-200 font-medium">Auditability & Receipts</td>
-                  <td className="p-4 text-slate-400">Requires complex block explorer scraping</td>
-                  <td className="p-4 text-[#00f5a0] font-bold">Cryptographic QR verifiable receipts</td>
+                  <td className="p-3 sm:p-4 text-slate-200 font-medium">Auditability & Receipts</td>
+                  <td className="p-3 sm:p-4 text-slate-400">Requires complex block explorer scraping</td>
+                  <td className="p-3 sm:p-4 text-[#00f5a0] font-bold">Cryptographic QR verifiable receipts</td>
                 </tr>
                 <tr className="hover:bg-white/[0.03] transition-colors">
-                  <td className="p-4 text-slate-200 font-medium">Smart Contract Runtime</td>
-                  <td className="p-4 text-slate-400">EVM bytecode (transparent execution)</td>
-                  <td className="p-4 text-[#00f5a0] font-bold">Compact Circuits (ZK compilation)</td>
+                  <td className="p-3 sm:p-4 text-slate-200 font-medium">Smart Contract Runtime</td>
+                  <td className="p-3 sm:p-4 text-slate-400">EVM bytecode (transparent execution)</td>
+                  <td className="p-3 sm:p-4 text-[#00f5a0] font-bold">Compact Circuits (ZK compilation)</td>
                 </tr>
               </tbody>
             </table>
@@ -256,14 +256,14 @@ contract PaymentVault {
       {/* 5. DEVELOPER COMPACT CODE PREVIEW — Terminal Fold-Up Blueprint */}
       <ScrollReveal variant="flip-up" duration={1200}>
         <div className="panel-surface rounded-2xl border border-white/[0.08] shadow-2xl overflow-hidden">
-          <div className="bg-black/60 px-5 py-3.5 border-b border-white/[0.06] flex items-center justify-between">
+          <div className="bg-black/60 px-4 sm:px-5 py-3 sm:py-3.5 border-b border-white/[0.06] flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
-              <Terminal className="w-4 h-4 text-[#00f5a0]" />
+              <Terminal className="w-4 h-4 text-[#00f5a0] flex-shrink-0" />
               <span>payment.compact</span>
             </div>
             <button
               onClick={handleCopyCode}
-              className="flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-white px-3 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-colors"
+              className="flex items-center gap-1.5 text-[11px] sm:text-xs font-mono text-slate-400 hover:text-white px-2.5 sm:px-3 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-colors"
             >
               {copiedCode ? (
                 <>
@@ -279,8 +279,8 @@ contract PaymentVault {
             </button>
           </div>
 
-          <div className="p-5 sm:p-6 overflow-x-auto bg-[#07090e]">
-            <pre className="text-xs sm:text-sm font-mono text-slate-300 leading-relaxed selection:bg-[#00f5a0]/30 selection:text-white">
+          <div className="p-3.5 sm:p-6 overflow-x-auto bg-[#07090e] no-scrollbar">
+            <pre className="text-[11px] sm:text-sm font-mono text-slate-300 leading-relaxed selection:bg-[#00f5a0]/30 selection:text-white">
               <code>{compactCodeSample}</code>
             </pre>
           </div>

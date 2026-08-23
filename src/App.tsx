@@ -275,22 +275,22 @@ export default function App() {
         ) : (
           <div className="space-y-4 sm:space-y-5 animate-window-3">
             {/* Top Toolbar & Exit Action */}
-            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 sm:px-4 sm:py-2.5 rounded-2xl bg-white/[0.02] border border-white/[0.07] backdrop-blur-md">
-              <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-semibold text-white">Active Vault:</span>
-                <span className="text-slate-400 font-mono text-[11px] truncate max-w-[140px] sm:max-w-none">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:px-4 sm:py-2.5 rounded-2xl bg-white/[0.02] border border-white/[0.07] backdrop-blur-md">
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-300 min-w-0">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+                <span className="font-semibold text-white flex-shrink-0 text-[11px] sm:text-xs">Active Vault:</span>
+                <span className="text-slate-400 font-mono text-[10px] sm:text-[11px] truncate select-all">
                   {activeContractAddress}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => {
                     playClickSound();
                     handleExitVault();
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-rose-500/10 text-slate-300 hover:text-rose-300 border border-white/[0.08] hover:border-rose-500/30 text-xs font-mono transition-all font-medium group"
+                  className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-rose-500/10 text-slate-300 hover:text-rose-300 border border-white/[0.08] hover:border-rose-500/30 text-xs font-mono transition-all font-medium group w-full sm:w-auto"
                   title="Leave this vault and return to main landing page"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-400 group-hover:translate-x-[-2px] transition-transform" />
@@ -309,7 +309,7 @@ export default function App() {
             />
 
             {/* Workspace Interactive Mode Tabs */}
-            <div className="flex items-center justify-start sm:justify-center overflow-x-auto pb-1 gap-1.5 p-1 rounded-xl bg-black/40 border border-white/[0.08] backdrop-blur-md">
+            <div className="flex items-center justify-start sm:justify-center overflow-x-auto pb-1 sm:pb-0 gap-1.5 p-1 rounded-xl bg-black/40 border border-white/[0.08] backdrop-blur-md no-scrollbar">
               <button
                 onClick={() => {
                   playClickSound();
