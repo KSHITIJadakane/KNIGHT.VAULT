@@ -72,20 +72,20 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           return { wallet: midnight?.['1am'], type: '1am' as const };
         }
         if (explicitWallet === 'lace') {
-          const l = midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'] ?? cardano?.lace;
+          const l = midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'];
           return { wallet: l, type: 'lace' as const };
         }
 
         if (midnight?.['1am']) return { wallet: midnight['1am'], type: '1am' as const };
-        const lace = midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'] ?? cardano?.lace;
+        const lace = midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'];
         if (lace) return { wallet: lace, type: 'lace' as const };
         return { wallet: null, type: null };
       };
 
-      // Poll briefly for 1.5 seconds if not yet injected
+      // Poll briefly for 2 seconds if not yet injected
       let found = findWallet();
       if (!found.wallet) {
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 20; i++) {
           await new Promise((r) => setTimeout(r, 100));
           found = findWallet();
           if (found.wallet) break;
