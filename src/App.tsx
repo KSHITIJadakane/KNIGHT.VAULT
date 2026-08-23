@@ -242,22 +242,22 @@ export default function App() {
         <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 relative z-10">
         {/* Header Title Section */}
         <div className="max-w-4xl mx-auto mb-4 sm:mb-6 text-center sm:text-left sm:flex sm:items-center sm:justify-between pb-4 sm:pb-5 border-b border-white/[0.08] animate-window-2">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-mono mb-2">
-              <Sparkles className="w-3 h-3" />
-              <span>Zero-Knowledge Privacy Vault</span>
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[#00f5a0] text-[11px] font-mono mb-2 shadow-[0_0_12px_rgba(0,245,160,0.15)]">
+              <Sparkles className="w-3.5 h-3.5 animate-pulse text-[#00f5a0]" />
+              <span className="font-semibold tracking-wide">ZERO-KNOWLEDGE PRIVACY VAULT</span>
             </div>
-            <h1 className="text-xl sm:text-3xl font-display font-bold tracking-tight text-slate-100">
+            <h1 className="text-2xl sm:text-4xl font-display font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-[#00f5a0] bg-clip-text text-transparent leading-normal pb-1">
               Midnight Settlement Vault
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl font-mono text-[12px]">
+            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl font-mono text-[11px] sm:text-[12px] leading-relaxed">
               Zero-Knowledge token custody and transfer circuits built on Midnight Network with dust-free sponsored gas.
             </p>
           </div>
 
           <div className="hidden sm:flex mt-4 sm:mt-0 items-center justify-center sm:justify-end gap-2 text-xs font-mono text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Compact Circuits</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+            <span className="text-[#00f5a0] font-medium">Compact Circuits Active</span>
           </div>
         </div>
 
