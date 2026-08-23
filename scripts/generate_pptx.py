@@ -388,27 +388,66 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
         p_r.font.color.rgb = TEXT_PLATINUM
 
     # =========================================================================
-    # SLIDE 6: Roadmap & Developer Summary (Kshitij Adakane)
+    # SLIDE 6: Verifiability Matrix // Real vs Bluff
     # =========================================================================
     s6 = prs.slides.add_slide(blank_layout)
     set_bg(s6)
-    add_header(s6, "Production Roadmap & Architect Profile", "05 / PROTOCOL FUTURE & TEAM")
+    add_header(s6, "Verifiability Matrix: Real Execution vs Bluff", "05 / CRYPTOGRAPHIC AUDITABILITY")
 
-    add_card(s6, 0.8, 1.75, 3.75, 3.4, "Phase 1: Preprod (Live)", [
-        "Full 1AM connector integration.",
+    add_card(s6, 0.8, 1.75, 2.75, 5.2, "01. Docker SNARK Prover", [
+        "Real ProofStation container (:6300).",
+        "Evaluates real mathematical constraints.",
+        "Proving key: withdraw.prover (2.82 MB).",
+        "Inspect via: docker logs proof-server.",
+        "Zero mock transcripts."
+    ], tag="PROOF ENGINE", accent_color=MINT, font_size=11, item_spacing=8)
+
+    add_card(s6, 3.78, 1.75, 2.75, 5.2, "02. Contract Hash", [
+        "Deterministic 64-char address.",
+        "Compiled from payment.compact.",
+        "Lace owner secret witness commitment.",
+        "dd9c5ee171fbb3516cd2...",
+        "Unique on-chain contract state."
+    ], tag="ON-CHAIN STATE", accent_color=INDIGO, font_size=11, item_spacing=8)
+
+    add_card(s6, 6.78, 1.75, 2.75, 5.2, "03. Lace Preprod UTXO", [
+        "Live wallet funded with 1,000 tNIGHT.",
+        "Tx ID: 4b853703926172159c...",
+        "Preprod network attachment.",
+        "Native stake capacity for tDUST.",
+        "Real cryptographic identity."
+    ], tag="WALLET INTEGRATION", accent_color=CYAN, font_size=11, item_spacing=8)
+
+    add_card(s6, 9.78, 1.75, 2.75, 5.2, "04. Zero-Gas Relay", [
+        "Executed with 0 / 0 tDUST in Lace.",
+        "Sponsored relayer bypasses gas tank.",
+        "Zero user cost (0.00 NIGHT).",
+        "Contract custody holds 35 tNIGHT.",
+        "Proof of zero-friction DeFi."
+    ], tag="GAS SPONSORSHIP", accent_color=ROSE, font_size=11, item_spacing=8)
+
+    # =========================================================================
+    # SLIDE 7: Roadmap & Developer Summary (Kshitij Adakane)
+    # =========================================================================
+    s7 = prs.slides.add_slide(blank_layout)
+    set_bg(s7)
+    add_header(s7, "Production Roadmap & Architect Profile", "06 / PROTOCOL FUTURE & TEAM")
+
+    add_card(s7, 0.8, 1.75, 3.75, 3.4, "Phase 1: Preprod (Live)", [
+        "Full Lace & 1AM connector integrations.",
         "Compact smart contracts on Preprod.",
         "Sponsored dust balancing engine.",
         "ProofStation client-side proving (:6300)."
     ], tag="LIVE PRODUCTION", accent_color=MINT, font_size=11.5, item_spacing=8)
 
-    add_card(s6, 4.78, 1.75, 3.75, 3.4, "Phase 2: Multi-Sig & Vesting", [
+    add_card(s7, 4.78, 1.75, 3.75, 3.4, "Phase 2: Multi-Sig & Vesting", [
         "m-of-n threshold witness approval circuits.",
         "Time-locked payment releases.",
         "Regulatory viewing keys for tax & compliance.",
         "Native Midnight mobile SDK."
     ], tag="NEXT MILESTONE", accent_color=INDIGO, font_size=11.5, item_spacing=8)
 
-    add_card(s6, 8.78, 1.75, 3.75, 3.4, "Phase 3: Mainnet Ecosystem", [
+    add_card(s7, 8.78, 1.75, 3.75, 3.4, "Phase 3: Mainnet Ecosystem", [
         "Cardano Partnerchain bridge deployment.",
         "Cross-chain shielded atomic swaps.",
         "Decentralized merchant payment widget.",
@@ -416,13 +455,13 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
     ], tag="ENTERPRISE SCALE", accent_color=CYAN, font_size=11.5, item_spacing=8)
 
     # Master Architect Card
-    arch_box = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(5.35), Inches(11.733), Inches(1.6))
+    arch_box = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(5.35), Inches(11.733), Inches(1.6))
     arch_box.fill.solid()
     arch_box.fill.fore_color.rgb = CARD_BG_ALT
     arch_box.line.color.rgb = BORDER_COLOR
     arch_box.line.width = Pt(1)
 
-    tb_a = s6.shapes.add_textbox(Inches(1.1), Inches(5.5), Inches(11.1), Inches(1.3))
+    tb_a = s7.shapes.add_textbox(Inches(1.1), Inches(5.5), Inches(11.1), Inches(1.3))
     tf_a = tb_a.text_frame
     p_a1 = tf_a.paragraphs[0]
     p_a1.text = "KNIGHT.VAULT Protocol Architect: Kshitij Adakane"

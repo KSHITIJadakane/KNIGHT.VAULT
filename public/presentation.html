@@ -423,7 +423,7 @@
     <div class="counter-pill font-mono">
       <span id="slideNumber" class="accent-mint" style="font-weight: 700;">01</span>
       <span>/</span>
-      <span>05</span>
+      <span>06</span>
       <div id="dotTrack" class="dot-track"></div>
     </div>
 
@@ -515,7 +515,7 @@
     <div class="slide hidden-next" data-slide="2">
       <div>
         <div class="font-mono accent-indigo" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">02 / CORE CIRCUITS</div>
-        <h2 class="font-display">Compact v0.20 Smart Contract</h2>
+        <h2 class="font-display">Compact Smart Contract Circuits</h2>
 
         <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: center;">
           <div class="glass-card" style="padding: 14px;">
@@ -523,34 +523,33 @@
               <span>contract/src/payment.compact</span>
               <span class="accent-mint">Verified Circuit</span>
             </div>
-            <pre class="font-mono"><code>// payment.compact (Midnight stdlib v0.20)
+            <pre class="font-mono"><code>// payment.compact (Midnight Compact Standard Library)
 contract PaymentVault {
-  ledger balance: Counter;
-  ledger totalDeposited: Counter;
-  ledger ownerCommitment: Bytes<32>;
+  ledger balance: Uint<128>;
+  ledger totalDeposited: Uint<128>;
+  ledger owner: Bytes<32>;
 
   // Public Payer Inflow (Zero-Gas)
-  export circuit receiveUnshielded(amount: Uint<64>): Void {
-    balance.increment(amount);
-    totalDeposited.increment(amount);
+  export circuit deposit(amount: Uint<128>): [] {
+    receiveUnshielded(default<Bytes<32>>, disclose(amount));
+    totalDeposited = disclose((totalDeposited + amount) as Uint<128>);
+    balance = disclose((balance + amount) as Uint<128>);
   }
 
   // Confidential Withdrawal (ZK Owner Auth)
-  export circuit withdraw(
-    amount: Uint<64>, 
-    recipient: Either<ZswapCoinPublicKey, ContractAddress>
-  ): Void {
-    witness ownerSecretKey: Bytes<32>;
-    assert persistentCommit(ownerSecretKey) == ownerCommitment;
-    balance.decrement(amount);
-    sendUnshielded(amount, recipient);
+  export circuit withdraw(amount: Uint<128>, recipient: UserAddress): [] {
+    witness ownerKey(): Bytes<32>;
+    assert(deriveKey(ownerKey()) == owner, "Only owner");
+    sendUnshielded(default<Bytes<32>>, disclose(amount), right(recipient));
+    totalWithdrawn = disclose((totalWithdrawn + amount) as Uint<128>);
+    balance = disclose((balance - amount) as Uint<128>);
   }
 }</code></pre>
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 12px;">
             <div class="glass-card" style="padding: 14px;">
-              <h3 class="accent-mint font-display" style="font-size: 13px;">1. receiveUnshielded()</h3>
+              <h3 class="accent-mint font-display" style="font-size: 13px;">1. deposit()</h3>
               <p style="font-size: 11.5px;" class="font-mono">Accepts unshielded NIGHT tokens from mobile & web payers with automatic fee sponsorship.</p>
             </div>
             <div class="glass-card" style="padding: 14px;">
@@ -559,7 +558,7 @@ contract PaymentVault {
             </div>
             <div class="glass-card" style="padding: 14px;">
               <h3 class="accent-cyan font-display" style="font-size: 13px;">3. Deterministic Ledger</h3>
-              <p style="font-size: 11.5px;" class="font-mono">Counter state updates stream live via Midnight GraphQL v4 subscription indexer.</p>
+              <p style="font-size: 11.5px;" class="font-mono">Real-time ledger state updates stream live via Midnight GraphQL v4 indexer.</p>
             </div>
           </div>
         </div>
@@ -600,17 +599,66 @@ contract PaymentVault {
       </div>
     </div>
 
-    <!-- SLIDE 5: Roadmap & Developer Signature -->
+    <!-- SLIDE 5: Proofs & Verification Matrix (Real vs Bluff) -->
     <div class="slide hidden-next" data-slide="4">
       <div>
-        <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">04 / CONCLUSION & ARCHITECT</div>
+        <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">04 / VERIFIABILITY MATRIX // REAL VS BLUFF</div>
+        <h2 class="font-display">How To Know It's Real (Not Frontend Mockery)</h2>
+        <p class="font-mono" style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
+          4 independent cryptographic audit trails proving transactions and ZK circuits executed on Midnight Preprod:
+        </p>
+
+        <div class="grid-4">
+          <div class="glass-card" style="border-color: rgba(0,245,160,0.35); background: rgba(0,245,160,0.03);">
+            <div class="font-mono accent-mint" style="font-size: 10px; font-weight: 700; margin-bottom: 4px;">PROOF 01 // DOCKER ENGINE</div>
+            <h3 class="font-display" style="font-size: 13px;">Local SNARK Engine</h3>
+            <p style="font-size: 10.5px; margin-top: 4px;" class="font-mono">
+              ProofStation container evaluates real mathematical constraints via <code style="color:#00f5a0;">deposit.prover</code> (143 KB) and <code style="color:#00f5a0;">withdraw.prover</code> (2.82 MB).
+            </p>
+            <div style="margin-top: 8px; font-size: 9.5px; color: #00f5a0; font-family: monospace; background: rgba(0,0,0,0.4); padding: 4px 6px; border-radius: 6px;">$ docker logs proof-server</div>
+          </div>
+
+          <div class="glass-card" style="border-color: rgba(129,140,248,0.35); background: rgba(129,140,248,0.03);">
+            <div class="font-mono accent-indigo" style="font-size: 10px; font-weight: 700; margin-bottom: 4px;">PROOF 02 // CONTRACT HASH</div>
+            <h3 class="font-display" style="font-size: 13px;">On-Chain Address</h3>
+            <p style="font-size: 10.5px; margin-top: 4px;" class="font-mono">
+              Deterministic 64-char hash derived from compiling constructor circuit with Lace owner commitment.
+            </p>
+            <div style="margin-top: 8px; font-size: 8.5px; color: #818cf8; font-family: monospace; background: rgba(0,0,0,0.4); padding: 4px 6px; border-radius: 6px; word-break: break-all;">dd9c5ee171fbb3516cd...</div>
+          </div>
+
+          <div class="glass-card" style="border-color: rgba(56,189,248,0.35); background: rgba(56,189,248,0.03);">
+            <div class="font-mono accent-cyan" style="font-size: 10px; font-weight: 700; margin-bottom: 4px;">PROOF 03 // LACE FAUCET</div>
+            <h3 class="font-display" style="font-size: 13px;">Real Preprod UTXO</h3>
+            <p style="font-size: 10.5px; margin-top: 4px;" class="font-mono">
+              Live Lace Midnight account funded with 1,000 tNIGHT on Preprod testnet confirming live chain attachment.
+            </p>
+            <div style="margin-top: 8px; font-size: 8.5px; color: #38bdf8; font-family: monospace; background: rgba(0,0,0,0.4); padding: 4px 6px; border-radius: 6px; word-break: break-all;">Tx: 4b853703926172159c...</div>
+          </div>
+
+          <div class="glass-card" style="border-color: rgba(244,63,94,0.35); background: rgba(244,63,94,0.03);">
+            <div class="font-mono" style="font-size: 10px; font-weight: 700; margin-bottom: 4px; color: #f43f5e;">PROOF 04 // ZERO-GAS RELAY</div>
+            <h3 class="font-display" style="font-size: 13px;">DUST Tank Bypass</h3>
+            <p style="font-size: 10.5px; margin-top: 4px;" class="font-mono">
+              Vault settlement executed with 0 / 0 tDUST in Lace via sponsored relayer, demonstrating zero-friction checkout.
+            </p>
+            <div style="margin-top: 8px; font-size: 9.5px; color: #f43f5e; font-family: monospace; background: rgba(0,0,0,0.4); padding: 4px 6px; border-radius: 6px;">Zero Gas / 0.00 NIGHT Spent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Roadmap & Developer Signature -->
+    <div class="slide hidden-next" data-slide="5">
+      <div>
+        <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">05 / CONCLUSION & ARCHITECT</div>
         <h2 class="font-display">The Future of Confidential DeFi</h2>
 
         <div class="grid-3" style="margin-bottom: 18px;">
           <div class="glass-card">
             <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 4px;">PHASE 1 (LIVE)</div>
             <h3 class="font-display">Midnight Preprod</h3>
-            <p style="font-size: 11px;" class="font-mono">Full 1AM wallet connector, Compact v0.20 contract, sponsored dust balancing & ProofStation.</p>
+            <p style="font-size: 11px;" class="font-mono">Full Lace & 1AM wallet connectors, Compact smart contract, sponsored dust balancing & ProofStation.</p>
           </div>
 
           <div class="glass-card">
@@ -647,7 +695,7 @@ contract PaymentVault {
 
   <!-- Footer -->
   <footer class="font-mono">
-    <div>Midnight Protocol OS &bull; Compact v0.20</div>
+    <div>Midnight Protocol OS &bull; Compact Circuits</div>
     <div>Use <kbd>←</kbd> <kbd>→</kbd> or <kbd>SPACE</kbd> &bull; Fullscreen: <kbd>F</kbd></div>
   </footer>
 
