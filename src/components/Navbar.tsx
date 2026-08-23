@@ -78,7 +78,7 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
         </button>
 
         {/* Center/Right Status & Wallet controls */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {/* Quick Exit Vault Action on desktop */}
           {activeContractAddress && (
             <button
@@ -88,10 +88,10 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
                 onExitVault?.();
               }}
               title="Leave Vault and return to Main Page"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-rose-500/10 text-slate-300 hover:text-rose-300 border border-white/[0.08] hover:border-rose-500/30 text-xs font-mono transition-all font-medium"
+              className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-rose-500/10 text-slate-300 hover:text-rose-300 border border-white/[0.08] hover:border-rose-500/30 text-xs font-mono transition-all font-medium"
             >
               <LogOut className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
-              <span>Exit Vault</span>
+              <span>Exit</span>
             </button>
           )}
 
@@ -115,24 +115,24 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
             </div>
           </div>
 
-          {/* Interactive Presentation Deck Link (Available on Mobile & Desktop) */}
+          {/* Interactive Presentation Deck Link (Space-optimized for Mobile & Desktop) */}
           <a
             href="/presentation.html"
             target="_blank"
             rel="noopener noreferrer"
             title="Open Interactive Presentation Slides"
-            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-emerald-500/30 text-[11px] sm:text-xs font-mono text-slate-200 transition-all shadow-sm"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-emerald-500/30 text-[11px] sm:text-xs font-mono text-slate-200 transition-all shadow-sm flex-shrink-0"
           >
             <MonitorPlay className="w-3.5 h-3.5 text-[#00f5a0] flex-shrink-0" />
-            <span className="font-medium">Deck</span>
+            <span className="font-medium hidden xs:inline">Deck</span>
           </a>
 
           {/* Wallet Connection & Exit Door */}
           {isConnected && address ? (
             <div className="flex items-center gap-1 bg-white/[0.04] border border-white/[0.09] rounded-xl p-1 text-xs">
-              <div className="flex items-center gap-1.5 px-2">
+              <div className="flex items-center gap-1.5 px-1.5 sm:px-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse shadow-[0_0_6px_#34d399]" />
-                <span className="font-mono text-slate-200 text-[11px] truncate max-w-[80px] xs:max-w-[100px] sm:max-w-none">
+                <span className="font-mono text-slate-200 text-[11px] truncate max-w-[70px] xs:max-w-[90px] sm:max-w-none">
                   {address.slice(0, 5)}...{address.slice(-4)}
                 </span>
                 <span className="hidden sm:inline text-[9px] uppercase font-mono px-1.5 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/10">
@@ -144,7 +144,7 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
                 type="button"
                 onClick={handleCopy}
                 title="Copy Address"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+                className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
@@ -153,40 +153,41 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
                 type="button"
                 onClick={handleExitDoor}
                 title={activeContractAddress ? "Exit Vault & Disconnect to Main Page" : "Disconnect"}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/[0.08] transition-colors"
+                className="p-1 sm:p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/[0.08] transition-colors"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <button
                 type="button"
                 onClick={() => connect('preprod')}
                 disabled={isConnecting}
-                className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-black bg-white hover:bg-slate-100 active:bg-slate-200 shadow-md transition-all disabled:opacity-50 font-mono tracking-tight"
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold text-black bg-white hover:bg-slate-100 active:bg-slate-200 shadow-md transition-all disabled:opacity-50 font-mono tracking-tight flex-shrink-0"
               >
                 {isConnecting ? (
                   <>
                     <div className="w-3 h-3 border-2 border-slate-400 border-t-black rounded-full animate-spin" />
-                    <span className="text-[11px]">Connecting...</span>
+                    <span className="text-[10px] sm:text-[11px]">Connecting</span>
                   </>
                 ) : (
                   <>
-                    <Shield className="w-3.5 h-3.5" />
+                    <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span>Connect</span>
                   </>
                 )}
               </button>
 
+              {/* Instant Sandbox Demo Button */}
               <button
                 type="button"
                 onClick={connectSandbox}
                 disabled={isConnecting}
-                title="Launch Instant Demo Mode"
-                className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all font-mono"
+                title="Instant Sandbox Mode (No Extension Needed)"
+                className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-mono font-medium text-amber-300 bg-amber-400/10 hover:bg-amber-400/20 active:bg-amber-400/30 border border-amber-400/25 transition-all flex-shrink-0"
               >
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />
                 <span>Demo</span>
               </button>
             </div>
