@@ -227,11 +227,15 @@ export default function App() {
 
       {/* Main Dashboard Scene - Synchronized Spatial Entrance */}
       <div
-        className={`flex-1 flex flex-col w-full transition-all duration-[1800ms] ease-[cubic-bezier(0.12,0.99,0.28,1)] ${
+        className={`flex-1 flex flex-col w-full transition-all duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isSceneVisible
-            ? 'opacity-100 translate-y-0 filter blur-0'
-            : 'opacity-0 translate-y-20 filter blur-lg pointer-events-none'
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-8 pointer-events-none'
         }`}
+        style={{
+          transform: isSceneVisible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 32px, 0)',
+          willChange: 'transform, opacity',
+        }}
       >
         {/* Glassmorphic Navbar */}
         <Navbar
