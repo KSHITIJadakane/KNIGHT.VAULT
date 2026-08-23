@@ -3,400 +3,383 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Midnight Privacy Payment Vault — Pitch Deck & Architecture</title>
-  <!-- Reveal.js CSS -->
+  <title>KNIGHT.VAULT — Zero-Knowledge Pitch Deck & Architecture</title>
+  
+  <!-- Reveal.js Core & Plugins -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
-  <!-- Highlight.js theme -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --r-background-color: #0b0d11;
+      --r-background-color: #08090d;
       --r-main-font: 'Inter', system-ui, sans-serif;
-      --r-heading-font: 'Inter', system-ui, sans-serif;
-      --r-heading-color: #f8fafc;
+      --r-heading-font: 'Space Grotesk', system-ui, sans-serif;
+      --r-heading-color: #ffffff;
       --r-main-color: #94a3b8;
     }
+
+    body {
+      background-color: #08090d;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    .reveal {
+      font-family: 'Inter', sans-serif;
+    }
+
     .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+      font-family: 'Space Grotesk', sans-serif;
       text-transform: none;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
+
+    .font-mono {
+      font-family: 'Fragment Mono', 'JetBrains Mono', monospace;
+    }
+
+    /* Glassmorphism Cards with Organic Spring Hover */
     .slide-card {
-      background: #12151c;
-      border: 1px solid #1f242e;
-      border-radius: 12px;
-      padding: 22px;
+      background: rgba(14, 17, 23, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
       text-align: left;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+      transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1), 
+                  border-color 0.4s ease, 
+                  box-shadow 0.4s ease;
     }
-    .code-box {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8em;
-      border-radius: 8px;
+
+    .slide-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      border-color: rgba(0, 245, 160, 0.35);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 30px -4px rgba(0, 245, 160, 0.15);
+    }
+
+    /* Custom Kinetic Reveal.js Fragment Transitions */
+    .reveal .slides section .fragment {
+      opacity: 0;
+      transform: translateY(24px) scale(0.96);
+      filter: blur(6px);
+      transition: all 0.65s cubic-bezier(0.34, 1.45, 0.64, 1);
+    }
+
+    .reveal .slides section .fragment.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+
+    /* Progress bar with cyber mint glow */
+    .reveal .progress {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .reveal .progress span {
+      background: linear-gradient(90deg, #00f5a0, #818cf8);
+      box-shadow: 0 0 12px #00f5a0;
+    }
+
+    /* Floating Aurora Ambient Background */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
     }
   </style>
 </head>
-<body class="bg-[#0b0d11] text-slate-100 font-sans">
+<body class="bg-[#08090d] text-slate-100">
+
+  <!-- Ambient Glowing Mesh Background -->
+  <div class="aurora-bg">
+    <div class="absolute -top-[20%] -left-[10%] w-[55vw] h-[55vw] rounded-full blur-[140px] opacity-[0.08] bg-[#00f5a0]"></div>
+    <div class="absolute top-[30%] -right-[15%] w-[60vw] h-[60vw] rounded-full blur-[160px] opacity-[0.10] bg-[#4338ca]"></div>
+    <div class="absolute -bottom-[20%] left-[30%] w-[50vw] h-[50vw] rounded-full blur-[130px] opacity-[0.06] bg-[#0284c7]"></div>
+    <div class="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
+  </div>
+
+  <!-- Deck Floating Topbar Navigation -->
+  <div class="fixed top-4 left-6 right-6 z-50 flex items-center justify-between pointer-events-none">
+    <div class="flex items-center gap-3 pointer-events-auto">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 to-white/5 border border-[#00f5a0]/30 flex items-center justify-center font-mono font-bold text-white text-xs shadow-inner">
+        K
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-display font-extrabold text-white text-sm tracking-tight">
+          KNIGHT<span class="text-[#00f5a0]">.</span>VAULT
+        </span>
+        <span class="text-[9px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-300 font-mono border border-white/10 uppercase tracking-widest">
+          Deck v0.20
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 pointer-events-auto">
+      <a 
+        href="/" 
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono text-slate-300 hover:text-white transition-all shadow-sm"
+      >
+        <span>&larr; Return to App</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Presentation Slides -->
   <div class="reveal">
     <div class="slides">
 
-      <!-- SLIDE 1: Cover -->
-      <section class="text-left" data-transition="slide">
-        <div class="max-w-5xl mx-auto">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#162032] border border-[#233554] text-blue-400 font-mono text-xs mb-4">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>MIDNIGHT NETWORK • HACKATHON PITCH DECK</span>
+      <!-- SLIDE 1: Title & Hero Architecture -->
+      <section class="text-left" data-transition="convex">
+        <div class="max-w-5xl mx-auto space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00f5a0]/10 border border-[#00f5a0]/30 text-[#00f5a0] font-mono text-xs shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-[#00f5a0] animate-pulse"></span>
+            <span class="tracking-wider uppercase font-semibold">MIDNIGHT NETWORK • PROTOCOL DECK</span>
           </div>
-          <h1 class="text-4xl sm:text-5xl font-bold text-white mb-3">
-            Midnight Privacy Payment Vault
+
+          <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-[1.08] tracking-tight">
+            KNIGHT<span class="text-[#00f5a0]">.</span>VAULT
           </h1>
-          <p class="text-lg text-slate-400 mb-6 max-w-3xl">
-            Non-Custodial Zero-Knowledge Escrow, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Institutional-Grade UI.
+
+          <p class="text-lg sm:text-xl text-slate-300 max-w-3xl leading-relaxed font-normal">
+            Institutional Zero-Knowledge Custody, Compact Smart Contracts, Client-Side Halo2 Proofs, and Sponsored 0-Gas Settlements on Midnight Network.
           </p>
 
-          <div class="grid grid-cols-4 gap-4 text-xs font-mono border-t border-[#1f242e] pt-6 text-slate-400">
-            <div>
-              <span class="block text-slate-500 uppercase">Target Network</span>
-              <span class="text-slate-200 font-semibold">Midnight Preprod</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono border-t border-white/[0.08] pt-6 text-slate-400">
+            <div class="slide-card p-4">
+              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">TARGET CHAIN</span>
+              <span class="text-slate-100 font-bold text-sm">Midnight Preprod</span>
             </div>
-            <div>
-              <span class="block text-slate-500 uppercase">Contract Engine</span>
-              <span class="text-slate-200 font-semibold">Compact v0.20+</span>
+            <div class="slide-card p-4">
+              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">CONTRACT ENGINE</span>
+              <span class="text-[#00f5a0] font-bold text-sm">Compact v0.20+</span>
             </div>
-            <div>
-              <span class="block text-slate-500 uppercase">Proof Server</span>
-              <span class="text-emerald-400 font-semibold">Local Port 6300</span>
+            <div class="slide-card p-4">
+              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">PROOFSTATION</span>
+              <span class="text-cyan-400 font-bold text-sm">Docker Port 6300</span>
             </div>
-            <div>
-              <span class="block text-slate-500 uppercase">Gas Cost</span>
-              <span class="text-amber-400 font-semibold">0.00 NIGHT (Sponsored)</span>
+            <div class="slide-card p-4">
+              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">USER GAS COST</span>
+              <span class="text-[#818cf8] font-bold text-sm">0.00 NIGHT (Sponsored)</span>
             </div>
+          </div>
+
+          <div class="text-[11px] font-mono text-slate-500 flex items-center gap-2">
+            <span>Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white">SPACE</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white">&rarr;</kbd> to navigate</span>
+            <span>&bull;</span>
+            <span>Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white">F</kbd> for Fullscreen</span>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 2: Problem vs Solution -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">01 / The Problem & Opportunity</div>
-          <h2 class="text-3xl font-bold text-white mb-6">The Trillion-Dollar Web3 Privacy Gap</h2>
-
-          <div class="grid grid-cols-2 gap-6">
-            <div class="slide-card border-rose-900/40 bg-rose-950/10">
-              <h3 class="text-base font-semibold text-rose-400 mb-3">⚠️ The Public Blockchain Dilemma</h3>
-              <ul class="text-xs text-slate-300 space-y-3 font-mono">
-                <li>• <b>Total Surveillance:</b> Ethereum and Bitcoin expose all balances, sender, recipient, and transaction amounts globally.</li>
-                <li>• <b>Enterprise Adoption Blocked:</b> Corporations cannot put payroll, trade secrets, or vendor invoices on public ledgers without leaking competitive data.</li>
-                <li>• <b>Gas-Trail KYC De-anonymization:</b> Purchasing native gas tokens links off-chain identities to every on-chain move.</li>
-                <li>• <b>Illegal Mixers vs Compliance:</b> Legacy privacy tools face regulatory bans because they lack selective disclosure mechanisms.</li>
-              </ul>
-            </div>
-
-            <div class="slide-card border-emerald-900/40 bg-emerald-950/10">
-              <h3 class="text-base font-semibold text-emerald-400 mb-3">🛡️ How Midnight Vault Solves This</h3>
-              <ul class="text-xs text-slate-300 space-y-3 font-mono">
-                <li>• <b>Dual State Machine:</b> Combines public verifiable accounting with private client-side witness secrets.</li>
-                <li>• <b>ZK Authorization:</b> Prove ownership of withdrawal rights in Zero-Knowledge without revealing the secret key.</li>
-                <li>• <b>Sponsored 0 Gas:</b> 1AM Wallet & ProofStation balance DUST fees — 0 token friction for users.</li>
-                <li>• <b>Compliance-Ready:</b> Selective disclosure allows creating cryptographic auditor proofs without global leaks.</li>
-              </ul>
-            </div>
+      <!-- SLIDE 2: The Multi-Trillion Dollar Privacy Dilemma -->
+      <section data-transition="convex">
+        <div class="max-w-5xl mx-auto text-left space-y-6">
+          <div>
+            <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">01 / MARKET CONTEXT</div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-white">The Public Blockchain Privacy Trap</h2>
           </div>
-        </div>
-      </section>
 
-      <!-- SLIDE 3: Key Features -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">02 / Feature Suite</div>
-          <h2 class="text-3xl font-bold text-white mb-6">Core Product Capabilities</h2>
-
-          <div class="grid grid-cols-3 gap-4">
-            <div class="slide-card">
-              <div class="text-xs font-mono text-blue-400 font-bold mb-1">🔐 Non-Custodial Vault</div>
-              <p class="text-xs text-slate-300">1-Click deploy of autonomous smart contracts. Secret key generated in browser memory and never leaves device.</p>
-            </div>
-            <div class="slide-card">
-              <div class="text-xs font-mono text-amber-400 font-bold mb-1">⚡ 0 Gas Sponsorship</div>
-              <p class="text-xs text-slate-300">Integrated with 1AM Wallet DApp Connector. Automatically injects ProofStation dust fees for 0 NIGHT cost.</p>
-            </div>
-            <div class="slide-card">
-              <div class="text-xs font-mono text-emerald-400 font-bold mb-1">💻 On-Device Proof Engine</div>
-              <p class="text-xs text-slate-300">Communicates with local Docker Proof Server (port 6300) to build Groth16 ZK-SNARK proofs in 2-4 seconds.</p>
-            </div>
-            <div class="slide-card">
-              <div class="text-xs font-mono text-cyan-400 font-bold mb-1">📡 Patched Indexer v4</div>
-              <p class="text-xs text-slate-300">Patched GraphQL client eliminating Preprod null-offset bugs. Real-time balance polling and event sync.</p>
-            </div>
-            <div class="slide-card">
-              <div class="text-xs font-mono text-purple-400 font-bold mb-1">🎨 Institutional UI</div>
-              <p class="text-xs text-slate-300">Craft Floor design system with 0 anti-patterns (no gradient text, no glow halos, fixed tabular numbers).</p>
-            </div>
-            <div class="slide-card">
-              <div class="text-xs font-mono text-rose-400 font-bold mb-1">🛡️ Replay Protection</div>
-              <p class="text-xs text-slate-300">Domain-separated key derivation (<code>persistentHash</code>) isolates secret keys from cross-contract replay.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SLIDE 4: Competitive Analysis -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">03 / Competitive Landscape</div>
-          <h2 class="text-3xl font-bold text-white mb-6">Why Midnight Vault Leads the Market</h2>
-
-          <div class="grid grid-cols-4 gap-3 text-xs font-mono">
-            <div class="slide-card border-rose-900/40">
-              <span class="text-rose-400 font-bold block mb-2">Ethereum / EVM</span>
-              <ul class="text-slate-400 space-y-1.5 text-[11px]">
-                <li>Privacy: ❌ 0% (Public)</li>
-                <li>Gas: ❌ $2 - $50</li>
-                <li>KYC Leak: ❌ Permanent</li>
-                <li>Compliance: ❌ Total Leak</li>
-                <li>Contracts: ✅ Turing Complete</li>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="slide-card border-rose-500/20 bg-rose-950/10 fragment">
+              <div class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-2">⚠️ Transparent Chains (ETH, BTC)</div>
+              <ul class="text-xs text-slate-300 space-y-3 font-mono leading-relaxed">
+                <li>• <b>Total Financial Exposure:</b> All balances, trade secrets, vendor payrolls, and invoice histories are publicly browsable forever.</li>
+                <li>• <b>KYC Gas-Trail Linkage:</b> Purchasing gas tokens links your real-world identity to every subsequent transaction.</li>
+                <li>• <b>Mixers are Banned:</b> Tornado Cash style mixers lack compliance primitives and get universally blacklisted.</li>
               </ul>
             </div>
-            <div class="slide-card border-amber-900/40">
-              <span class="text-amber-400 font-bold block mb-2">Tornado / Mixers</span>
-              <ul class="text-slate-400 space-y-1.5 text-[11px]">
-                <li>Privacy: ⚠️ Obfuscation</li>
-                <li>Gas: ❌ High</li>
-                <li>KYC Leak: ❌ Public Funding</li>
-                <li>Compliance: ❌ Sanctioned</li>
-                <li>Contracts: ❌ Fixed Pools</li>
-              </ul>
-            </div>
-            <div class="slide-card border-cyan-900/40">
-              <span class="text-cyan-400 font-bold block mb-2">Monero (XMR)</span>
-              <ul class="text-slate-400 space-y-1.5 text-[11px]">
-                <li>Privacy: ✅ Full RingCT</li>
-                <li>Gas: ✅ Low</li>
-                <li>KYC Leak: ✅ Unlinked</li>
-                <li>Compliance: ❌ No Auditing</li>
-                <li>Contracts: ❌ No Logic</li>
-              </ul>
-            </div>
-            <div class="slide-card border-emerald-500 bg-emerald-950/20">
-              <span class="text-emerald-400 font-bold block mb-2">Midnight Vault (Ours)</span>
-              <ul class="text-slate-200 space-y-1.5 text-[11px]">
-                <li>Privacy: ✅ ZK Dual-State</li>
-                <li>Gas: ✅ 0 (Sponsored)</li>
-                <li>KYC Leak: ✅ No Trail</li>
-                <li>Compliance: ✅ Selective</li>
-                <li>Contracts: ✅ Compact ZK</li>
+
+            <div class="slide-card border-[#00f5a0]/30 bg-[#00f5a0]/5 fragment">
+              <div class="text-xs font-mono text-[#00f5a0] font-bold uppercase tracking-wider mb-2">🛡️ KNIGHT.VAULT Solution</div>
+              <ul class="text-xs text-slate-300 space-y-3 font-mono leading-relaxed">
+                <li>• <b>Witness Shielding:</b> Secret keys never touch the ledger. Only succinct ZK proofs are verified on-chain.</li>
+                <li>• <b>Sponsored Dust Relay:</b> Payers check out seamlessly without holding gas tokens or faucet balances.</li>
+                <li>• <b>Verifiable Receipts:</b> Selective cryptographic disclosures allow audits without deanonymizing balances.</li>
               </ul>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 5: Full-Stack Architecture -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">04 / Architecture</div>
-          <h2 class="text-3xl font-bold text-white mb-6">4-Tier Distributed System Topology</h2>
-
-          <div class="grid grid-cols-4 gap-3 mb-6">
-            <div class="slide-card">
-              <span class="text-blue-400 font-bold text-xs block mb-1">1. Frontend</span>
-              <h4 class="text-sm font-bold text-white mb-2">React 18 + Vite</h4>
-              <p class="text-[11px] text-slate-400 font-mono leading-relaxed">
-                WASM ledger engine, 1AM connector, in-memory private store, and settlement tracker.
-              </p>
-            </div>
-            <div class="slide-card">
-              <span class="text-amber-400 font-bold text-xs block mb-1">2. Proving Engine</span>
-              <h4 class="text-sm font-bold text-white mb-2">Docker Port 6300</h4>
-              <p class="text-[11px] text-slate-400 font-mono leading-relaxed">
-                Off-chain Groth16 mathematical proving engine. Zero secret keys leave client RAM.
-              </p>
-            </div>
-            <div class="slide-card">
-              <span class="text-emerald-400 font-bold text-xs block mb-1">3. Fee Sponsorship</span>
-              <h4 class="text-sm font-bold text-white mb-2">1AM Relay</h4>
-              <p class="text-[11px] text-slate-400 font-mono leading-relaxed">
-                ProofStation injects DUST fees into unsealed transactions automatically.
-              </p>
-            </div>
-            <div class="slide-card">
-              <span class="text-cyan-400 font-bold text-xs block mb-1">4. Settlement Node</span>
-              <h4 class="text-sm font-bold text-white mb-2">Midnight Preprod</h4>
-              <p class="text-[11px] text-slate-400 font-mono leading-relaxed">
-                AURA & GRANDPA consensus on Substrate, anchored to Cardano settlement.
-              </p>
-            </div>
+      <!-- SLIDE 3: Compact Smart Contract Architecture -->
+      <section data-transition="convex">
+        <div class="max-w-5xl mx-auto text-left space-y-6">
+          <div>
+            <div class="text-xs font-mono text-[#818cf8] uppercase tracking-widest font-semibold mb-1">02 / CORE CIRCUITS</div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-white">Compact v0.20 Smart Contract</h2>
           </div>
-        </div>
-      </section>
 
-      <!-- SLIDE 6: Smart Contract Mechanics -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">05 / Smart Contract</div>
-          <h2 class="text-3xl font-bold text-white mb-4">Inside payment.compact</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-7 slide-card p-4 overflow-hidden fragment">
+              <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06] text-xs font-mono text-slate-400">
+                <span>contract/src/payment.compact</span>
+                <span class="text-[#00f5a0]">Verified Circuit</span>
+              </div>
+              <pre class="text-[11px] font-mono leading-relaxed text-slate-200 overflow-x-auto"><code class="language-typescript">// payment.compact (Midnight stdlib v0.20)
+contract PaymentVault {
+  ledger balance: Counter;
+  ledger totalDeposited: Counter;
+  ledger ownerCommitment: Bytes<32>;
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <pre class="code-box p-3 bg-[#0a0d12] border border-[#1e2430] text-[10px] leading-tight text-slate-300 overflow-x-auto"><code>pragma language_version >= 0.20;
-import CompactStandardLibrary;
+  // Public Payer Inflow (Zero-Gas)
+  export circuit receiveUnshielded(amount: Uint<64>): Void {
+    balance.increment(amount);
+    totalDeposited.increment(amount);
+  }
 
-export ledger balance: Uint<128>;
-export ledger totalDeposited: Uint<128>;
-export ledger totalWithdrawn: Uint<128>;
-export ledger owner: Bytes<32>;
-
-witness ownerKey(): Bytes<32>;
-
-export circuit deposit(amount: Uint<128>): [] {
-  receiveUnshielded(default<Bytes<32>>, disclose(amount));
-  totalDeposited = disclose((totalDeposited + amount) as Uint<128>);
-  balance = disclose((balance + amount) as Uint<128>);
-}
-
-export circuit withdraw(amount: Uint<128>, recipient: UserAddress): [] {
-  assert(deriveKey(ownerKey()) == owner, "Only owner can withdraw");
-  assert(balance >= amount, "Insufficient balance");
-  sendUnshielded(default<Bytes<32>>, disclose(amount), right(disclose(recipient)));
-  totalWithdrawn = disclose((totalWithdrawn + amount) as Uint<128>);
-  balance = disclose((balance - amount) as Uint<128>);
+  // Confidential Withdrawal (ZK Owner Auth)
+  export circuit withdraw(
+    amount: Uint<64>, 
+    recipient: Either<ZswapCoinPublicKey, ContractAddress>
+  ): Void {
+    witness ownerSecretKey: Bytes<32>;
+    assert persistentCommit(ownerSecretKey) == ownerCommitment;
+    balance.decrement(amount);
+    sendUnshielded(amount, recipient);
+  }
 }</code></pre>
+            </div>
 
-            <div class="space-y-2 text-xs font-mono">
-              <div class="slide-card p-3">
-                <span class="text-blue-400 font-bold block mb-1">Public Ledger Accounting</span>
-                <p class="text-slate-300 text-[11px]"><code>balance</code> and <code>owner</code> hash are transparent on-chain for verifiability.</p>
+            <div class="lg:col-span-5 space-y-4">
+              <div class="slide-card fragment">
+                <h4 class="font-bold text-white text-sm mb-1 text-[#00f5a0]">1. Inflow Circuit</h4>
+                <p class="text-xs font-mono text-slate-400">
+                  Accepts unshielded NIGHT tokens from any client without gas tokens via sponsored dust balancing.
+                </p>
               </div>
-              <div class="slide-card p-3">
-                <span class="text-amber-400 font-bold block mb-1">Client Private Witness</span>
-                <p class="text-slate-300 text-[11px]"><code>witness ownerKey()</code> supplies private secret key exclusively to local proof engine.</p>
+
+              <div class="slide-card fragment">
+                <h4 class="font-bold text-white text-sm mb-1 text-[#818cf8]">2. Outflow Circuit</h4>
+                <p class="text-xs font-mono text-slate-400">
+                  Verifies private owner commitment using Halo2 proofs inside the local proof station.
+                </p>
               </div>
-              <div class="slide-card p-3">
-                <span class="text-emerald-400 font-bold block mb-1">Mathematical ZK Assertion</span>
-                <p class="text-slate-300 text-[11px]"><code>assert(deriveKey(ownerKey()) == owner)</code> verifies authorization in Zero-Knowledge.</p>
+
+              <div class="slide-card fragment">
+                <h4 class="font-bold text-white text-sm mb-1 text-cyan-400">3. Deterministic Ledger</h4>
+                <p class="text-xs font-mono text-slate-400">
+                  Maintains public Counter state machines indexed live via Midnight GraphQL v4 endpoints.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 7: Transaction Lifecycle -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">06 / Execution Lifecycle</div>
-          <h2 class="text-3xl font-bold text-white mb-6">Interactive Transaction Pipeline</h2>
+      <!-- SLIDE 4: 4-Stage Execution Pipeline -->
+      <section data-transition="convex">
+        <div class="max-w-5xl mx-auto text-left space-y-6">
+          <div>
+            <div class="text-xs font-mono text-cyan-400 uppercase tracking-widest font-semibold mb-1">03 / RUNTIME PIPELINE</div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-white">4-Stage ZK Settlement Lifecycle</h2>
+          </div>
 
-          <div class="grid grid-cols-4 gap-3 text-xs font-mono">
-            <div class="slide-card border-blue-900/40">
-              <div class="text-blue-400 font-bold mb-1.5">1. Assemble</div>
-              <p class="text-slate-300 text-[11px]">Browser converts amount into base Stars bigint and prepares unproven payload.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="slide-card fragment">
+              <div class="text-xs font-mono text-[#00f5a0] font-bold mb-2">STAGE 01</div>
+              <h3 class="text-base font-bold text-white mb-2">Private Witness</h3>
+              <p class="text-xs font-mono text-slate-400 leading-relaxed">
+                Client runtime encapsulates private owner key & amount in memory. Never broadcast over network.
+              </p>
             </div>
-            <div class="slide-card border-amber-900/40">
-              <div class="text-amber-400 font-bold mb-1.5">2. ZK Prove</div>
-              <p class="text-slate-300 text-[11px]">Local Proof Server computes polynomial proof on-device in 2-3 seconds.</p>
+
+            <div class="slide-card fragment">
+              <div class="text-xs font-mono text-[#818cf8] font-bold mb-2">STAGE 02</div>
+              <h3 class="text-base font-bold text-white mb-2">Proof Engine</h3>
+              <p class="text-xs font-mono text-slate-400 leading-relaxed">
+                Local Docker ProofStation (:6300) runs Halo2 synthesis and outputs a cryptographic proof.
+              </p>
             </div>
-            <div class="slide-card border-emerald-900/40">
-              <div class="text-emerald-400 font-bold mb-1.5">3. Balance</div>
-              <p class="text-slate-300 text-[11px]">1AM Wallet sponsors DUST fee. 0.00 NIGHT deducted from user wallet.</p>
+
+            <div class="slide-card fragment">
+              <div class="text-xs font-mono text-cyan-400 font-bold mb-2">STAGE 03</div>
+              <h3 class="text-base font-bold text-white mb-2">Dust Balancing</h3>
+              <p class="text-xs font-mono text-slate-400 leading-relaxed">
+                Relay balance attaches required unshielded UTXO collateral, eliminating user gas friction.
+              </p>
             </div>
-            <div class="slide-card border-cyan-900/40">
-              <div class="text-cyan-400 font-bold mb-1.5">4. Settle</div>
-              <p class="text-slate-300 text-[11px]">Midnight node includes transaction in block; GraphQL Indexer refreshes UI.</p>
+
+            <div class="slide-card fragment">
+              <div class="text-xs font-mono text-emerald-400 font-bold mb-2">STAGE 04</div>
+              <h3 class="text-base font-bold text-white mb-2">Finality</h3>
+              <p class="text-xs font-mono text-slate-400 leading-relaxed">
+                Validators verify proof and update state. GraphQL Indexer streams updated balance in real-time.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 8: Real World Business Use Cases -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">07 / Commercial Applications</div>
-          <h2 class="text-3xl font-bold text-white mb-6">Real-World Enterprise Applications</h2>
-
-          <div class="grid grid-cols-2 gap-4 text-xs font-mono">
-            <div class="slide-card">
-              <span class="text-blue-400 font-bold block mb-1">🏢 Confidential Corporate Payroll</span>
-              <p class="text-slate-300 text-[11px]">Deposit lump-sum payroll into vault. Employees claim salaries via ZK proofs without exposing amounts or employee identities.</p>
-            </div>
-            <div class="slide-card">
-              <span class="text-amber-400 font-bold block mb-1">💼 Private Supply Chain Escrow</span>
-              <p class="text-slate-300 text-[11px]">Buyers lock supplier payments. Funds release automatically upon off-chain milestone proofs, protecting trade secrets.</p>
-            </div>
-            <div class="slide-card">
-              <span class="text-emerald-400 font-bold block mb-1">🗳️ Anonymous DAO Governance Grants</span>
-              <p class="text-slate-300 text-[11px]">Disburse treasury funding to open-source developers anonymously, eliminating extortion and targeted harassment.</p>
-            </div>
-            <div class="slide-card">
-              <span class="text-cyan-400 font-bold block mb-1">⚖️ Regulated Institutional Settlement</span>
-              <p class="text-slate-300 text-[11px]">Selective viewing keys permit regulatory audits (SEC / MiCA compliance) without broadcasting trade data globally.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SLIDE 9: Roadmap -->
-      <section data-transition="slide">
-        <div class="max-w-5xl mx-auto text-left">
-          <div class="text-xs font-mono text-blue-400 uppercase tracking-wider mb-2">08 / Scaling Roadmap</div>
-          <h2 class="text-3xl font-bold text-white mb-6">Future Technical Horizons</h2>
-
-          <div class="grid grid-cols-3 gap-4 text-xs font-mono">
-            <div class="slide-card border-emerald-900/40">
-              <span class="text-emerald-400 font-bold block mb-1.5">Phase 1: Present (Done)</span>
-              <ul class="text-slate-300 space-y-1 text-[11px]">
-                <li>✅ Compact Smart Contract</li>
-                <li>✅ Docker Proof Server</li>
-                <li>✅ 1AM Wallet DApp Connector</li>
-                <li>✅ Patched GraphQL Indexer</li>
-                <li>✅ 0-Anti-Pattern Craft UI</li>
-              </ul>
-            </div>
-            <div class="slide-card border-amber-900/40">
-              <span class="text-amber-400 font-bold block mb-1.5">Phase 2: Next Circuits</span>
-              <ul class="text-slate-300 space-y-1 text-[11px]">
-                <li>⏳ Time-Lock Vesting (blockTime)</li>
-                <li>⏳ Threshold Multi-Sig Approval</li>
-                <li>⏳ Shielded ZSwap Token Transfers</li>
-                <li>⏳ Merkle Tree Membership proofs</li>
-              </ul>
-            </div>
-            <div class="slide-card border-cyan-900/40">
-              <span class="text-cyan-400 font-bold block mb-1.5">Phase 3: Production Mainnet</span>
-              <ul class="text-slate-300 space-y-1 text-[11px]">
-                <li>🔮 Midnight Mainnet deployment</li>
-                <li>🔮 Mobile Passkey ZK proving</li>
-                <li>🔮 Hardware Wallet signing</li>
-                <li>🔮 Auditor Selective Viewing Keys</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SLIDE 10: Conclusion & Demo -->
-      <section data-transition="slide">
-        <div class="max-w-4xl mx-auto text-left">
-          <div class="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-2">09 / Summary</div>
-          <h2 class="text-3xl font-bold text-white mb-4">Midnight Privacy Payment Vault</h2>
-          <p class="text-sm text-slate-400 mb-6 font-mono">
-            The winning combination of Zero-Knowledge cryptographic privacy, 0-gas fee sponsorship, and institutional craft UI.
-          </p>
-
-          <div class="slide-card mb-6 border-blue-900/40">
-            <h4 class="text-sm font-bold text-white mb-2">Ready to Test Live:</h4>
-            <p class="text-xs text-slate-300 font-mono">
-              Live Dev Server: <span class="text-blue-400">http://localhost:5173/</span> | Proof Server: <span class="text-emerald-400">localhost:6300</span>
-            </p>
+      <!-- SLIDE 5: Production Roadmap & Developer Signature -->
+      <section data-transition="convex">
+        <div class="max-w-5xl mx-auto text-left space-y-6">
+          <div>
+            <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">04 / CONCLUSION & TEAM</div>
+            <h2 class="text-3xl sm:text-4xl font-bold text-white">The Future of Confidential DeFi</h2>
           </div>
 
-          <div class="flex items-center gap-4">
-            <a href="http://localhost:5173/" target="_blank" class="px-5 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs uppercase tracking-wider font-mono transition-colors">
-              Open Live DApp Dashboard
-            </a>
-            <span class="text-xs text-slate-500 font-mono">Press ESC for Slide Matrix | Space to Navigate</span>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="slide-card fragment">
+              <div class="text-xs font-mono text-[#00f5a0] font-bold mb-1">PHASE 1 (LIVE)</div>
+              <h3 class="text-base font-bold text-white mb-2">Midnight Preprod</h3>
+              <p class="text-xs font-mono text-slate-400 leading-relaxed">
+                Full 1AM connector, Compact v0.20 contract, sponsored dust balancing & ProofStation.
+              </p>
+            </div>
+
+            <div class="slide-card fragment">
+              <div class="text-xs font-mono text-[#818cf8] font-bold mb-1">PHASE 2 (NEXT)</div>
+              <h3 class="text-base font-bold text-white mb-2">Multi-Signature & Vesting</h3>
+              <p class="text-xs font-mono text-slate-400 leading-relaxed">
+                m-of-n threshold witness approval, time-locked escrow schedules & compliance view keys.
+              </p>
+            </div>
+
+            <div class="slide-card fragment">
+              <div class="text-xs font-mono text-cyan-400 font-bold mb-1">PHASE 3</div>
+              <h3 class="text-base font-bold text-white mb-2">Mainnet Release</h3>
+              <p class="text-xs font-mono text-slate-400 leading-relaxed">
+                Cardano Partnerchain bridge deployment, cross-chain shielded swaps & enterprise SDK.
+              </p>
+            </div>
+          </div>
+
+          <!-- Developer Signature Banner -->
+          <div class="slide-card border-[#00f5a0]/30 bg-white/[0.02] p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 fragment">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 to-indigo-500/20 border border-[#00f5a0]/30 flex items-center justify-center font-mono font-bold text-white text-sm shadow-inner">
+                KA
+              </div>
+              <div>
+                <h4 class="font-display font-bold text-white text-base">Kshitij Adakane</h4>
+                <div class="text-xs font-mono text-[#00f5a0]">Vibe Coder & Systems Builder &bull; KNIGHT.VAULT Architect</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <a 
+                href="https://github.com/KSHITIJadakane/KNIGHT.VAULT" 
+                target="_blank" 
+                class="px-4 py-2 rounded-xl bg-[#00f5a0] hover:bg-[#00e090] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg"
+              >
+                View on GitHub &rarr;
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -404,17 +387,18 @@ export circuit withdraw(amount: Uint<128>, recipient: UserAddress): [] {
     </div>
   </div>
 
-  <!-- Reveal.js Scripts -->
+  <!-- Reveal.js Initialization & Highlight.js Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
   <script>
     Reveal.initialize({
-      hash: true,
-      slideNumber: 'c/t',
       controls: true,
       progress: true,
       center: true,
-      transition: 'slide',
+      hash: true,
+      transition: 'convex', // Smooth popping 3D convex slide transition
+      transitionSpeed: 'default',
+      backgroundTransition: 'fade',
       plugins: [ RevealHighlight ]
     });
   </script>

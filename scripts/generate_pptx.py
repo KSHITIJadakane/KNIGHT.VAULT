@@ -11,18 +11,20 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
     prs.slide_height = Inches(7.5)
     blank_layout = prs.slide_layouts[6]
 
-    # Institutional Palette
-    BG_COLOR = RGBColor(11, 13, 17)        # #0b0d11 Dark Canvas
-    PANEL_COLOR = RGBColor(18, 21, 28)     # #12151c Surface Card
-    PANEL_HIGHLIGHT = RGBColor(22, 27, 38) # #161b26 Highlighted Card
-    BORDER_COLOR = RGBColor(31, 36, 46)    # #1f242e Border
-    TEXT_MAIN = RGBColor(248, 250, 252)    # #f8fafc Platinum Text
+    # Institutional Palette (KNIGHT.VAULT Cyber Mint & Soft Indigo)
+    BG_COLOR = RGBColor(8, 9, 13)          # #08090d Dark Obsidian Canvas
+    PANEL_COLOR = RGBColor(14, 17, 23)     # #0e1117 Surface Card
+    PANEL_HIGHLIGHT = RGBColor(20, 25, 35) # #141923 Highlighted Card
+    BORDER_COLOR = RGBColor(35, 42, 56)    # #232a38 Border
+    TEXT_MAIN = RGBColor(255, 255, 255)    # #ffffff Platinum Text
     TEXT_MUTED = RGBColor(148, 163, 184)   # #94a3b8 Slate Muted
-    ACCENT_BLUE = RGBColor(59, 130, 246)   # #3b82f6 Blue
-    ACCENT_GREEN = RGBColor(16, 185, 129)  # #10b981 Emerald
-    ACCENT_AMBER = RGBColor(245, 158, 11)  # #f59e0b Amber
-    ACCENT_ROSE = RGBColor(244, 63, 94)    # #f43f5e Rose
+    ACCENT_MINT = RGBColor(0, 245, 160)    # #00f5a0 Cyber Mint
+    ACCENT_INDIGO = RGBColor(129, 140, 248)# #818cf8 Soft Indigo
     ACCENT_CYAN = RGBColor(6, 182, 212)    # #06b6d4 Cyan
+    ACCENT_ROSE = RGBColor(244, 63, 94)    # #f43f5e Rose
+    ACCENT_AMBER = RGBColor(245, 158, 11)  # #f59e0b Amber
+    ACCENT_GREEN = ACCENT_MINT
+    ACCENT_BLUE = ACCENT_INDIGO
 
     def set_bg(slide):
         bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height)
@@ -31,7 +33,7 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
         bg.line.fill.background()
         return bg
 
-    def add_header(slide, title_text, category_text="MIDNIGHT NETWORK • HACKATHON PITCH DECK"):
+    def add_header(slide, title_text, category_text="KNIGHT.VAULT // ZERO-KNOWLEDGE PROTOCOL DECK"):
         cat_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(11.7), Inches(0.35))
         tf_cat = cat_box.text_frame
         tf_cat.word_wrap = True
@@ -40,7 +42,7 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
         p_cat.font.name = "Arial"
         p_cat.font.size = Pt(9.5)
         p_cat.font.bold = True
-        p_cat.font.color.rgb = ACCENT_BLUE
+        p_cat.font.color.rgb = ACCENT_MINT
 
         title_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.72), Inches(11.7), Inches(0.7))
         tf_title = title_box.text_frame
@@ -57,7 +59,9 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
         line.fill.fore_color.rgb = BORDER_COLOR
         line.line.fill.background()
 
-    def add_card(slide, left, top, width, height, title, items, badge=None, accent_color=ACCENT_BLUE, fill_color=PANEL_COLOR):
+    def add_card(slide, left, top, width, height, title, items, badge=None, accent_color=None, fill_color=PANEL_COLOR):
+        if accent_color is None:
+            accent_color = ACCENT_MINT
         card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height))
         card.fill.solid()
         card.fill.fore_color.rgb = fill_color
@@ -97,47 +101,54 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
     tf1.word_wrap = True
 
     p0 = tf1.paragraphs[0]
-    p0.text = "MIDNIGHT NETWORK ZERO-KNOWLEDGE DAPP"
+    p0.text = "MIDNIGHT NETWORK // ZERO-KNOWLEDGE SETTLEMENT PROTOCOL"
     p0.font.name = "Arial"
     p0.font.size = Pt(11)
     p0.font.bold = True
-    p0.font.color.rgb = ACCENT_GREEN
+    p0.font.color.rgb = ACCENT_MINT
     p0.space_after = Pt(10)
 
     p1 = tf1.add_paragraph()
-    p1.text = "Midnight Privacy Payment Vault"
+    p1.text = "KNIGHT.VAULT (v0.20)"
     p1.font.name = "Arial"
-    p1.font.size = Pt(36)
+    p1.font.size = Pt(38)
     p1.font.bold = True
     p1.font.color.rgb = TEXT_MAIN
     p1.space_after = Pt(12)
 
     p2 = tf1.add_paragraph()
-    p2.text = "Non-Custodial ZK Escrow, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Institutional UI"
+    p2.text = "Institutional Zero-Knowledge Custody, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Armored Privacy"
     p2.font.name = "Arial"
-    p2.font.size = Pt(15)
+    p2.font.size = Pt(14)
     p2.font.color.rgb = TEXT_MUTED
 
-    card_meta = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.0), Inches(4.9), Inches(11.3), Inches(1.5))
+    card_meta = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.0), Inches(4.9), Inches(11.3), Inches(1.6))
     card_meta.fill.solid()
     card_meta.fill.fore_color.rgb = PANEL_COLOR
     card_meta.line.color.rgb = BORDER_COLOR
     card_meta.line.width = Pt(1)
 
-    tb_m = s1.shapes.add_textbox(Inches(1.3), Inches(5.1), Inches(10.7), Inches(1.1))
+    tb_m = s1.shapes.add_textbox(Inches(1.3), Inches(5.05), Inches(10.7), Inches(1.3))
     tf_m = tb_m.text_frame
     p_m1 = tf_m.paragraphs[0]
-    p_m1.text = "Core Innovation: Mathematical Zero-Knowledge Witness Auth + Zero User Gas Fees (1AM Sponsor Flow)"
+    p_m1.text = "Core Innovation: Mathematical ZK Witness Auth + Sponsored Dust Transactions (Zero User Gas)"
     p_m1.font.name = "Arial"
     p_m1.font.size = Pt(12)
     p_m1.font.bold = True
-    p_m1.font.color.rgb = ACCENT_BLUE
+    p_m1.font.color.rgb = ACCENT_MINT
 
     p_m2 = tf_m.add_paragraph()
-    p_m2.text = "Stack: Compact v0.20+ | Docker Proof Server (6300) | Midnight.js SDK | React 18 | Vite | Tailwind (Impeccable 0-Flaw)"
+    p_m2.text = "Architected & Engineered by: Kshitij Adakane (Vibe Coder, Systems Builder & Applied AI/ML)"
     p_m2.font.name = "Arial"
-    p_m2.font.size = Pt(10.5)
-    p_m2.font.color.rgb = TEXT_MUTED
+    p_m2.font.size = Pt(11)
+    p_m2.font.bold = True
+    p_m2.font.color.rgb = ACCENT_INDIGO
+
+    p_m3 = tf_m.add_paragraph()
+    p_m3.text = "Stack: Compact v0.20+ | Docker ProofStation (:6300) | Midnight.js SDK | React 18 | Vite | Tailwind Kinetic UI"
+    p_m3.font.name = "Arial"
+    p_m3.font.size = Pt(10)
+    p_m3.font.color.rgb = TEXT_MUTED
     p_m2.space_before = Pt(6)
 
     # -------------------------------------------------------------
