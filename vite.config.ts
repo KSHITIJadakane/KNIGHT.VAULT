@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import wasm from 'vite-plugin-wasm';
+import topLevelAwait from 'vite-plugin-top-level-await';
 import path from 'node:path';
 
 export default defineConfig({
@@ -83,6 +84,10 @@ export default defineConfig({
     alias: {
       'isomorphic-ws': path.resolve(__dirname, 'src/lib/isomorphic-ws-fix.mjs'),
       'object-inspect': path.resolve(__dirname, 'src/lib/object-inspect-fix.mjs'),
+      '@midnight-ntwrk/ledger': path.resolve(__dirname, 'node_modules/@midnight-ntwrk/ledger-v8'),
+      '@midnight-ntwrk/ledger-v8': path.resolve(__dirname, 'node_modules/@midnight-ntwrk/ledger-v8'),
+      '@midnight-ntwrk/onchain-runtime-v3': path.resolve(__dirname, 'node_modules/@midnight-ntwrk/onchain-runtime-v3'),
+      '@midnight-ntwrk/compact-runtime': path.resolve(__dirname, 'node_modules/@midnight-ntwrk/compact-runtime'),
     },
   },
   optimizeDeps: {
