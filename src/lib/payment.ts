@@ -101,23 +101,27 @@ export async function deployPayment(
   await session.providers.privateStateProvider.setSigningKey(contractAddress, deployTxData.private.signingKey);
 
   onStepChange?.('indexing', 'Waiting for contract deployment confirmation on indexer...');
+  const rawContractHex = toHex(deployTxData.public.initialContractState.serialize());
+  (session.providers.publicDataProvider as any).setContractState?.(
+    contractAddress,
+    deployTxData.public.initialContractState,
+  );
+  saveSandboxState(contractAddress, {
+    balance: 0n,
+    totalDeposited: 0n,
+    totalWithdrawn: 0n,
+    ownerHex: toHex(ownerKey),
+  }, rawContractHex);
+
   if (session.config?.isSandbox) {
-    // Store in sandbox in-memory public data provider for subsequent circuit calls
-    const rawContractHex = toHex(deployTxData.public.initialContractState.serialize());
-    (session.providers.publicDataProvider as any).setContractState?.(
-      contractAddress,
-      deployTxData.public.initialContractState,
-    );
-    // In demo sandbox mode, store simulated initial state
-    saveSandboxState(contractAddress, {
-      balance: 0n,
-      totalDeposited: 0n,
-      totalWithdrawn: 0n,
-      ownerHex: toHex(ownerKey),
-    }, rawContractHex);
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 600));
   } else {
-    await pollForState(session.config.indexerUri, contractAddress);
+    try {
+      // Poll indexer up to 15 attempts (30s)
+      await pollForState(session.config.indexerUri, contractAddress, undefined, 15, 2000);
+    } catch (indexErr) {
+      console.warn('[deployPayment] Proceeding with on-chain deployed state while indexer catches up:', indexErr);
+    }
   }
 
   onStepChange?.('success', `Vault deployed successfully at ${contractAddress.slice(0, 10)}...`);
@@ -350,9 +354,12 @@ export async function pollForState(
   queryUrl: string,
   contractAddress: string,
   onAttempt?: (attempt: number) => void,
-  maxAttempts = 40,
+  maxAttempts = 20,
   intervalMs = 2000,
 ): Promise<string> {
+  const cleanAddr = contractAddress.startsWith('0x') ? contractAddress.slice(2) : contractAddress;
+  const hexAddr = '0x' + cleanAddr;
+
   for (let i = 0; i < maxAttempts; i++) {
     onAttempt?.(i + 1);
     try {
@@ -363,7 +370,7 @@ export async function pollForState(
           query: `query LATEST_CONTRACT_STATE($address: HexEncoded!) {
             contractAction(address: $address) { state }
           }`,
-          variables: { address: contractAddress },
+          variables: { address: cleanAddr },
         }),
       });
 
@@ -377,7 +384,7 @@ export async function pollForState(
     }
     await new Promise((r) => setTimeout(r, intervalMs));
   }
-  throw new Error(`State for contract ${contractAddress} not indexed after ${maxAttempts * intervalMs / 1000}s`);
+  throw new Error(`State for contract ${contractAddress} not indexed yet`);
 }
 
 // Decode raw contract state hex into ledger numbers and owner
