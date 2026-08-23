@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Cpu, Wrench, Brain, Calculator, GraduationCap, X } from 'lucide-react';
+import { Sparkles, Cpu, Wrench, Brain, Calculator, GraduationCap, X, Github, ExternalLink } from 'lucide-react';
 
 export default function DeveloperProfilePopover() {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,8 +125,22 @@ export default function DeveloperProfilePopover() {
             </div>
           </div>
 
+          {/* GitHub Direct Link Button */}
+          <a
+            href="https://github.com/KSHITIJadakane"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between w-full py-2 px-3 mt-3 rounded-xl bg-white/[0.04] hover:bg-[#00f5a0]/10 border border-white/[0.08] hover:border-[#00f5a0]/40 text-slate-200 hover:text-[#00f5a0] text-xs font-mono font-semibold transition-all group/gh shadow-sm"
+          >
+            <div className="flex items-center gap-2">
+              <Github className="w-3.5 h-3.5 text-slate-400 group-hover/gh:text-[#00f5a0] transition-colors" />
+              <span>github.com/KSHITIJadakane</span>
+            </div>
+            <ExternalLink className="w-3 h-3 text-slate-400 group-hover/gh:text-[#00f5a0] transition-colors" />
+          </a>
+
           {/* Footer Sub-Note */}
-          <div className="mt-3.5 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-[9.5px] font-mono text-slate-400">
+          <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-[9.5px] font-mono text-slate-400">
             <span className="flex items-center gap-1.5">
               <GraduationCap className="w-3 h-3 text-slate-400" />
               <span>Student Builder</span>
