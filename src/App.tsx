@@ -238,7 +238,7 @@ export default function App() {
 
           <div className="hidden sm:flex mt-4 sm:mt-0 items-center justify-center sm:justify-end gap-2 text-xs font-mono text-slate-400">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Compact Stdlib v0.20</span>
+            <span>Compact Circuits</span>
           </div>
         </div>
 
@@ -513,8 +513,8 @@ export default function App() {
           </div>
         )}
 
-        {/* Scroll-Down Protocol Showcase Sections (Benjamin Creative Style) */}
-        <ShowcaseSections />
+        {/* Protocol Showcase Sections (Rendered only on Outside Landing Page) */}
+        {!activeContractAddress && <ShowcaseSections />}
       </main>
 
       {/* Institutional Glass Footer */}
