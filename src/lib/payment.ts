@@ -134,6 +134,13 @@ export async function deployPayment(
 // Store for sandbox demo mode instances with localStorage & server sync
 const sandboxStateStore = new Map<string, PaymentVaultState>();
 
+// Returns true only in local dev (Vite dev server has the /api/sandbox-state middleware)
+function isLocalDev(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.');
+}
+
 export function saveSandboxState(address: string, state: PaymentVaultState, rawContractStateHex?: string) {
   sandboxStateStore.set(address, state);
   const serialized = {
@@ -149,42 +156,45 @@ export function saveSandboxState(address: string, state: PaymentVaultState, rawC
       localStorage.setItem('sb_contract_raw_' + address, rawContractStateHex);
     }
   } catch {}
-  // Broadcast to local server so all connected devices (PC & mobile) sync in real-time
-  try {
-    if (typeof window !== 'undefined') {
+  // Broadcast to local dev server so PC and mobile sync in real-time (dev only)
+  if (isLocalDev()) {
+    try {
       fetch('/api/sandbox-state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address, state: serialized }),
       }).catch(() => {});
-    }
-  } catch {}
+    } catch {}
+  }
 }
 
 export async function fetchServerSandboxState(address: string): Promise<PaymentVaultState | null> {
+  // The /api/sandbox-state endpoint only exists in local Vite dev server — skip on deployed site
+  if (!isLocalDev()) return null;
   try {
     if (typeof window !== 'undefined') {
       const res = await fetch(`/api/sandbox-state/${address}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.balance !== undefined) {
-          const state: PaymentVaultState = {
-            balance: BigInt(data.balance),
-            totalDeposited: BigInt(data.totalDeposited),
-            totalWithdrawn: BigInt(data.totalWithdrawn),
-            ownerHex: data.ownerHex || '',
-          };
-          sandboxStateStore.set(address, state);
-          if (data.rawContractStateHex) {
-            try {
-              localStorage.setItem('sb_contract_raw_' + address, data.rawContractStateHex);
-              const { ContractState } = await import('@midnight-ntwrk/compact-runtime');
-              const { setGlobalSandboxContractState } = await import('./midnight');
-              setGlobalSandboxContractState(address, ContractState.deserialize(fromHex(data.rawContractStateHex)));
-            } catch {}
-          }
-          return state;
+      if (!res.ok) return null;
+      const contentType = res.headers.get('content-type') ?? '';
+      if (!contentType.includes('application/json')) return null;
+      const data = await res.json();
+      if (data && data.balance !== undefined) {
+        const state: PaymentVaultState = {
+          balance: BigInt(data.balance),
+          totalDeposited: BigInt(data.totalDeposited),
+          totalWithdrawn: BigInt(data.totalWithdrawn),
+          ownerHex: data.ownerHex || '',
+        };
+        sandboxStateStore.set(address, state);
+        if (data.rawContractStateHex) {
+          try {
+            localStorage.setItem('sb_contract_raw_' + address, data.rawContractStateHex);
+            const { ContractState } = await import('@midnight-ntwrk/compact-runtime');
+            const { setGlobalSandboxContractState } = await import('./midnight');
+            setGlobalSandboxContractState(address, ContractState.deserialize(fromHex(data.rawContractStateHex)));
+          } catch {}
         }
+        return state;
       }
     }
   } catch {}

@@ -7,7 +7,15 @@ export default function Navbar() {
   const [copied, setCopied] = useState(false);
   const [proofServerOnline, setProofServerOnline] = useState<boolean | null>(null);
 
+  // Only check proof server health when running locally (it's a local Docker service)
+  const isLocalDev = typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'));
+
   useEffect(() => {
+    if (!isLocalDev) {
+      setProofServerOnline(false);
+      return;
+    }
     const checkProofServer = async () => {
       try {
         await fetch('http://localhost:6300', { mode: 'no-cors' });
@@ -19,7 +27,7 @@ export default function Navbar() {
     checkProofServer();
     const interval = setInterval(checkProofServer, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isLocalDev]);
 
   const handleCopy = () => {
     if (!address) return;
@@ -51,11 +59,16 @@ export default function Navbar() {
           {/* Proof Server Status Pill */}
           <div
             className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-slate-300"
-            title="Local Docker Proof Server (port 6300)"
+            title={isLocalDev ? "Local Docker Proof Server (port 6300)" : "ZK Proving requires local Docker on port 6300"}
           >
             <Activity className="w-3.5 h-3.5 text-slate-400" />
             <span className="text-slate-400 text-[11px]">Engine:</span>
-            {proofServerOnline === true ? (
+            {!isLocalDev ? (
+              <span className="flex items-center gap-1.5 text-slate-500 font-medium text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                Local Docker Only
+              </span>
+            ) : proofServerOnline === true ? (
               <span className="flex items-center gap-1.5 text-emerald-400 font-medium text-[11px]">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 6300 Active

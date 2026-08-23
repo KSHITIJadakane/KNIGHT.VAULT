@@ -479,11 +479,18 @@ export default function App() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <div className="p-3.5 rounded-xl bg-black/40 border border-white/[0.06] space-y-1">
-                    <div className="text-slate-500 text-[10px]">LOCAL DOCKER PROOF SERVER</div>
-                    <div className="text-emerald-400 font-semibold flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>Online on http://localhost:6300</span>
-                    </div>
+                    <div className="text-slate-500 text-[10px]">ZK PROOF SERVER</div>
+                    {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? (
+                      <div className="text-emerald-400 font-semibold flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Online on http://localhost:6300</span>
+                      </div>
+                    ) : (
+                      <div className="text-slate-400 font-semibold flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-slate-500" />
+                        <span>Local Docker Required (port 6300)</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="p-3.5 rounded-xl bg-black/40 border border-white/[0.06] space-y-1">

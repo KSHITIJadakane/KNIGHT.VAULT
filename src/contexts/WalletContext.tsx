@@ -76,8 +76,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     connectingRef.current = true;
     setIsConnecting(true);
     try {
-      const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const proofServerUri = `http://${host}:6300`;
+      // Proof server always runs locally on the user's machine (port 6300)
+      const proofServerUri = 'http://localhost:6300';
 
       // Poll up to 2 seconds for wallet injection if not yet ready
       let detected = getAvailableWallet();
@@ -159,8 +159,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     connectingRef.current = true;
     setIsConnecting(true);
     try {
-      const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const proofServerUri = `http://${host}:6300`;
+      // Proof server always runs locally on the user's machine (port 6300)
+      const proofServerUri = 'http://localhost:6300';
       const sess = await createSandboxWalletSession('/zk/payment', proofServerUri);
       setSession(sess);
       setAddress(sess.unshieldedAddress);

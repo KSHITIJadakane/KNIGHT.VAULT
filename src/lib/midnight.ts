@@ -8,9 +8,14 @@ import { ContractState } from '@midnight-ntwrk/compact-runtime';
 export const LOCAL_PROOF_SERVER_URI =
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_PROOF_SERVER_URI)
     ? (import.meta as any).env.VITE_PROOF_SERVER_URI
-    : (typeof window !== 'undefined'
-        ? `${window.location.origin}/proof-server`
-        : 'http://127.0.0.1:6300');
+    : 'http://localhost:6300';
+
+// Returns true only when running on a local dev server
+function isLocalDev(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.');
+}
 
 export type ConnectedSession = {
   api: any;
@@ -279,16 +284,19 @@ export function createSandboxPublicDataProvider(zkConfigProvider?: any) {
         } catch {}
       }
 
-      // Check server sync if not present locally
-      if (!state && typeof window !== 'undefined') {
+      // Check server sync if not present locally (only on local dev — no /api on Vercel)
+      if (!state && isLocalDev() && typeof window !== 'undefined') {
         try {
           const res = await fetch(`/api/sandbox-state/${contractAddress}`);
           if (res.ok) {
-            const data = await res.json();
-            if (data?.rawContractStateHex) {
-              const { ContractState } = await import('@midnight-ntwrk/compact-runtime');
-              state = ContractState.deserialize(fromHex(data.rawContractStateHex));
-              setGlobalSandboxContractState(contractAddress, state);
+            const contentType = res.headers.get('content-type') ?? '';
+            if (contentType.includes('application/json')) {
+              const data = await res.json();
+              if (data?.rawContractStateHex) {
+                const { ContractState } = await import('@midnight-ntwrk/compact-runtime');
+                state = ContractState.deserialize(fromHex(data.rawContractStateHex));
+                setGlobalSandboxContractState(contractAddress, state);
+              }
             }
           }
         } catch {}
