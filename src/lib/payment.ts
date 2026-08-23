@@ -246,26 +246,35 @@ export async function depositPayment(
   );
 
   onStepChange?.('indexing', 'Awaiting block finalization and indexer update...');
-  if (session.config?.isSandbox) {
-    if (callTxData.public?.nextContractState) {
+  if (callTxData.public?.nextContractState) {
+    try {
       const current = await session.providers.publicDataProvider.queryContractState(contractAddress);
       if (current) {
         const { ChargedState } = await import('@midnight-ntwrk/compact-runtime');
         current.data = new ChargedState(callTxData.public.nextContractState);
         (session.providers.publicDataProvider as any).setContractState?.(contractAddress, current);
       }
+    } catch {}
+  }
+  const prev = getSandboxState(contractAddress) ?? {
+    balance: 0n,
+    totalDeposited: 0n,
+    totalWithdrawn: 0n,
+    ownerHex: '',
+  };
+  saveSandboxState(contractAddress, {
+    ...prev,
+    balance: prev.balance + amountStars,
+    totalDeposited: prev.totalDeposited + amountStars,
+  });
+
+  if (!session.config?.isSandbox) {
+    try {
+      await pollForState(session.config.indexerUri, contractAddress, undefined, 8, 1500);
+    } catch (idxErr) {
+      console.warn('[depositPayment] Indexer sync in progress:', idxErr);
     }
-    const prev = getSandboxState(contractAddress) ?? {
-      balance: 0n,
-      totalDeposited: 0n,
-      totalWithdrawn: 0n,
-      ownerHex: '',
-    };
-    saveSandboxState(contractAddress, {
-      ...prev,
-      balance: prev.balance + amountStars,
-      totalDeposited: prev.totalDeposited + amountStars,
-    });
+  } else {
     await new Promise((r) => setTimeout(r, 600));
   }
   return txId;
@@ -324,26 +333,35 @@ export async function withdrawPayment(
   );
 
   onStepChange?.('indexing', 'Awaiting block finalization and indexer update...');
-  if (session.config?.isSandbox) {
-    if (callTxData.public?.nextContractState) {
+  if (callTxData.public?.nextContractState) {
+    try {
       const current = await session.providers.publicDataProvider.queryContractState(contractAddress);
       if (current) {
         const { ChargedState } = await import('@midnight-ntwrk/compact-runtime');
         current.data = new ChargedState(callTxData.public.nextContractState);
         (session.providers.publicDataProvider as any).setContractState?.(contractAddress, current);
       }
+    } catch {}
+  }
+  const prevW = getSandboxState(contractAddress) ?? {
+    balance: 0n,
+    totalDeposited: 0n,
+    totalWithdrawn: 0n,
+    ownerHex: '',
+  };
+  saveSandboxState(contractAddress, {
+    ...prevW,
+    balance: prevW.balance >= amountStars ? prevW.balance - amountStars : 0n,
+    totalWithdrawn: prevW.totalWithdrawn + amountStars,
+  });
+
+  if (!session.config?.isSandbox) {
+    try {
+      await pollForState(session.config.indexerUri, contractAddress, undefined, 8, 1500);
+    } catch (idxErr) {
+      console.warn('[withdrawPayment] Indexer sync in progress:', idxErr);
     }
-    const prev = getSandboxState(contractAddress) ?? {
-      balance: 0n,
-      totalDeposited: 0n,
-      totalWithdrawn: 0n,
-      ownerHex: '',
-    };
-    saveSandboxState(contractAddress, {
-      ...prev,
-      balance: prev.balance >= amountStars ? prev.balance - amountStars : 0n,
-      totalWithdrawn: prev.totalWithdrawn + amountStars,
-    });
+  } else {
     await new Promise((r) => setTimeout(r, 600));
   }
   return txId;

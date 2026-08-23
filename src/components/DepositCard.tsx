@@ -51,7 +51,7 @@ export default function DepositCard({
 
     try {
       await depositPayment(session, contractAddress, stars, onStepChange);
-      onTxComplete();
+      onTxComplete('deposit', amountNight);
       setAmountNight('10');
     } catch (err: any) {
       console.error('[Deposit] failed:', err);
