@@ -121,16 +121,23 @@ export function createPrivateStateProvider() {
   };
 }
 
-// Patched public data provider to fix the preprod indexer offset: null bug
+// Patched public data provider to fix the preprod indexer offset: null bug and testnet indexing lag
 export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUrl: string) {
   const base = indexerPublicDataProvider(queryUrl, subscriptionUrl);
 
   return {
     ...base,
+    setContractState(address: string, state: any) {
+      setGlobalSandboxContractState(address, state);
+    },
+    getContractState(address: string) {
+      return sandboxContractStateStore.get(address) ?? null;
+    },
     async queryContractState(contractAddress: string, config?: any) {
       if (config) return base.queryContractState(contractAddress, config);
 
       try {
+        const cleanAddr = contractAddress.startsWith('0x') ? contractAddress.slice(2) : contractAddress;
         const res = await fetch(queryUrl, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
@@ -138,7 +145,7 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
             query: `query LATEST_CONTRACT_STATE($address: HexEncoded!) {
               contractAction(address: $address) { state }
             }`,
-            variables: { address: contractAddress },
+            variables: { address: cleanAddr },
           }),
         });
 
@@ -149,9 +156,16 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
         }
 
         const action = payload.data?.contractAction ?? null;
-        return action ? ContractState.deserialize(fromHex(action.state)) : null;
+        if (action?.state) {
+          const st = ContractState.deserialize(fromHex(action.state));
+          setGlobalSandboxContractState(contractAddress, st);
+          return st;
+        }
+        return sandboxContractStateStore.get(contractAddress) ?? null;
       } catch (err) {
-        console.warn('[patchedPublicDataProvider] queryContractState failed, falling back to base:', err);
+        console.warn('[patchedPublicDataProvider] queryContractState falling back to cache:', err);
+        const cached = sandboxContractStateStore.get(contractAddress);
+        if (cached) return cached;
         return base.queryContractState(contractAddress);
       }
     },
@@ -159,6 +173,7 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
       if (config) return base.queryZSwapAndContractState(contractAddress, config);
 
       try {
+        const cleanAddr = contractAddress.startsWith('0x') ? contractAddress.slice(2) : contractAddress;
         const res = await fetch(queryUrl, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
@@ -174,7 +189,7 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
                 }
               }
             }`,
-            variables: { address: contractAddress },
+            variables: { address: cleanAddr },
           }),
         });
 
@@ -185,16 +200,31 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
         }
 
         const action = payload.data?.contractAction ?? null;
-        if (!action) return null;
         const { ZswapChainState, LedgerParameters } = await import('@midnight-ntwrk/ledger-v8');
-        const zswap = ZswapChainState.deserialize(fromHex(action.zswapState));
-        const state = ContractState.deserialize(fromHex(action.state));
-        const params = action.transaction?.block?.ledgerParameters
-          ? LedgerParameters.deserialize(fromHex(action.transaction.block.ledgerParameters))
-          : LedgerParameters.initialParameters();
-        return [zswap, state, params];
+
+        if (action?.state) {
+          const zswap = action.zswapState ? ZswapChainState.deserialize(fromHex(action.zswapState)) : ZswapChainState.empty();
+          const state = ContractState.deserialize(fromHex(action.state));
+          setGlobalSandboxContractState(contractAddress, state);
+          const params = action.transaction?.block?.ledgerParameters
+            ? LedgerParameters.deserialize(fromHex(action.transaction.block.ledgerParameters))
+            : LedgerParameters.initialParameters();
+          return [zswap, state, params];
+        }
+
+        // Fallback to local verified deployed state if indexer has not committed the block yet
+        const cached = sandboxContractStateStore.get(contractAddress);
+        if (cached) {
+          return [ZswapChainState.empty(), cached, LedgerParameters.initialParameters()];
+        }
+        return base.queryZSwapAndContractState(contractAddress);
       } catch (err) {
-        console.warn('[patchedPublicDataProvider] queryZSwapAndContractState failed, falling back to base:', err);
+        console.warn('[patchedPublicDataProvider] queryZSwapAndContractState fallback:', err);
+        const cached = sandboxContractStateStore.get(contractAddress);
+        if (cached) {
+          const { ZswapChainState, LedgerParameters } = await import('@midnight-ntwrk/ledger-v8');
+          return [ZswapChainState.empty(), cached, LedgerParameters.initialParameters()];
+        }
         return base.queryZSwapAndContractState(contractAddress);
       }
     },
