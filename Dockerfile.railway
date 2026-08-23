@@ -1,8 +1,7 @@
 FROM midnightntwrk/proof-server:latest
 
-# Expose standard ProofServer port
+# Expose standard Midnight ProofServer port
 EXPOSE 6300
 
-# Run ProofServer binding on all network interfaces
-ENTRYPOINT ["proof-server"]
+# Pass arguments directly to default container entrypoint
 CMD ["--host", "0.0.0.0", "--port", "6300"]
