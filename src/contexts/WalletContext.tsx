@@ -32,8 +32,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const startedAt = Date.now();
     const id = setInterval(() => {
-      const w1am = (window as any).midnight?.['1am'];
-      const wLace = (window as any).midnight?.mnLace;
+      const midnight = (window as any).midnight;
+      const w1am = midnight?.['1am'];
+      const wLace = midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'];
       if (w1am) {
         setWalletType('1am');
         setWalletStatus('detected');
@@ -59,12 +60,13 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     connectingRef.current = true;
     setIsConnecting(true);
     try {
-      const wallet = (window as any).midnight?.['1am'] ?? (window as any).midnight?.mnLace;
+      const midnight = (window as any).midnight;
+      const wallet = midnight?.['1am'] ?? midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'];
+      const isLace = !midnight?.['1am'] && Boolean(midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace']);
       const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
       const proofServerUri = `http://${host}:6300`;
 
       if (!wallet) {
-        // Automatically switch to sandbox session if no browser extension is installed (e.g. mobile)
         console.log('[WalletConnect] No extension found, connecting in Sandbox Demo mode with proof server:', proofServerUri);
         const sess = await createSandboxWalletSession('/zk/payment', proofServerUri);
         setSession(sess);
@@ -73,11 +75,29 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         setIsConnected(true);
         return sess;
       }
-      const api = await wallet.connect(network);
+      
+      // Support both Midnight standard enable() and legacy connect()
+      const api = typeof wallet.enable === 'function'
+        ? await wallet.enable()
+        : typeof wallet.connect === 'function'
+        ? await wallet.connect(network)
+        : wallet;
+
       const sess = await createConnectedSession(api, '/zk/payment', proofServerUri);
       setSession(sess);
-      setAddress((await api.getUnshieldedAddress()).unshieldedAddress);
-      setWalletType((window as any).midnight?.['1am'] ? '1am' : 'lace');
+
+      // Extract unshielded address
+      let userAddr = '';
+      if (typeof api.getUnshieldedAddress === 'function') {
+        const res = await api.getUnshieldedAddress();
+        userAddr = res?.unshieldedAddress ?? res;
+      } else if (typeof api.state === 'function') {
+        const state = await api.state();
+        userAddr = state?.unshieldedAddress ?? '';
+      }
+
+      setAddress(userAddr || 'mn_addr_preprod_connected');
+      setWalletType(isLace ? 'lace' : '1am');
       setIsConnected(true);
       return sess;
     } catch (err: any) {
