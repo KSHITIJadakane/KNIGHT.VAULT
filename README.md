@@ -1,6 +1,6 @@
-# 🌌 Midnight Privacy Payment Vault (v0.20)
+# 🛡️ KNIGHT.VAULT (v0.20)
 
-> A state-of-the-art, privacy-preserving zero-knowledge settlement protocol and institutional vault built on the **Midnight Network**.
+> A state-of-the-art, privacy-preserving zero-knowledge settlement protocol and institutional vault built on the **Midnight Network**. *"Armored by Zero-Knowledge. Powered by Midnight."*
 
 [![Midnight Network](https://img.shields.io/badge/Midnight-Preprod-00f5a0?style=for-the-badge&logo=shield)](https://midnight.network)
 [![Compact Compiler](https://img.shields.io/badge/Compact-v0.20-818cf8?style=for-the-badge)](https://midnight.network)
@@ -10,7 +10,7 @@
 
 ## 🏛️ Executive Summary
 
-The **Midnight Privacy Payment Vault** is an institutional-grade decentralized application designed for confidential asset custody, anonymous settlements, and zero-gas payer checkouts. By leveraging **Compact Zero-Knowledge smart contracts**, **Halo2 client-side proving**, and **sponsored dust balancing**, sensitive owner keys and transaction witnesses remain 100% private to the client while state transitions are cryptographically verified on-chain.
+**KNIGHT.VAULT** is an institutional-grade decentralized application designed for confidential asset custody, anonymous settlements, and zero-gas payer checkouts. By leveraging **Compact Zero-Knowledge smart contracts**, **Halo2 client-side proving**, and **sponsored dust balancing**, sensitive owner keys and transaction witnesses remain 100% private to the client while state transitions are cryptographically verified on-chain.
 
 ---
 

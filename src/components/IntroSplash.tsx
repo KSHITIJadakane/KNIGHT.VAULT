@@ -10,7 +10,7 @@ const CYCLING_WORDS = [
   'COMPACT CIRCUITS',
   'PRIVATE STATE',
   'DUST-FREE GAS',
-  'SETTLEMENT VAULT',
+  'KNIGHT.VAULT',
   'MIDNIGHT.NETWORK',
 ];
 
@@ -28,43 +28,35 @@ export default function IntroSplash({ onComplete, onEntering }: IntroSplashProps
       const elapsed = currentTime - startTime;
       const progress = Math.min(1, elapsed / duration);
       
-      // Deep parabolic ease-out curve
-      const easeProgress = 1 - Math.pow(1 - progress, 2.5);
-      const currentVal = Math.floor(easeProgress * 100);
+      const currentVal = Math.floor(progress * 100);
       setCount(currentVal);
+
+      // Cycle words rapidly based on percentage
+      const step = Math.min(
+        CYCLING_WORDS.length - 1,
+        Math.floor(progress * CYCLING_WORDS.length)
+      );
+      setWordIndex(step);
 
       if (progress < 1) {
         requestAnimationFrame(updateCounter);
       } else {
-        // Trigger slow spatial entrance through the gate in sync with background
+        // Trigger synchronized site flight at 100%
+        if (onEntering) onEntering();
+        setIsEnteringSite(true);
         setTimeout(() => {
-          setIsEnteringSite(true);
-          onEntering?.();
-          setTimeout(() => {
-            onComplete();
-          }, 1600); // 1.6s slow camera flight
-        }, 400);
+          onComplete();
+        }, 1100); // 1.1s upward flight
       }
     };
 
     requestAnimationFrame(updateCounter);
   }, [onComplete, onEntering]);
 
-  // Word cycling with deliberate editorial pacing
-  useEffect(() => {
-    const wordInterval = setInterval(() => {
-      setWordIndex((prev) => (prev + 1) % CYCLING_WORDS.length);
-    }, 460);
-
-    return () => clearInterval(wordInterval);
-  }, []);
-
   return (
     <div
-      className={`fixed inset-0 z-[100] w-full h-full flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#08090d] text-white transition-all duration-[1600ms] ease-[cubic-bezier(0.7,0,0.1,1)] select-none overflow-hidden will-change-transform ${
-        isEnteringSite
-          ? '-translate-y-full opacity-0 filter blur-sm'
-          : 'translate-y-0 opacity-100 filter blur-0'
+      className={`fixed inset-0 z-50 flex flex-col justify-between p-6 sm:p-12 bg-[#08090d] text-white select-none overflow-hidden will-change-transform ${
+        isEnteringSite ? 'animate-intro-exit' : ''
       }`}
     >
       {/* Background Precision Grid */}
@@ -75,7 +67,7 @@ export default function IntroSplash({ onComplete, onEntering }: IntroSplashProps
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#00f5a0] animate-pulse" />
           <span className="tracking-widest uppercase text-[11px] font-semibold text-slate-300">
-            MIDNIGHT PROTOCOL OS
+            KNIGHT.VAULT // PROTOCOL OS
           </span>
         </div>
         <div className="hidden sm:flex items-center gap-3 text-slate-500 text-[11px]">

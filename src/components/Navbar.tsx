@@ -33,12 +33,12 @@ export default function Navbar() {
       <div className="panel-surface rounded-2xl px-3 sm:px-5 h-14 sm:h-16 flex items-center justify-between gap-2 border border-white/[0.08] shadow-2xl bg-[#0e1117]/80 backdrop-blur-2xl">
         {/* Left: Brand Identity */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-white/10 to-white/[0.02] border border-white/15 flex items-center justify-center text-white font-mono font-bold text-sm shadow-sm">
-            M
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 via-white/10 to-white/[0.02] border border-[#00f5a0]/30 flex items-center justify-center text-white font-mono font-bold text-sm shadow-sm">
+            K
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-display font-bold text-white tracking-tight text-sm sm:text-base">
-              Midnight<span className="text-[#00f5a0]">.</span>Vault
+            <span className="font-display font-extrabold text-white tracking-tight text-sm sm:text-base">
+              KNIGHT<span className="text-[#00f5a0]">.</span>VAULT
             </span>
             <span className="hidden sm:inline text-[9px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-300 font-mono border border-white/10 uppercase tracking-widest">
               v0.20
