@@ -55,28 +55,52 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(id);
   }, []);
 
-  const connect = useCallback(async (network = 'preprod') => {
+  const connect = useCallback(async (network = 'preprod', explicitWallet?: '1am' | 'lace') => {
     if (connectingRef.current) return;
     connectingRef.current = true;
     setIsConnecting(true);
     try {
-      const midnight = (window as any).midnight;
-      const wallet = midnight?.['1am'] ?? midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'];
-      const isLace = !midnight?.['1am'] && Boolean(midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace']);
       const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
       const proofServerUri = `http://${host}:6300`;
 
-      if (!wallet) {
-        console.log('[WalletConnect] No extension found, connecting in Sandbox Demo mode with proof server:', proofServerUri);
-        const sess = await createSandboxWalletSession('/zk/payment', proofServerUri);
-        setSession(sess);
-        setAddress(sess.unshieldedAddress);
-        setWalletType('sandbox');
-        setIsConnected(true);
-        return sess;
+      // Helper to find wallet in window
+      const findWallet = () => {
+        const midnight = (window as any).midnight;
+        const cardano = (window as any).cardano;
+
+        if (explicitWallet === '1am') {
+          return { wallet: midnight?.['1am'], type: '1am' as const };
+        }
+        if (explicitWallet === 'lace') {
+          const l = midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'] ?? cardano?.lace;
+          return { wallet: l, type: 'lace' as const };
+        }
+
+        if (midnight?.['1am']) return { wallet: midnight['1am'], type: '1am' as const };
+        const lace = midnight?.mnLace ?? midnight?.lace ?? midnight?.['lace'] ?? cardano?.lace;
+        if (lace) return { wallet: lace, type: 'lace' as const };
+        return { wallet: null, type: null };
+      };
+
+      // Poll briefly for 1.5 seconds if not yet injected
+      let found = findWallet();
+      if (!found.wallet) {
+        for (let i = 0; i < 15; i++) {
+          await new Promise((r) => setTimeout(r, 100));
+          found = findWallet();
+          if (found.wallet) break;
+        }
       }
-      
-      // Support both Midnight standard enable() and legacy connect()
+
+      const { wallet, type } = found;
+
+      if (!wallet) {
+        throw new Error(
+          'No Midnight wallet extension detected. Please ensure 1AM Wallet or Lace is installed and unlocked, or use Demo Mode.'
+        );
+      }
+
+      // Connect to the extension
       const api = typeof wallet.enable === 'function'
         ? await wallet.enable()
         : typeof wallet.connect === 'function'
@@ -86,18 +110,18 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       const sess = await createConnectedSession(api, '/zk/payment', proofServerUri);
       setSession(sess);
 
-      // Extract unshielded address
+      // Extract user unshielded address
       let userAddr = '';
       if (typeof api.getUnshieldedAddress === 'function') {
         const res = await api.getUnshieldedAddress();
-        userAddr = res?.unshieldedAddress ?? res;
+        userAddr = res?.unshieldedAddress ?? (typeof res === 'string' ? res : '');
       } else if (typeof api.state === 'function') {
         const state = await api.state();
         userAddr = state?.unshieldedAddress ?? '';
       }
 
       setAddress(userAddr || 'mn_addr_preprod_connected');
-      setWalletType(isLace ? 'lace' : '1am');
+      setWalletType(type || '1am');
       setIsConnected(true);
       return sess;
     } catch (err: any) {
