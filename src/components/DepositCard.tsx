@@ -9,7 +9,7 @@ type DepositCardProps = {
   initialAmount?: string;
   onTxStart: () => void;
   onStepChange: (step: TxStep, message: string) => void;
-  onTxComplete: () => void;
+  onTxComplete: (type?: 'deposit' | 'withdraw', amountStr?: string) => void;
   onTxError: (errorMsg: string) => void;
 };
 
