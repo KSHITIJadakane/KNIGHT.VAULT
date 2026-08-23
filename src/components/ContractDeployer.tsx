@@ -50,25 +50,6 @@ export default function ContractDeployer({
     }
   };
 
-  const handleDeploySandbox = async () => {
-    playClickSound();
-    setLastError(null);
-    setIsDeploying(true);
-    onTxStart();
-    try {
-      const sandboxSession = await connectSandbox();
-      if (!sandboxSession) throw new Error('Could not start sandbox');
-      const result = await deployPayment(sandboxSession, undefined, onStepChange);
-      onTxComplete();
-      onContractSelected(result.contractAddress, result.ownerSecretKeyHex);
-    } catch (err: any) {
-      console.error('[Deploy Sandbox] failed:', err);
-      onTxError(err?.message || 'Sandbox deployment failed');
-    } finally {
-      setIsDeploying(false);
-    }
-  };
-
   const handleConnectExisting = (e: React.FormEvent) => {
     e.preventDefault();
     playClickSound();
@@ -83,23 +64,12 @@ export default function ContractDeployer({
   return (
     <div className="space-y-5 max-w-4xl mx-auto my-4 sm:my-6">
       {lastError && (
-        <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-800/60 flex items-start justify-between gap-3 text-xs font-mono text-rose-200">
-          <div className="flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <div className="font-semibold text-rose-100">1AM Remote Sponsor Busy</div>
-              <p className="text-rose-300/90 text-[11px] mt-0.5">
-                The 1AM testnet sponsor relay returned a temporary server error. You can deploy instantly with Demo Sandbox Mode using your real Docker ZK Proof Engine!
-              </p>
-            </div>
+        <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-800/60 flex items-start gap-3 text-xs font-mono text-rose-200">
+          <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <div className="font-semibold text-rose-100">Deployment Notice</div>
+            <p className="text-rose-300/90 text-[11px] mt-0.5">{lastError}</p>
           </div>
-          <button
-            onClick={handleDeploySandbox}
-            className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs flex items-center gap-1.5 transition-all shadow-md font-mono"
-          >
-            <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>Demo Mode</span>
-          </button>
         </div>
       )}
 
@@ -154,15 +124,6 @@ export default function ContractDeployer({
                   <span>Deploy on Preprod</span>
                 </>
               )}
-            </button>
-
-            <button
-              onClick={handleDeploySandbox}
-              disabled={isDeploying}
-              className="w-full py-2.5 px-4 rounded-xl font-semibold text-xs text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all flex items-center justify-center gap-2 font-mono"
-            >
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>Instant Demo Mode (Port 6300)</span>
             </button>
           </div>
         </div>
