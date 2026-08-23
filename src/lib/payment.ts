@@ -4,7 +4,7 @@ import {
   createUnprovenCallTx,
   submitTxAsync,
 } from '@midnight-ntwrk/midnight-js-contracts';
-import { sampleSigningKey, ContractState } from '@midnight-ntwrk/compact-runtime';
+import { ContractState } from '@midnight-ntwrk/compact-runtime';
 import * as PaymentContractModule from '../../contract/src/managed/payment/contract/index.js';
 import {
   ConnectedSession,
@@ -52,15 +52,25 @@ export async function deployPayment(
   const ownerKey = ownerKeyBytes ?? crypto.getRandomValues(new Uint8Array(32));
   const ownerSecretKeyHex = toHex(ownerKey);
 
-  onStepChange?.('preparing', 'Preparing deployment transaction and signing key...');
+  onStepChange?.('preparing', 'Initializing ZK runtime modules...');
 
-  // Ensure WASM ledger runtime is fully initialized
-  await import('@midnight-ntwrk/ledger-v8');
+  // CRITICAL: Both WASM modules MUST be fully initialized before any compact-runtime calls.
+  // ledger-v8 provides Transaction/ZswapChainState; onchain-runtime-v3 (via compact-runtime)
+  // provides ContractState / contractstate_deserialize. Without this await, the WASM
+  // functions are undefined and throw "Cannot read properties of undefined".
+  await Promise.all([
+    import('@midnight-ntwrk/ledger-v8'),
+    import('@midnight-ntwrk/compact-runtime'),
+  ]);
+
+  onStepChange?.('preparing', 'Preparing deployment transaction and signing key...');
 
   // Pass ownerKey so the witness closure captures it for the constructor call
   const compiledContract = makeCompiledContract(ownerKey);
   const initialPrivateState = { ownerSecretKey: ownerKey };
-  const signingKey = sampleSigningKey();
+  // sampleSigningKey must be called AFTER compact-runtime WASM is ready
+  const { sampleSigningKey: ssk } = await import('@midnight-ntwrk/compact-runtime');
+  const signingKey = ssk();
 
   onStepChange?.('proving', 'Generating Zero-Knowledge Proof with ProofStation...');
   let deployTxData: any;
@@ -228,6 +238,11 @@ export async function depositPayment(
   onStepChange?: (step: TxStep, message: string) => void,
 ): Promise<string> {
   onStepChange?.('preparing', `Preparing deposit of ${starsToNight(amountStars)} tNIGHT...`);
+  // Ensure both WASM runtimes are initialized before compact-runtime calls
+  await Promise.all([
+    import('@midnight-ntwrk/ledger-v8'),
+    import('@midnight-ntwrk/compact-runtime'),
+  ]);
   const compiledContract = makeCompiledContract();
 
   // Ensure private state and contract scope are initialized for the session provider
@@ -303,6 +318,11 @@ export async function withdrawPayment(
   onStepChange?: (step: TxStep, message: string) => void,
 ): Promise<string> {
   onStepChange?.('preparing', `Authorizing withdrawal of ${starsToNight(amountStars)} tNIGHT...`);
+  // Ensure both WASM runtimes are initialized before compact-runtime calls
+  await Promise.all([
+    import('@midnight-ntwrk/ledger-v8'),
+    import('@midnight-ntwrk/compact-runtime'),
+  ]);
   const compiledContract = makeCompiledContract(ownerSecretKeyHex ? fromHex(ownerSecretKeyHex) : undefined);
 
   let recipientBytes: Uint8Array;

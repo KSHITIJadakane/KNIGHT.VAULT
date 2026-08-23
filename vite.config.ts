@@ -86,7 +86,11 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['@midnight-ntwrk/ledger-v8', '@midnight-ntwrk/compact-runtime'],
+    exclude: [
+      '@midnight-ntwrk/ledger-v8',
+      '@midnight-ntwrk/compact-runtime',
+      '@midnight-ntwrk/onchain-runtime-v3',
+    ],
   },
   define: {
     global: 'globalThis',
