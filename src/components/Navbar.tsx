@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useWallet } from '../contexts/WalletContext';
 import { 
   Shield, 
@@ -278,14 +279,14 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
       </div>
 
       {/* Floating Kshitij Adakane Developer Info Modal (Triggered by Holding [ K ]) */}
-      {showDeveloperModal && (
+      {showDeveloperModal && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity duration-200"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md transition-opacity duration-200"
           onClick={() => setShowDeveloperModal(false)}
         >
           {/* Modal Card Content (Stop propagation so clicks inside don't dismiss) */}
           <div 
-            className="relative w-full max-w-sm rounded-2xl bg-[#0e1117] border border-white/[0.18] shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_40px_rgba(0,245,160,0.25)] p-5 text-left text-slate-200 z-10 select-text"
+            className="relative w-full max-w-sm rounded-2xl bg-[#0e1117] border border-white/[0.22] shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_40px_rgba(0,245,160,0.3)] p-5 text-left text-slate-200 z-10 select-text"
             onClick={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
@@ -380,7 +381,8 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
               </span>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );
