@@ -1,0 +1,8 @@
+FROM midnightntwrk/proof-server:latest
+
+# Expose standard ProofServer port
+EXPOSE 6300
+
+# Run ProofServer binding on all network interfaces
+ENTRYPOINT ["proof-server"]
+CMD ["--host", "0.0.0.0", "--port", "6300"]

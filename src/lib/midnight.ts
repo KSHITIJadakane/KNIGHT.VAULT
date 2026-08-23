@@ -6,9 +6,11 @@ import type { MidnightProvider, WalletProvider } from '@midnight-ntwrk/midnight-
 import { ContractState } from '@midnight-ntwrk/compact-runtime';
 
 export const LOCAL_PROOF_SERVER_URI =
-  typeof window !== 'undefined'
-    ? `${window.location.origin}/proof-server`
-    : 'http://127.0.0.1:6300';
+  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_PROOF_SERVER_URI)
+    ? (import.meta as any).env.VITE_PROOF_SERVER_URI
+    : (typeof window !== 'undefined'
+        ? `${window.location.origin}/proof-server`
+        : 'http://127.0.0.1:6300');
 
 export type ConnectedSession = {
   api: any;
