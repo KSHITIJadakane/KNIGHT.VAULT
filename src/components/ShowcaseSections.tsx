@@ -286,6 +286,34 @@ contract PaymentVault {
           </div>
         </div>
       </ScrollReveal>
+
+      {/* 6. INTERACTIVE PRESENTATION DECK BANNER (Instant Mobile & Desktop Tap) */}
+      <ScrollReveal variant="blur-spread" duration={1200}>
+        <div className="relative rounded-2xl p-6 sm:p-8 bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-cyan-500/10 border border-emerald-500/25 shadow-[0_0_50px_rgba(0,245,160,0.1)] flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#00f5a0]/15 border border-[#00f5a0]/30 text-[#00f5a0] text-[10px] font-mono font-semibold uppercase tracking-wider">
+              <Sparkles className="w-3 h-3 text-[#00f5a0]" />
+              <span>Interactive Protocol Slides</span>
+            </div>
+            <h3 className="text-lg sm:text-2xl font-display font-bold text-white tracking-tight">
+              Explore the KNIGHT.VAULT Pitch Deck
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-400 font-mono max-w-xl">
+              Confidential DeFi architecture, zero-knowledge settlement state machine, and production roadmap.
+            </p>
+          </div>
+
+          <a
+            href="/presentation.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#00f5a0] hover:bg-[#00f5a0]/90 text-[#08090d] font-mono font-bold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,245,160,0.35)] transition-all hover:scale-105 active:scale-95 flex-shrink-0 w-full sm:w-auto"
+          >
+            <span>Open Deck</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+      </ScrollReveal>
     </div>
   );
 }

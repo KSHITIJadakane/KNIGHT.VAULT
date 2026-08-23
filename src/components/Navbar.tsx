@@ -115,15 +115,15 @@ export default function Navbar({ activeContractAddress, onExitVault }: NavbarPro
             </div>
           </div>
 
-          {/* Interactive Presentation Deck Link */}
+          {/* Interactive Presentation Deck Link (Available on Mobile & Desktop) */}
           <a
             href="/presentation.html"
             target="_blank"
             rel="noopener noreferrer"
             title="Open Interactive Presentation Slides"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/20 text-xs font-mono text-slate-200 transition-all"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-emerald-500/30 text-[11px] sm:text-xs font-mono text-slate-200 transition-all shadow-sm"
           >
-            <MonitorPlay className="w-3.5 h-3.5 text-[#00f5a0]" />
+            <MonitorPlay className="w-3.5 h-3.5 text-[#00f5a0] flex-shrink-0" />
             <span className="font-medium">Deck</span>
           </a>
 
