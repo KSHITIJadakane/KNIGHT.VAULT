@@ -98,9 +98,13 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
-    headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'require-corp',
+    cors: true,
+    proxy: {
+      '/proof-server': {
+        target: 'http://127.0.0.1:6300',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/proof-server/, ''),
+      },
     },
   },
 });

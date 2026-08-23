@@ -5,7 +5,10 @@ import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-p
 import type { MidnightProvider, WalletProvider } from '@midnight-ntwrk/midnight-js-types';
 import { ContractState } from '@midnight-ntwrk/compact-runtime';
 
-export const LOCAL_PROOF_SERVER_URI = 'http://localhost:6300';
+export const LOCAL_PROOF_SERVER_URI =
+  typeof window !== 'undefined'
+    ? `${window.location.origin}/proof-server`
+    : 'http://127.0.0.1:6300';
 
 export type ConnectedSession = {
   api: any;
