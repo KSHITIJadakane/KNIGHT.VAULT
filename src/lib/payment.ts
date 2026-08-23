@@ -54,6 +54,9 @@ export async function deployPayment(
 
   onStepChange?.('preparing', 'Preparing deployment transaction and signing key...');
 
+  // Ensure WASM ledger runtime is fully initialized
+  await import('@midnight-ntwrk/ledger-v8');
+
   // Pass ownerKey so the witness closure captures it for the constructor call
   const compiledContract = makeCompiledContract(ownerKey);
   const initialPrivateState = { ownerSecretKey: ownerKey };

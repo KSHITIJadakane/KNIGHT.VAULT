@@ -1,12 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import wasm from 'vite-plugin-wasm';
+import topLevelAwait from 'vite-plugin-top-level-await';
 import path from 'node:path';
 
 export default defineConfig({
   plugins: [
     react(),
     wasm(),
+    topLevelAwait(),
     {
       // Ensure ZK binary assets are served with correct headers
       name: 'zk-asset-headers',

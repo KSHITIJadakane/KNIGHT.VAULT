@@ -8,6 +8,7 @@ if (typeof (globalThis as any).Buffer === 'undefined') {
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import '@midnight-ntwrk/ledger-v8';
 import App from './App';
 import { WalletProvider } from './contexts/WalletContext';
 import './index.css';
