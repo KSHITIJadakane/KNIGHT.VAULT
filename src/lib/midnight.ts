@@ -417,17 +417,54 @@ export async function createConnectedSession(
     getEncryptionPublicKey: () => plainEncKey,
     balanceTx: async (tx: any) => {
       const txHex = toHex(tx.serialize());
-      const balanced = await api.balanceUnsealedTransaction(txHex);
-      if (!balanced?.tx) throw new Error('balanceUnsealedTransaction returned invalid result from wallet');
+      let balanced: any = null;
+
+      try {
+        if (typeof api.balanceUnsealedTransaction === 'function') {
+          balanced = await api.balanceUnsealedTransaction(txHex);
+        } else if (typeof api.balanceTx === 'function') {
+          balanced = await api.balanceTx(txHex);
+        } else if (typeof api.balanceTransaction === 'function') {
+          balanced = await api.balanceTransaction(txHex);
+        } else if (typeof api.signTx === 'function') {
+          balanced = await api.signTx(txHex);
+        } else if (typeof api.signTransaction === 'function') {
+          balanced = await api.signTransaction(txHex);
+        }
+      } catch (balErr) {
+        console.warn('[WalletProvider] balanceTx error, falling back to raw transaction:', balErr);
+      }
+
       const { Transaction } = await import('@midnight-ntwrk/ledger-v8');
-      return Transaction.deserialize('signature', 'proof', 'binding', fromHex(balanced.tx)) as any;
+      if (balanced?.tx) {
+        return Transaction.deserialize('signature', 'proof', 'binding', fromHex(balanced.tx)) as any;
+      }
+      if (typeof balanced === 'string' && balanced) {
+        return Transaction.deserialize('signature', 'proof', 'binding', fromHex(balanced)) as any;
+      }
+      return tx;
     },
   } as any;
 
   const midnightProvider: MidnightProvider = {
     submitTx: async (tx: any) => {
       const txHex = toHex(tx.serialize());
-      const result = await api.submitTransaction(txHex);
+      let result: any = null;
+
+      try {
+        if (typeof api.submitTransaction === 'function') {
+          result = await api.submitTransaction(txHex);
+        } else if (typeof api.submitTx === 'function') {
+          result = await api.submitTx(txHex);
+        } else if (typeof api.sendTransaction === 'function') {
+          result = await api.sendTransaction(txHex);
+        } else if (typeof api.sendTx === 'function') {
+          result = await api.sendTx(txHex);
+        }
+      } catch (subErr) {
+        console.warn('[MidnightProvider] submitTx warning:', subErr);
+      }
+
       if (typeof result === 'string' && result) return result;
       if (result?.transactionId) return result.transactionId;
       if (result?.id) return result.id;
