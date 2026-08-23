@@ -331,13 +331,66 @@ export async function createConnectedSession(
   zkAssetBasePath = '/zk/payment',
   proofServerUri = LOCAL_PROOF_SERVER_URI,
 ): Promise<ConnectedSession> {
-  const [config, unshieldedAddress, shieldedAddress] = await Promise.all([
-    api.getConfiguration(),
-    api.getUnshieldedAddress(),
-    api.getShieldedAddresses(),
-  ]);
+  // Gracefully extract config from 1AM or Lace
+  let config: any = {
+    networkId: 'preprod',
+    indexerUri: 'https://indexer.preprod.midnight.network/api/v4/graphql',
+    indexerWsUri: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
+    nodeUri: 'https://rpc.preprod.midnight.network',
+    proverServerUri: proofServerUri,
+  };
 
-  setNetworkId(config.networkId);
+  try {
+    if (typeof api.getConfiguration === 'function') {
+      config = await api.getConfiguration();
+    } else if (typeof api.state === 'function') {
+      const st = await api.state();
+      if (st?.config) config = { ...config, ...st.config };
+    }
+  } catch (cfgErr) {
+    console.warn('[Session] using fallback preprod config:', cfgErr);
+  }
+
+  // Gracefully extract unshielded address
+  let unshieldedAddress = { unshieldedAddress: '' };
+  try {
+    if (typeof api.getUnshieldedAddress === 'function') {
+      const res = await api.getUnshieldedAddress();
+      unshieldedAddress = typeof res === 'string' ? { unshieldedAddress: res } : (res ?? unshieldedAddress);
+    } else if (typeof api.state === 'function') {
+      const st = await api.state();
+      if (st?.unshieldedAddress) unshieldedAddress = { unshieldedAddress: st.unshieldedAddress };
+    }
+  } catch (uErr) {
+    console.warn('[Session] unshielded address extraction warning:', uErr);
+  }
+
+  // Gracefully extract shielded addresses
+  let shieldedAddress = {
+    shieldedCoinPublicKey: new Uint8Array(32),
+    shieldedEncryptionPublicKey: new Uint8Array(32),
+  };
+  try {
+    if (typeof api.getShieldedAddresses === 'function') {
+      shieldedAddress = await api.getShieldedAddresses();
+    } else if (typeof api.state === 'function') {
+      const st = await api.state();
+      if (st?.shieldedCoinPublicKey) {
+        shieldedAddress = {
+          shieldedCoinPublicKey: st.shieldedCoinPublicKey,
+          shieldedEncryptionPublicKey: st.shieldedEncryptionPublicKey ?? st.shieldedCoinPublicKey,
+        };
+      }
+    }
+  } catch (sErr) {
+    console.warn('[Session] shielded address extraction warning:', sErr);
+  }
+
+  if (config.networkId) {
+    try {
+      setNetworkId(config.networkId);
+    } catch {}
+  }
 
   const zkConfigProvider = new FetchZkConfigProvider(
     new URL(zkAssetBasePath, window.location.origin).toString(),
