@@ -521,7 +521,7 @@ export default function App() {
       <footer className="border-t border-white/[0.06] py-5 text-xs font-mono text-slate-500 bg-black/40 backdrop-blur-md relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span>Midnight Protocol &bull; Compact v0.20+</span>
+            <span>Midnight Protocol &bull; Compact Circuits</span>
             <button
               onClick={() => {
                 setShowIntro(true);

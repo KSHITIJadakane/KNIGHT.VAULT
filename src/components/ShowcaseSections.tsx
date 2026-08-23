@@ -245,7 +245,7 @@ contract PaymentVault {
                 <tr className="hover:bg-white/[0.03] transition-colors">
                   <td className="p-4 text-slate-200 font-medium">Smart Contract Runtime</td>
                   <td className="p-4 text-slate-400">EVM bytecode (transparent execution)</td>
-                  <td className="p-4 text-[#00f5a0] font-bold">Compact v0.20+ (ZK circuit compilation)</td>
+                  <td className="p-4 text-[#00f5a0] font-bold">Compact Circuits (ZK compilation)</td>
                 </tr>
               </tbody>
             </table>
