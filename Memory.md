@@ -10,7 +10,7 @@ This file serves as durable operational memory across chat sessions and AI devel
 * **Dev Server URL**: `http://localhost:5173/`
 * **Local Proof Server**: Running via Docker on `http://localhost:6300` (`midnightntwrk/proof-server:latest`)
 * **WSL Toolchain**: Ubuntu (WSL 2) running `compact` v0.5.2 / compiler v0.31.1 at `/home/kshitij/.local/bin/compact`
-* **Supported Wallets**: 1AM (`window.midnight['1am']`) and Lace (`window.midnight.mnLace`)
+* **Supported Wallets**: Midnight Lace Wallet (`window.midnight.mnLace`) and Injected Web Extensions
 * **Network Target**: Midnight Preprod Testnet (with zero-gas dust sponsorship enabled)
 
 ---

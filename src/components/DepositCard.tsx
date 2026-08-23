@@ -36,7 +36,7 @@ export default function DepositCard({
   const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session || !isConnected) {
-      alert('Please connect your 1AM wallet first.');
+      alert('Please connect your wallet first.');
       return;
     }
 

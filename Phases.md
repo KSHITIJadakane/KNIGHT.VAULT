@@ -23,7 +23,7 @@ This document outlines the structured execution phases for building and extendin
 ---
 
 ## Phase 3 — SDK & Wallet Provider Wiring ✅ Completed
-* [x] **3.1. 1AM / Lace DApp Connector**: Build resilient wallet polling and parallel configuration retrieval (`src/lib/midnight.ts`).
+* [x] **3.1. Midnight Lace DApp Connector**: Build resilient wallet polling and parallel configuration retrieval (`src/lib/midnight.ts`).
 * [x] **3.2. Patched Indexer Client**: Implement custom GraphQL public data provider resolving the Preprod `offset: null` serialization bug.
 * [x] **3.3. In-Memory Private State Provider**: Manage session-isolated owner secret keys and signing keys.
 * [x] **3.4. Low-Level Transaction Execution**: Implement `createUnprovenDeployTx` and `createUnprovenCallTx` in `src/lib/payment.ts` for zero-gas sponsored deployments and circuit invocations.

@@ -113,7 +113,7 @@ export default function Navbar() {
                   {address.slice(0, 6)}...{address.slice(-4)}
                 </span>
                 <span className="hidden sm:inline text-[9px] uppercase font-mono px-1.5 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/10">
-                  {walletType === '1am' ? '1AM' : walletType === 'sandbox' ? 'Demo' : 'Lace'}
+                  {walletType === 'sandbox' ? 'Demo' : 'Lace'}
                 </span>
               </div>
 

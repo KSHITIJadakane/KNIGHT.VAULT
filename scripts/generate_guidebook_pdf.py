@@ -199,14 +199,14 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
     # ================= COVER / TITLE =================
     story.append(Spacer(1, 10))
     story.append(Paragraph("THE COMPLETE GUIDEBOOK TO ZERO-KNOWLEDGE BLOCKCHAIN & DAPP ENGINEERING", title_style))
-    story.append(Paragraph("From Distributed Systems First Principles to Production Deployment on Midnight Network with WSL2, Ubuntu, Docker & 1AM Wallet", subtitle_style))
+    story.append(Paragraph("From Distributed Systems First Principles to Production Deployment on Midnight Network with WSL2, Ubuntu, Docker & Midnight Lace Wallet", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=C_ACCENT, spaceBefore=0, spaceAfter=14))
 
     # Metadata Card
     meta_data = [
         [Paragraph("<b>Project:</b> KNIGHT.VAULT Protocol", body_style), Paragraph("<b>Network:</b> Midnight Blockchain (Preprod / Preview)", body_style)],
-        [Paragraph("<b>Smart Contracts:</b> Compact Circuits", body_style), Paragraph("<b>ZK Prover:</b> Local Docker ProofServer (:6300)", body_style)],
-        [Paragraph("<b>Wallet System:</b> 1AM DApp Connector (0 Gas)", body_style), Paragraph("<b>Architect:</b> Kshitij Adakane (Systems Builder)", body_style)]
+        [Paragraph("<b>Smart Contracts:</b> Compact Circuits", body_style), Paragraph("<b>ZK Prover:</b> Local Docker ProofServer (:6300) / Railway", body_style)],
+        [Paragraph("<b>Wallet System:</b> Midnight Lace DApp Connector (0 Gas)", body_style), Paragraph("<b>Architect:</b> Kshitij Adakane (Systems Builder)", body_style)]
     ]
     meta_table = Table(meta_data, colWidths=[252, 252])
     meta_table.setStyle(TableStyle([
@@ -276,23 +276,23 @@ def build_pdf(filename="Midnight_Blockchain_and_DApp_Guidebook.pdf"):
 
     add_callout("<b>Troubleshooting Port 6300:</b> If Docker reports 'port already in use', find the conflicting process with <code>netstat -ano | findstr :6300</code> or kill dangling proof containers with <code>docker rm -f proof-server</code>.", bg_color=colors.HexColor("#fffbeb"), border_color=colors.HexColor("#fcd34d"))
 
-    # ================= CHAPTER 3: 1AM WALLET & DUST RELAY =================
-    story.append(Paragraph("Chapter 3: 1AM Wallet Integration & Sponsored Dust Architecture", h1_style))
+    # ================= CHAPTER 3: MIDNIGHT LACE WALLET & DUST RELAY =================
+    story.append(Paragraph("Chapter 3: Midnight Lace Wallet Integration & Sponsored Dust Architecture", h1_style))
     story.append(Paragraph(
         "Midnight Network introduces a dual-token paradigm: <b>tNIGHT</b> (unshielded/shielded settlement currency) and <b>DUST</b> (non-transferable computational resource used for gas fees).",
         body_style
     ))
 
-    story.append(Paragraph("3.1 1AM Browser Wallet Configuration", h2_style))
-    story.append(Paragraph("1. Install the <b>1AM Wallet Extension</b> from the Midnight Developer Portal into Google Chrome, Brave, or Edge.", bullet_style))
+    story.append(Paragraph("3.1 Midnight Lace Browser Wallet Configuration", h2_style))
+    story.append(Paragraph("1. Install the <b>Midnight Lace Wallet Extension</b> from the Midnight Developer Portal into Google Chrome, Brave, or Edge.", bullet_style))
     story.append(Paragraph("2. Switch the active network to <b>Midnight Preprod</b> with the official GraphQL indexer URL: <code>https://indexer.preprod.midnight.network/api/v4/graphql</code>.", bullet_style))
     story.append(Paragraph("3. Fund your address via the <b>Midnight Testnet Faucet</b> to receive initial tNIGHT.", bullet_style))
-    story.append(Paragraph("4. <b>Handshake Authorization:</b> In TypeScript, the frontend connects to 1AM using:", bullet_style))
-    add_code("const midnightApi = window.midnight?.['1am'];\nif (!midnightApi) throw new Error('1AM wallet not detected');\nconst wallet = await midnightApi.enable();\nconst state = await wallet.state();")
+    story.append(Paragraph("4. <b>Handshake Authorization:</b> In TypeScript, the frontend connects to Lace using:", bullet_style))
+    add_code("const midnightApi = window.midnight?.mnLace;\nif (!midnightApi) throw new Error('Midnight Lace wallet not detected');\nconst wallet = await midnightApi.enable();\nconst state = await wallet.state();")
 
     story.append(Paragraph("3.2 Zero-Gas Dust Balancing Flow", h2_style))
     story.append(Paragraph(
-        "Traditional blockchains require every payer to hold gas tokens. In <b>KNIGHT.VAULT</b>, transactions are balanced via <code>balanceUnsealedTransaction</code> through 1AM's ProofStation relay, allowing users to interact with <b>0.00 NIGHT user gas</b>.",
+        "Traditional blockchains require every payer to hold gas tokens. In <b>KNIGHT.VAULT</b>, transactions are balanced via <code>balanceUnsealedTransaction</code> through Lace's ProofStation relay, allowing users to interact with <b>0.00 NIGHT user gas</b>.",
         body_style
     ))
 
@@ -335,7 +335,7 @@ contract PaymentVault {
     # ================= CHAPTER 5: SUMMARY =================
     story.append(Paragraph("Chapter 5: Production Summary & Architect Credits", h1_style))
     story.append(Paragraph(
-        "<b>KNIGHT.VAULT</b> represents an end-to-end realization of institutional privacy. By combining WSL2, Docker ProofServer, Compact Circuits, and the 1AM Wallet, developers can build scalable, privacy-first DeFi applications.",
+        "<b>KNIGHT.VAULT</b> represents an end-to-end realization of institutional privacy. By combining WSL2, Docker ProofServer, Compact Circuits, and the Midnight Lace Wallet, developers can build scalable, privacy-first DeFi applications.",
         body_style
     ))
 

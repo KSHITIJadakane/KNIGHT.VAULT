@@ -180,8 +180,8 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
 
     meta = [
         [Paragraph("<b>Target Network:</b> Midnight Preprod", body_style), Paragraph("<b>DApp Name:</b> KNIGHT.VAULT", body_style)],
-        [Paragraph("<b>Smart Contract:</b> Compact Circuits (payment.compact)", body_style), Paragraph("<b>ZK Proof Engine:</b> Docker Local Port :6300", body_style)],
-        [Paragraph("<b>Wallet API:</b> 1AM DApp Connector", body_style), Paragraph("<b>Architect:</b> Kshitij Adakane", body_style)]
+        [Paragraph("<b>Smart Contract:</b> Compact Circuits (payment.compact)", body_style), Paragraph("<b>ZK Proof Engine:</b> Docker Local Port :6300 / Railway", body_style)],
+        [Paragraph("<b>Wallet API:</b> Midnight Lace DApp Connector", body_style), Paragraph("<b>Architect:</b> Kshitij Adakane", body_style)]
     ]
     t_meta = Table(meta, colWidths=[252, 252])
     t_meta.setStyle(TableStyle([
@@ -204,7 +204,7 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
     ))
     story.append(Paragraph("• <b>WSL2 (Ubuntu 22.04 LTS):</b> Required on Windows to host the native Linux Compact toolchain and prover libraries.", bullet_style))
     story.append(Paragraph("• <b>Docker ProofServer (Port 6300):</b> Synthesizes zero-knowledge proofs on your machine in 2-4 seconds.", bullet_style))
-    story.append(Paragraph("• <b>1AM Browser Wallet:</b> Manages unshielded/shielded keys, signs transactions, and relays sponsored dust fees.", bullet_style))
+    story.append(Paragraph("• <b>Midnight Lace Browser Wallet:</b> Manages unshielded/shielded keys, signs transactions, and relays sponsored dust fees.", bullet_style))
 
     story.append(Paragraph("1.1 Docker ProofServer Deployment & Port Verification", h2_style))
     story.append(Paragraph("Run the proof server container and ensure it is listening on localhost:", body_style))
@@ -216,9 +216,9 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
     
     story.append(Paragraph("2.1 Depositing Funds (Zero-Gas Payer Flow)", h2_style))
     story.append(Paragraph("1. Open the KNIGHT.VAULT dashboard at <code>http://localhost:5173/</code>.", bullet_style))
-    story.append(Paragraph("2. Click <b>'Connect 1AM Wallet'</b> and authorize permissions on the popup modal.", bullet_style))
+    story.append(Paragraph("2. Click <b>'Connect Wallet'</b> and authorize permissions on the popup modal.", bullet_style))
     story.append(Paragraph("3. Enter the deposit amount (e.g. 50 tNIGHT) in the <b>'Inflow Channel'</b> card.", bullet_style))
-    story.append(Paragraph("4. Click <b>'Execute Confidential Inflow'</b>. The 1AM wallet balances the transaction with sponsored dust automatically.", bullet_style))
+    story.append(Paragraph("4. Click <b>'Execute Confidential Inflow'</b>. The Lace wallet balances the transaction with sponsored dust automatically.", bullet_style))
 
     story.append(Paragraph("2.2 Zero-Knowledge Withdrawal Flow", h2_style))
     story.append(Paragraph("1. Navigate to the <b>'Private Liquidity Release'</b> card.", bullet_style))
@@ -232,8 +232,8 @@ def build_pdf(filename="Midnight_Vault_User_Manual_and_Architecture_Guide.pdf"):
     faq_data = [
         [Paragraph("<b>Issue / Error</b>", body_style), Paragraph("<b>Root Cause & Recommended Solution</b>", body_style)],
         [Paragraph("<b>ProofServer Unreachable (Port 6300)</b>", body_style), Paragraph("Docker container is stopped or port is blocked by Windows Firewall. Run <code>docker restart proof-server</code> and verify with <code>curl http://localhost:6300/health</code>.", body_style)],
-        [Paragraph("<b>1AM Wallet 'offset: null' Error</b>", body_style), Paragraph("Known bug in Midnight Indexer v4 GraphQL schema when pagination offset is null. The KNIGHT.VAULT client includes an automatic filter polyfill.", body_style)],
-        [Paragraph("<b>Insufficient Dust Balance</b>", body_style), Paragraph("The 1AM wallet needs a small unshielded balance to derive dust. Request 10 tNIGHT from the Midnight faucet to refresh coin notes.", body_style)],
+        [Paragraph("<b>Lace Wallet 'offset: null' Error</b>", body_style), Paragraph("Known bug in Midnight Indexer v4 GraphQL schema when pagination offset is null. The KNIGHT.VAULT client includes an automatic filter polyfill.", body_style)],
+        [Paragraph("<b>Insufficient Dust Balance</b>", body_style), Paragraph("The Lace wallet needs a small unshielded balance to derive dust. Request 10 tNIGHT from the Midnight faucet to refresh coin notes.", body_style)],
         [Paragraph("<b>Vite / Browser Polyfill Errors</b>", body_style), Paragraph("Node.js stream/crypto modules must be polyfilled in browser builds. Ensure <code>vite-plugin-node-polyfills</code> is included in <code>vite.config.ts</code>.", body_style)]
     ]
     t_faq = Table(faq_data, colWidths=[160, 344])

@@ -214,7 +214,7 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
     p_s1.space_after = Pt(4)
 
     p_s2 = tf_sig.add_paragraph()
-    p_s2.text = "Stack: Compact Smart Contracts • Halo2 Proofs • Midnight.js SDK • 1AM Wallet • React 18 • Vite • Tailwind Kinetic UI"
+    p_s2.text = "Stack: Compact Smart Contracts • Halo2 Proofs • Midnight.js SDK • Lace Wallet • React 18 • Vite • Tailwind Kinetic UI"
     p_s2.font.name = "Arial"
     p_s2.font.size = Pt(10.5)
     p_s2.font.color.rgb = TEXT_MUTED
@@ -434,7 +434,7 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
     add_header(s7, "Production Roadmap & Architect Profile", "06 / PROTOCOL FUTURE & TEAM")
 
     add_card(s7, 0.8, 1.75, 3.75, 3.4, "Phase 1: Preprod (Live)", [
-        "Full Lace & 1AM connector integrations.",
+        "Full Midnight Lace connector integration.",
         "Compact smart contracts on Preprod.",
         "Sponsored dust balancing engine.",
         "ProofStation client-side proving (:6300)."

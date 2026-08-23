@@ -93,7 +93,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       if (!detected) {
         // Offer graceful transition to Sandbox Demo if no wallet extension is found
         const proceedWithDemo = confirm(
-          'No browser wallet extension detected (1AM Wallet or Lace).\n\nWould you like to connect in Instant Demo Mode (with local ProofServer on port 6300)?'
+          'No Midnight Lace browser wallet extension detected.\n\nWould you like to connect in Instant Demo Mode (with ProofServer)?'
         );
         if (proceedWithDemo) {
           const sess = await createSandboxWalletSession('/zk/payment', proofServerUri);

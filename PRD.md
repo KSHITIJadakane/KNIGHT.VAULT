@@ -18,7 +18,7 @@
 ## 3. Core Features & Functional Requirements
 
 ### 3.1. Wallet & Identity Management
-* **Browser Wallet Injection**: Auto-detection of 1AM (`window.midnight['1am']`) and Lace (`window.midnight.mnLace`) browser extensions.
+* **Browser Wallet Injection**: Auto-detection of Lace (`window.midnight.mnLace`) browser extension.
 * **Dust-Free Gas Sponsorship**: Sponsorship of network execution fees via `balanceUnsealedTransaction` (0 NIGHT / 0 gas user cost).
 * **Parallel Provider Initialization**: Simultaneous retrieval of unshielded address, shielded coin/encryption public keys, and network config.
 
@@ -37,7 +37,7 @@
 * **Step-by-Step Pipeline**: Visual tracking of:
   1. *Parameter Assembly*
   2. *ZK Proving via ProofServer / ProofStation*
-  3. *Fee Balancing & 1AM Wallet Signing*
+  3. *Fee Balancing & Lace Wallet Signing*
   4. *Chain Broadcast*
   5. *Block Finalization & Indexer Sync*
 * **Session Audit Log**: Real-time record of confirmed transactions during the user's active session.

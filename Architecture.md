@@ -13,8 +13,8 @@
                        ┌──────────────┴──────────────┐
                        ▼                             ▼
        ┌───────────────────────────────┐   ┌───────────────────────────────┐
-       │      Local Proof Server       │   │        1AM Wallet API         │
-       │    (midnightntwrk/proof-      │   │  (window.midnight['1am'])     │
+       │      Local / Cloud Prover     │   │        Lace Wallet API        │
+       │    (midnightntwrk/proof-      │   │  (window.midnight.mnLace)     │
        │     server on port 6300)      │   │  - Dust Fee Sponsorship       │
        │  - ZK-SNARK Proving Engine    │   │  - Transaction Serialization  │
        └───────────────┬───────────────┘   └───────────────┬───────────────┘
@@ -47,7 +47,7 @@
 | **Frontend Framework** | React 18 + Vite 6 + TypeScript 5 | High-speed Single Page Application with ESNext / WASM support |
 | **Styling & Design** | Tailwind CSS 3.4 (Impeccable Design System) | Institutional matte surfaces, crisp borders, tabular numerals |
 | **Blockchain SDK** | Midnight.js (`@midnight-ntwrk/*`) | Contract compilation handles, provider orchestration, and ledger types |
-| **Wallet Connector** | DApp Connector API (`1AM` / `Lace`) | Sponsored dust fees, balanceUnsealedTransaction, key derivation |
+| **Wallet Connector** | DApp Connector API (`Midnight Lace Wallet`) | Sponsored dust fees, balanceUnsealedTransaction, key derivation |
 
 ---
 
@@ -75,7 +75,7 @@ d:\codeverse\workshop stuffs\
 │   │   ├── VaultMetrics.tsx      # On-chain liquidity & flow analytics
 │   │   └── WithdrawCard.tsx      # Owner-authorized withdrawal form
 │   ├── contexts/
-│   │   └── WalletContext.tsx     # 1AM / Lace wallet state context
+│   │   └── WalletContext.tsx     # Lace wallet state context
 │   ├── lib/
 │   │   ├── isomorphic-ws-fix.mjs # Browser WebSocket shim for indexer
 │   │   ├── midnight.ts           # Provider factory, patched indexer, session setup

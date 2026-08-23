@@ -20,7 +20,7 @@
 | :--- | :--- |
 | 🛡️ **Zero-Knowledge Witness Isolation** | Secret keys and withdrawal authorizations never touch the public ledger. Proving occurs locally on port `:6300`. |
 | ⚡ **Dust-Free Gas Sponsorship** | Direct-payer deposits and checkouts require zero pre-funded gas tokens. Fee sponsorship is handled automatically. |
-| 🔐 **1AM & Lace Wallet Integration** | Native browser extension connector with preprod provider routing and unshielded/shielded balance sync. |
+| 🔐 **Midnight Lace Wallet Integration** | Native browser extension connector with preprod provider routing and unshielded/shielded balance sync. |
 | 📜 **Cryptographic Audit Receipts** | Generates verifiable QR invoice codes and SHA-256 state receipts for financial compliance. |
 | 🎨 **Kinetic Editorial UI** | Inspired by `benjamincreative.me` with cinematic preloader, continuous multi-vector scroll reveals, and spring hover physics. |
 
@@ -54,7 +54,7 @@
 │   │   └── TransactionStatusModal.tsx # 4-step pipeline execution modal
 │   │
 │   ├── contexts/
-│   │   └── WalletContext.tsx       # 1AM wallet session & state management
+│   │   └── WalletContext.tsx       # Lace wallet session & state management
 │   │
 │   ├── lib/
 │   │   ├── midnight.ts             # Midnight.js SDK & provider orchestration
@@ -77,7 +77,7 @@
 ### 1. Prerequisites
 - **Node.js**: v18.0.0 or higher
 - **Docker Desktop**: Required for local proof server
-- **1AM Wallet Extension**: Chrome/Brave browser extension for Midnight Network
+- **Midnight Lace Wallet Extension**: Chrome/Brave browser extension for Midnight Network
 
 ### 2. Launch Local Proof Server
 Start the official Midnight Proof Server container (port 6300):
