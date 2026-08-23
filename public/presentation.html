@@ -1,236 +1,239 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KNIGHT.VAULT — Zero-Knowledge Pitch Deck & Architecture</title>
+  <title>KNIGHT.VAULT — Interactive Protocol Pitch Deck</title>
   
-  <!-- Reveal.js Core & Plugins -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-  
-  <!-- Google Fonts -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fragment Mono', 'JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            mint: '#00f5a0',
+            indigoAccent: '#818cf8',
+            obsidian: '#08090d',
+          }
+        }
+      }
+    }
+  </script>
   
   <style>
-    :root {
-      --r-background-color: #08090d;
-      --r-main-font: 'Inter', system-ui, sans-serif;
-      --r-heading-font: 'Space Grotesk', system-ui, sans-serif;
-      --r-heading-color: #ffffff;
-      --r-main-color: #94a3b8;
-    }
-
     body {
       background-color: #08090d;
       color: #e2e8f0;
       font-family: 'Inter', sans-serif;
       overflow: hidden;
+      user-select: none;
     }
 
-    .reveal {
-      font-family: 'Inter', sans-serif;
-    }
-
-    .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
-      font-family: 'Space Grotesk', sans-serif;
-      text-transform: none;
-      letter-spacing: -0.03em;
-    }
-
-    .font-mono {
-      font-family: 'Fragment Mono', 'JetBrains Mono', monospace;
-    }
-
-    /* Glassmorphism Cards with Organic Spring Hover */
-    .slide-card {
-      background: rgba(14, 17, 23, 0.75);
+    .slide-surface {
+      background: rgba(14, 17, 23, 0.85);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: left;
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
-      transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1), 
-                  border-color 0.4s ease, 
-                  box-shadow 0.4s ease;
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .slide-card:hover {
-      transform: translateY(-4px) scale(1.01);
+    .slide-surface-hover:hover {
       border-color: rgba(0, 245, 160, 0.35);
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 30px -4px rgba(0, 245, 160, 0.15);
+      transform: translateY(-3px) scale(1.008);
+      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 30px -5px rgba(0, 245, 160, 0.15);
     }
 
-    /* Custom Kinetic Reveal.js Fragment Transitions */
-    .reveal .slides section .fragment {
-      opacity: 0;
-      transform: translateY(24px) scale(0.96);
-      filter: blur(6px);
-      transition: all 0.65s cubic-bezier(0.34, 1.45, 0.64, 1);
-    }
-
-    .reveal .slides section .fragment.visible {
+    /* Smooth Slide Transition Animation */
+    .slide-active {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: scale(1) translateY(0);
       filter: blur(0);
+      pointer-events: auto;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
     }
 
-    /* Progress bar with cyber mint glow */
-    .reveal .progress {
-      height: 4px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-    .reveal .progress span {
-      background: linear-gradient(90deg, #00f5a0, #818cf8);
-      box-shadow: 0 0 12px #00f5a0;
-    }
-
-    /* Floating Aurora Ambient Background */
-    .aurora-bg {
-      position: fixed;
-      inset: 0;
+    .slide-hidden-next {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      filter: blur(8px);
       pointer-events: none;
-      z-index: 0;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+    }
+
+    .slide-hidden-prev {
+      opacity: 0;
+      transform: scale(1.05) translateY(-20px);
+      filter: blur(8px);
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
     }
   </style>
 </head>
-<body class="bg-[#08090d] text-slate-100">
+<body class="bg-[#08090d] text-slate-100 h-screen w-screen flex flex-col justify-between overflow-hidden relative">
 
-  <!-- Ambient Glowing Mesh Background -->
-  <div class="aurora-bg">
-    <div class="absolute -top-[20%] -left-[10%] w-[55vw] h-[55vw] rounded-full blur-[140px] opacity-[0.08] bg-[#00f5a0]"></div>
-    <div class="absolute top-[30%] -right-[15%] w-[60vw] h-[60vw] rounded-full blur-[160px] opacity-[0.10] bg-[#4338ca]"></div>
-    <div class="absolute -bottom-[20%] left-[30%] w-[50vw] h-[50vw] rounded-full blur-[130px] opacity-[0.06] bg-[#0284c7]"></div>
+  <!-- Ambient Glowing Background Mesh -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full blur-[140px] opacity-[0.08] bg-[#00f5a0]"></div>
+    <div class="absolute top-[30%] -right-[15%] w-[55vw] h-[55vw] rounded-full blur-[160px] opacity-[0.10] bg-[#4338ca]"></div>
+    <div class="absolute -bottom-[15%] left-[25%] w-[45vw] h-[45vw] rounded-full blur-[130px] opacity-[0.07] bg-[#0284c7]"></div>
     <div class="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
   </div>
 
-  <!-- Deck Floating Topbar Navigation -->
-  <div class="fixed top-4 left-6 right-6 z-50 flex items-center justify-between pointer-events-none">
-    <div class="flex items-center gap-3 pointer-events-auto">
-      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 to-white/5 border border-[#00f5a0]/30 flex items-center justify-center font-mono font-bold text-white text-xs shadow-inner">
+  <!-- Header Navigation -->
+  <header class="relative z-30 px-6 py-4 flex items-center justify-between border-b border-white/[0.06] bg-black/40 backdrop-blur-xl">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 via-white/10 to-transparent border border-[#00f5a0]/30 flex items-center justify-center text-white font-mono font-bold text-sm shadow-inner">
         K
       </div>
       <div class="flex items-center gap-2">
-        <span class="font-display font-extrabold text-white text-sm tracking-tight">
+        <span class="font-display font-extrabold text-white tracking-tight text-sm sm:text-base">
           KNIGHT<span class="text-[#00f5a0]">.</span>VAULT
         </span>
         <span class="text-[9px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-300 font-mono border border-white/10 uppercase tracking-widest">
-          Deck v0.20
+          PROTOCOL DECK
         </span>
       </div>
     </div>
 
-    <div class="flex items-center gap-2 pointer-events-auto">
+    <!-- Center Slide Progress Indicator -->
+    <div class="flex items-center gap-3 font-mono text-xs text-slate-400 bg-white/[0.03] px-3.5 py-1.5 rounded-full border border-white/[0.08]">
+      <span id="slideCounter" class="text-white font-bold text-[#00f5a0]">01</span>
+      <span>/</span>
+      <span>05</span>
+      <div id="dotContainer" class="flex items-center gap-1.5 ml-2"></div>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="flex items-center gap-2">
+      <button 
+        id="prevBtn" 
+        class="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
+        title="Previous Slide (Left Arrow)"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <button 
+        id="nextBtn" 
+        class="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
+        title="Next Slide (Right Arrow or Spacebar)"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </button>
       <a 
         href="/" 
-        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono text-slate-300 hover:text-white transition-all shadow-sm"
+        class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#00f5a0]/10 hover:bg-[#00f5a0]/20 border border-[#00f5a0]/30 text-[#00f5a0] text-xs font-mono font-semibold transition-all shadow-sm ml-2"
       >
-        <span>&larr; Return to App</span>
+        <span>&larr; Return to Vault</span>
       </a>
     </div>
-  </div>
+  </header>
 
-  <!-- Main Presentation Slides -->
-  <div class="reveal">
-    <div class="slides">
+  <!-- Main Slide Viewport Container -->
+  <main class="relative z-20 flex-1 flex items-center justify-center p-4 sm:p-8 max-w-6xl mx-auto w-full">
 
-      <!-- SLIDE 1: Title & Hero Architecture -->
-      <section class="text-left" data-transition="convex">
-        <div class="max-w-5xl mx-auto space-y-6">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00f5a0]/10 border border-[#00f5a0]/30 text-[#00f5a0] font-mono text-xs shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-[#00f5a0] animate-pulse"></span>
-            <span class="tracking-wider uppercase font-semibold">MIDNIGHT NETWORK • PROTOCOL DECK</span>
+    <!-- SLIDE 1: Title & Hero Architecture -->
+    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-active" data-index="0">
+      <div class="space-y-6">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00f5a0]/10 border border-[#00f5a0]/30 text-[#00f5a0] font-mono text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-[#00f5a0] animate-pulse"></span>
+          <span>MIDNIGHT NETWORK // ZERO-KNOWLEDGE SETTLEMENT</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl font-display font-extrabold text-white leading-[1.08] tracking-tight">
+          KNIGHT<span class="text-[#00f5a0]">.</span>VAULT
+        </h1>
+
+        <p class="text-base sm:text-xl text-slate-300 max-w-3xl leading-relaxed font-mono">
+          Institutional Zero-Knowledge Custody, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Armored State Protection.
+        </p>
+
+        <!-- 4 Stat Badges Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+          <div class="slide-surface slide-surface-hover rounded-xl p-4">
+            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">TARGET CHAIN</div>
+            <div class="text-white font-bold font-mono text-sm sm:text-base">Midnight Preprod</div>
           </div>
-
-          <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-[1.08] tracking-tight">
-            KNIGHT<span class="text-[#00f5a0]">.</span>VAULT
-          </h1>
-
-          <p class="text-lg sm:text-xl text-slate-300 max-w-3xl leading-relaxed font-normal">
-            Institutional Zero-Knowledge Custody, Compact Smart Contracts, Client-Side Halo2 Proofs, and Sponsored 0-Gas Settlements on Midnight Network.
-          </p>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono border-t border-white/[0.08] pt-6 text-slate-400">
-            <div class="slide-card p-4">
-              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">TARGET CHAIN</span>
-              <span class="text-slate-100 font-bold text-sm">Midnight Preprod</span>
-            </div>
-            <div class="slide-card p-4">
-              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">CONTRACT ENGINE</span>
-              <span class="text-[#00f5a0] font-bold text-sm">Compact v0.20+</span>
-            </div>
-            <div class="slide-card p-4">
-              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">PROOFSTATION</span>
-              <span class="text-cyan-400 font-bold text-sm">Docker Port 6300</span>
-            </div>
-            <div class="slide-card p-4">
-              <span class="block text-slate-500 uppercase text-[10px] tracking-wider mb-1">USER GAS COST</span>
-              <span class="text-[#818cf8] font-bold text-sm">0.00 NIGHT (Sponsored)</span>
-            </div>
+          <div class="slide-surface slide-surface-hover rounded-xl p-4">
+            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">CONTRACT ENGINE</div>
+            <div class="text-[#00f5a0] font-bold font-mono text-sm sm:text-base">Compact v0.20+</div>
           </div>
-
-          <div class="text-[11px] font-mono text-slate-500 flex items-center gap-2">
-            <span>Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white">SPACE</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white">&rarr;</kbd> to navigate</span>
-            <span>&bull;</span>
-            <span>Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white">F</kbd> for Fullscreen</span>
+          <div class="slide-surface slide-surface-hover rounded-xl p-4">
+            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">PROOF SERVER</div>
+            <div class="text-[#818cf8] font-bold font-mono text-sm sm:text-base">Docker :6300</div>
+          </div>
+          <div class="slide-surface slide-surface-hover rounded-xl p-4">
+            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">USER GAS COST</div>
+            <div class="text-emerald-400 font-bold font-mono text-sm sm:text-base">0.00 NIGHT (Sponsored)</div>
           </div>
         </div>
-      </section>
 
-      <!-- SLIDE 2: The Multi-Trillion Dollar Privacy Dilemma -->
-      <section data-transition="convex">
-        <div class="max-w-5xl mx-auto text-left space-y-6">
-          <div>
-            <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">01 / MARKET CONTEXT</div>
-            <h2 class="text-3xl sm:text-4xl font-bold text-white">The Public Blockchain Privacy Trap</h2>
+        <div class="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-slate-400">
+          <div class="flex items-center gap-2">
+            <span>Use <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">&rarr;</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">SPACE</kbd> to advance</span>
+          </div>
+          <div class="text-slate-500">Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">F</kbd> for Fullscreen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: The Privacy Dilemma -->
+    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="1">
+      <div class="space-y-6">
+        <div>
+          <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">01 / MARKET CONTEXT</div>
+          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">The Public Blockchain Privacy Trap</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="slide-surface rounded-2xl p-6 border-rose-500/20 bg-rose-950/10 space-y-3">
+            <div class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider">⚠️ Transparent Chains (ETH, BTC, Solana)</div>
+            <ul class="text-xs sm:text-sm text-slate-300 space-y-2.5 font-mono leading-relaxed">
+              <li>• <b>Total Surveillance:</b> Every balance, vendor invoice, employee payroll, and transaction amount is publicly exposed globally.</li>
+              <li>• <b>KYC Gas Linkage:</b> Purchasing gas tokens links off-chain identities to every on-chain move.</li>
+              <li>• <b>Mixers are Banned:</b> Tornado Cash style mixers lack compliance and face universal regulatory blacklisting.</li>
+            </ul>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="slide-card border-rose-500/20 bg-rose-950/10 fragment">
-              <div class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-2">⚠️ Transparent Chains (ETH, BTC)</div>
-              <ul class="text-xs text-slate-300 space-y-3 font-mono leading-relaxed">
-                <li>• <b>Total Financial Exposure:</b> All balances, trade secrets, vendor payrolls, and invoice histories are publicly browsable forever.</li>
-                <li>• <b>KYC Gas-Trail Linkage:</b> Purchasing gas tokens links your real-world identity to every subsequent transaction.</li>
-                <li>• <b>Mixers are Banned:</b> Tornado Cash style mixers lack compliance primitives and get universally blacklisted.</li>
-              </ul>
-            </div>
-
-            <div class="slide-card border-[#00f5a0]/30 bg-[#00f5a0]/5 fragment">
-              <div class="text-xs font-mono text-[#00f5a0] font-bold uppercase tracking-wider mb-2">🛡️ KNIGHT.VAULT Solution</div>
-              <ul class="text-xs text-slate-300 space-y-3 font-mono leading-relaxed">
-                <li>• <b>Witness Shielding:</b> Secret keys never touch the ledger. Only succinct ZK proofs are verified on-chain.</li>
-                <li>• <b>Sponsored Dust Relay:</b> Payers check out seamlessly without holding gas tokens or faucet balances.</li>
-                <li>• <b>Verifiable Receipts:</b> Selective cryptographic disclosures allow audits without deanonymizing balances.</li>
-              </ul>
-            </div>
+          <div class="slide-surface slide-surface-hover rounded-2xl p-6 border-[#00f5a0]/30 bg-[#00f5a0]/5 space-y-3">
+            <div class="text-xs font-mono text-[#00f5a0] font-bold uppercase tracking-wider">🛡️ KNIGHT.VAULT Solution</div>
+            <ul class="text-xs sm:text-sm text-slate-300 space-y-2.5 font-mono leading-relaxed">
+              <li>• <b>Witness Shielding:</b> Owner secret keys remain isolated in local memory. Only succinct ZK proofs touch the ledger.</li>
+              <li>• <b>Sponsored Dust Relay:</b> Zero-gas payer checkout eliminates faucet/gas friction entirely.</li>
+              <li>• <b>Verifiable Receipts:</b> Selective cryptographic disclosures enable institutional audits without public leakage.</li>
+            </ul>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <!-- SLIDE 3: Compact Smart Contract Architecture -->
-      <section data-transition="convex">
-        <div class="max-w-5xl mx-auto text-left space-y-6">
-          <div>
-            <div class="text-xs font-mono text-[#818cf8] uppercase tracking-widest font-semibold mb-1">02 / CORE CIRCUITS</div>
-            <h2 class="text-3xl sm:text-4xl font-bold text-white">Compact v0.20 Smart Contract</h2>
-          </div>
+    <!-- SLIDE 3: Compact Smart Contract -->
+    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="2">
+      <div class="space-y-6">
+        <div>
+          <div class="text-xs font-mono text-[#818cf8] uppercase tracking-widest font-semibold mb-1">02 / CORE CIRCUITS</div>
+          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">Compact v0.20 Smart Contract</h2>
+        </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-7 slide-card p-4 overflow-hidden fragment">
-              <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06] text-xs font-mono text-slate-400">
-                <span>contract/src/payment.compact</span>
-                <span class="text-[#00f5a0]">Verified Circuit</span>
-              </div>
-              <pre class="text-[11px] font-mono leading-relaxed text-slate-200 overflow-x-auto"><code class="language-typescript">// payment.compact (Midnight stdlib v0.20)
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 slide-surface rounded-2xl p-4 overflow-hidden">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06] text-xs font-mono text-slate-400">
+              <span>contract/src/payment.compact</span>
+              <span class="text-[#00f5a0] font-semibold">Verified Circuit</span>
+            </div>
+            <pre class="text-[11px] sm:text-xs font-mono text-slate-200 overflow-x-auto leading-relaxed bg-black/50 p-3.5 rounded-xl"><code>// payment.compact (Midnight stdlib v0.20)
 contract PaymentVault {
   ledger balance: Counter;
   ledger totalDeposited: Counter;
@@ -253,154 +256,226 @@ contract PaymentVault {
     sendUnshielded(amount, recipient);
   }
 }</code></pre>
-            </div>
-
-            <div class="lg:col-span-5 space-y-4">
-              <div class="slide-card fragment">
-                <h4 class="font-bold text-white text-sm mb-1 text-[#00f5a0]">1. Inflow Circuit</h4>
-                <p class="text-xs font-mono text-slate-400">
-                  Accepts unshielded NIGHT tokens from any client without gas tokens via sponsored dust balancing.
-                </p>
-              </div>
-
-              <div class="slide-card fragment">
-                <h4 class="font-bold text-white text-sm mb-1 text-[#818cf8]">2. Outflow Circuit</h4>
-                <p class="text-xs font-mono text-slate-400">
-                  Verifies private owner commitment using Halo2 proofs inside the local proof station.
-                </p>
-              </div>
-
-              <div class="slide-card fragment">
-                <h4 class="font-bold text-white text-sm mb-1 text-cyan-400">3. Deterministic Ledger</h4>
-                <p class="text-xs font-mono text-slate-400">
-                  Maintains public Counter state machines indexed live via Midnight GraphQL v4 endpoints.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SLIDE 4: 4-Stage Execution Pipeline -->
-      <section data-transition="convex">
-        <div class="max-w-5xl mx-auto text-left space-y-6">
-          <div>
-            <div class="text-xs font-mono text-cyan-400 uppercase tracking-widest font-semibold mb-1">03 / RUNTIME PIPELINE</div>
-            <h2 class="text-3xl sm:text-4xl font-bold text-white">4-Stage ZK Settlement Lifecycle</h2>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="slide-card fragment">
-              <div class="text-xs font-mono text-[#00f5a0] font-bold mb-2">STAGE 01</div>
-              <h3 class="text-base font-bold text-white mb-2">Private Witness</h3>
+          <div class="lg:col-span-5 space-y-3">
+            <div class="slide-surface slide-surface-hover rounded-xl p-4">
+              <div class="text-xs font-mono text-[#00f5a0] font-bold mb-1">1. receiveUnshielded()</div>
               <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Client runtime encapsulates private owner key & amount in memory. Never broadcast over network.
+                Accepts unshielded NIGHT tokens from mobile & web payers with automatic fee sponsorship.
               </p>
             </div>
-
-            <div class="slide-card fragment">
-              <div class="text-xs font-mono text-[#818cf8] font-bold mb-2">STAGE 02</div>
-              <h3 class="text-base font-bold text-white mb-2">Proof Engine</h3>
+            <div class="slide-surface slide-surface-hover rounded-xl p-4">
+              <div class="text-xs font-mono text-[#818cf8] font-bold mb-1">2. withdraw()</div>
               <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Local Docker ProofStation (:6300) runs Halo2 synthesis and outputs a cryptographic proof.
+                Authorizes outflows via private witness proof generated locally by Docker ProofStation (:6300).
               </p>
             </div>
-
-            <div class="slide-card fragment">
-              <div class="text-xs font-mono text-cyan-400 font-bold mb-2">STAGE 03</div>
-              <h3 class="text-base font-bold text-white mb-2">Dust Balancing</h3>
+            <div class="slide-surface slide-surface-hover rounded-xl p-4">
+              <div class="text-xs font-mono text-cyan-400 font-bold mb-1">3. Deterministic Ledger</div>
               <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Relay balance attaches required unshielded UTXO collateral, eliminating user gas friction.
-              </p>
-            </div>
-
-            <div class="slide-card fragment">
-              <div class="text-xs font-mono text-emerald-400 font-bold mb-2">STAGE 04</div>
-              <h3 class="text-base font-bold text-white mb-2">Finality</h3>
-              <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Validators verify proof and update state. GraphQL Indexer streams updated balance in real-time.
+                Counter state updates stream live via Midnight GraphQL v4 subscription indexer.
               </p>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- SLIDE 5: Production Roadmap & Developer Signature -->
-      <section data-transition="convex">
-        <div class="max-w-5xl mx-auto text-left space-y-6">
-          <div>
-            <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">04 / CONCLUSION & TEAM</div>
-            <h2 class="text-3xl sm:text-4xl font-bold text-white">The Future of Confidential DeFi</h2>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div class="slide-card fragment">
-              <div class="text-xs font-mono text-[#00f5a0] font-bold mb-1">PHASE 1 (LIVE)</div>
-              <h3 class="text-base font-bold text-white mb-2">Midnight Preprod</h3>
-              <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Full 1AM connector, Compact v0.20 contract, sponsored dust balancing & ProofStation.
-              </p>
-            </div>
-
-            <div class="slide-card fragment">
-              <div class="text-xs font-mono text-[#818cf8] font-bold mb-1">PHASE 2 (NEXT)</div>
-              <h3 class="text-base font-bold text-white mb-2">Multi-Signature & Vesting</h3>
-              <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                m-of-n threshold witness approval, time-locked escrow schedules & compliance view keys.
-              </p>
-            </div>
-
-            <div class="slide-card fragment">
-              <div class="text-xs font-mono text-cyan-400 font-bold mb-1">PHASE 3</div>
-              <h3 class="text-base font-bold text-white mb-2">Mainnet Release</h3>
-              <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Cardano Partnerchain bridge deployment, cross-chain shielded swaps & enterprise SDK.
-              </p>
-            </div>
-          </div>
-
-          <!-- Developer Signature Banner -->
-          <div class="slide-card border-[#00f5a0]/30 bg-white/[0.02] p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 fragment">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 to-indigo-500/20 border border-[#00f5a0]/30 flex items-center justify-center font-mono font-bold text-white text-sm shadow-inner">
-                KA
-              </div>
-              <div>
-                <h4 class="font-display font-bold text-white text-base">Kshitij Adakane</h4>
-                <div class="text-xs font-mono text-[#00f5a0]">Vibe Coder & Systems Builder &bull; KNIGHT.VAULT Architect</div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <a 
-                href="https://github.com/KSHITIJadakane/KNIGHT.VAULT" 
-                target="_blank" 
-                class="px-4 py-2 rounded-xl bg-[#00f5a0] hover:bg-[#00e090] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg"
-              >
-                View on GitHub &rarr;
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      </div>
     </div>
-  </div>
 
-  <!-- Reveal.js Initialization & Highlight.js Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
+    <!-- SLIDE 4: 4-Stage Runtime Pipeline -->
+    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="3">
+      <div class="space-y-6">
+        <div>
+          <div class="text-xs font-mono text-cyan-400 uppercase tracking-widest font-semibold mb-1">03 / RUNTIME PIPELINE</div>
+          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">4-Stage ZK Settlement Lifecycle</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
+            <div class="font-mono text-xs text-[#00f5a0] font-bold">01 / WITNESS</div>
+            <h3 class="font-display font-bold text-white text-base">Private Witness</h3>
+            <p class="text-xs font-mono text-slate-400 leading-relaxed">
+              Client runtime encapsulates secret key and parameters inside local memory. Never sent over RPC.
+            </p>
+          </div>
+
+          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
+            <div class="font-mono text-xs text-[#818cf8] font-bold">02 / SYNTHESIS</div>
+            <h3 class="font-display font-bold text-white text-base">Proof Engine</h3>
+            <p class="text-xs font-mono text-slate-400 leading-relaxed">
+              Local ProofStation transforms circuit constraints into a succinct Zero-Knowledge proof transcript.
+            </p>
+          </div>
+
+          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
+            <div class="font-mono text-xs text-cyan-400 font-bold">03 / SPONSOR</div>
+            <h3 class="font-display font-bold text-white text-base">Relay Balancing</h3>
+            <p class="text-xs font-mono text-slate-400 leading-relaxed">
+              Fee balancer attaches required unshielded UTXO dust collateral without charging the sender.
+            </p>
+          </div>
+
+          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
+            <div class="font-mono text-xs text-emerald-400 font-bold">04 / COMMIT</div>
+            <h3 class="font-display font-bold text-white text-base">Ledger Finality</h3>
+            <p class="text-xs font-mono text-slate-400 leading-relaxed">
+              Midnight validators verify proof validity and finalize state update to the public indexer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Roadmap & Developer Signature -->
+    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="4">
+      <div class="space-y-6">
+        <div>
+          <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">04 / CONCLUSION & ARCHITECT</div>
+          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">The Future of Confidential DeFi</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2">
+            <div class="text-xs font-mono text-[#00f5a0] font-bold">PHASE 1 (LIVE)</div>
+            <h3 class="font-display font-bold text-white text-base">Midnight Preprod</h3>
+            <p class="text-xs font-mono text-slate-400 leading-relaxed">
+              Full 1AM wallet connector, Compact v0.20 contract, sponsored dust balancing & local ProofStation.
+            </p>
+          </div>
+
+          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2">
+            <div class="text-xs font-mono text-[#818cf8] font-bold">PHASE 2 (NEXT)</div>
+            <h3 class="font-display font-bold text-white text-base">Multi-Sig & Vesting</h3>
+            <p class="text-xs font-mono text-slate-400 leading-relaxed">
+              m-of-n threshold witness approval, time-locked escrow schedules & regulatory viewing keys.
+            </p>
+          </div>
+
+          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2">
+            <div class="text-xs font-mono text-cyan-400 font-bold">PHASE 3</div>
+            <h3 class="font-display font-bold text-white text-base">Mainnet Protocol</h3>
+            <p class="text-xs font-mono text-slate-400 leading-relaxed">
+              Cardano Partnerchain bridge deployment, cross-chain shielded swaps & enterprise payment SDK.
+            </p>
+          </div>
+        </div>
+
+        <!-- Developer Signature Card -->
+        <div class="slide-surface rounded-2xl p-5 border-[#00f5a0]/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 to-indigo-500/20 border border-[#00f5a0]/30 flex items-center justify-center font-mono font-bold text-white text-sm shadow-inner flex-shrink-0">
+              KA
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-display font-bold text-white text-base">Kshitij Adakane</h4>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#00f5a0]"></span>
+              </div>
+              <div class="text-xs font-mono text-slate-400">
+                Vibe Coder, Systems Builder &bull; Architect of <span class="text-[#00f5a0] font-semibold">KNIGHT.VAULT</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <a 
+              href="https://github.com/KSHITIJadakane/KNIGHT.VAULT" 
+              target="_blank" 
+              class="px-4 py-2 rounded-xl bg-[#00f5a0] hover:bg-[#00e090] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#00f5a0]/20"
+            >
+              View GitHub Repo &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Navigation Bar -->
+  <footer class="relative z-30 px-6 py-3 border-t border-white/[0.06] bg-black/40 backdrop-blur-xl flex items-center justify-between text-xs font-mono text-slate-400">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[#00f5a0]"></span>
+      <span>Midnight Protocol OS &bull; Compact v0.20</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span>Navigate: <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">&larr;</kbd> <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">&rarr;</kbd></span>
+      <span>Fullscreen: <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">F</kbd></span>
+    </div>
+  </footer>
+
+  <!-- Slide State Controller Script -->
   <script>
-    Reveal.initialize({
-      controls: true,
-      progress: true,
-      center: true,
-      hash: true,
-      transition: 'convex', // Smooth popping 3D convex slide transition
-      transitionSpeed: 'default',
-      backgroundTransition: 'fade',
-      plugins: [ RevealHighlight ]
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const counterEl = document.getElementById('slideCounter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotContainer = document.getElementById('dotContainer');
+
+    // Create interactive navigation dots
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('button');
+      dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-[#00f5a0] w-5' : 'bg-white/20 hover:bg-white/40'}`;
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotContainer.appendChild(dot);
     });
+
+    function updateSlides(prevIndex, nextIndex) {
+      slides.forEach((slide, idx) => {
+        slide.classList.remove('slide-active', 'slide-hidden-next', 'slide-hidden-prev');
+        if (idx === nextIndex) {
+          slide.classList.add('slide-active');
+        } else if (idx < nextIndex) {
+          slide.classList.add('slide-hidden-prev');
+        } else {
+          slide.classList.add('slide-hidden-next');
+        }
+      });
+
+      counterEl.textContent = (nextIndex + 1).toString().padStart(2, '0');
+      prevBtn.disabled = nextIndex === 0;
+      nextBtn.disabled = nextIndex === totalSlides - 1;
+
+      // Update dots
+      const dots = dotContainer.querySelectorAll('button');
+      dots.forEach((dot, idx) => {
+        if (idx === nextIndex) {
+          dot.className = 'w-5 h-2 rounded-full bg-[#00f5a0] transition-all duration-300';
+        } else {
+          dot.className = 'w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 transition-all duration-300';
+        }
+      });
+    }
+
+    function goToSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      const prev = currentSlide;
+      currentSlide = index;
+      updateSlides(prev, currentSlide);
+    }
+
+    prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        goToSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        goToSlide(currentSlide - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    });
+
+    // Initialize first slide state
+    updateSlides(0, 0);
   </script>
 </body>
 </html>
