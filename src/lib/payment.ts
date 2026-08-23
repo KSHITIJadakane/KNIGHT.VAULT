@@ -11,6 +11,7 @@ import {
   fromHex,
   toHex,
 } from './midnight';
+import { ensureWasmReady, isProofServerReachable } from './wasm-init';
 
 export const PRIVATE_STATE_ID = 'midnight-payment-vault-state';
 export const ZK_ASSET_PATH = '/zk/payment';
@@ -52,23 +53,32 @@ export async function deployPayment(
   const ownerKey = ownerKeyBytes ?? crypto.getRandomValues(new Uint8Array(32));
   const ownerSecretKeyHex = toHex(ownerKey);
 
-  onStepChange?.('preparing', 'Initializing ZK runtime modules...');
+  onStepChange?.('preparing', 'Checking ZK runtime and proof server...');
 
-  // CRITICAL: Both WASM modules MUST be fully initialized before any compact-runtime calls.
-  // ledger-v8 provides Transaction/ZswapChainState; onchain-runtime-v3 (via compact-runtime)
-  // provides ContractState / contractstate_deserialize. Without this await, the WASM
-  // functions are undefined and throw "Cannot read properties of undefined".
-  await Promise.all([
-    import('@midnight-ntwrk/ledger-v8'),
-    import('@midnight-ntwrk/compact-runtime'),
-  ]);
+  // Pre-flight: ensure local proof server is reachable.
+  // Contract deployment REQUIRES the local Docker proof server (port 6300).
+  // On the deployed Vercel site there is no local proof server, so we give
+  // a clear, actionable error instead of a cryptic WASM crash.
+  const proofServerUri = session.config?.proverServerUri ?? 'http://localhost:6300';
+  const proofServerUp = await isProofServerReachable(proofServerUri);
+  if (!proofServerUp) {
+    throw new Error(
+      'Local ZK Proof Server is offline.\n\n' +
+      'Contract deployment requires the Midnight Docker proof server running locally on port 6300.\n\n' +
+      'Run: docker compose up -d\nThen retry from http://localhost:5173'
+    );
+  }
+
+  // Ensure BOTH WASM runtimes are fully initialized before any compact-runtime call.
+  // compact-runtime → onchain-runtime-v3 → contractstate_deserialize
+  await ensureWasmReady();
 
   onStepChange?.('preparing', 'Preparing deployment transaction and signing key...');
 
   // Pass ownerKey so the witness closure captures it for the constructor call
   const compiledContract = makeCompiledContract(ownerKey);
   const initialPrivateState = { ownerSecretKey: ownerKey };
-  // sampleSigningKey must be called AFTER compact-runtime WASM is ready
+  // sampleSigningKey called AFTER WASM is guaranteed ready
   const { sampleSigningKey: ssk } = await import('@midnight-ntwrk/compact-runtime');
   const signingKey = ssk();
 
@@ -238,11 +248,8 @@ export async function depositPayment(
   onStepChange?: (step: TxStep, message: string) => void,
 ): Promise<string> {
   onStepChange?.('preparing', `Preparing deposit of ${starsToNight(amountStars)} tNIGHT...`);
-  // Ensure both WASM runtimes are initialized before compact-runtime calls
-  await Promise.all([
-    import('@midnight-ntwrk/ledger-v8'),
-    import('@midnight-ntwrk/compact-runtime'),
-  ]);
+  // Ensure WASM runtimes are initialized before compact-runtime calls
+  await ensureWasmReady();
   const compiledContract = makeCompiledContract();
 
   // Ensure private state and contract scope are initialized for the session provider
@@ -318,11 +325,8 @@ export async function withdrawPayment(
   onStepChange?: (step: TxStep, message: string) => void,
 ): Promise<string> {
   onStepChange?.('preparing', `Authorizing withdrawal of ${starsToNight(amountStars)} tNIGHT...`);
-  // Ensure both WASM runtimes are initialized before compact-runtime calls
-  await Promise.all([
-    import('@midnight-ntwrk/ledger-v8'),
-    import('@midnight-ntwrk/compact-runtime'),
-  ]);
+  // Ensure WASM runtimes are initialized before compact-runtime calls
+  await ensureWasmReady();
   const compiledContract = makeCompiledContract(ownerSecretKeyHex ? fromHex(ownerSecretKeyHex) : undefined);
 
   let recipientBytes: Uint8Array;

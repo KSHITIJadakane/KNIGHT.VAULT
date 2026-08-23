@@ -61,14 +61,42 @@ export default function ContractDeployer({
     onContractSelected(clean);
   };
 
+  // Deploy requires local Docker proof server — not available on deployed Vercel site
+  const isLocalEnv =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname.startsWith('192.168.'));
+
   return (
     <div className="space-y-5 max-w-4xl mx-auto my-4 sm:my-6">
+      {/* Deployed-site notice — deploy requires local Docker proof server */}
+      {!isLocalEnv && (
+        <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-700/50 flex items-start gap-3 text-xs font-mono text-amber-200">
+          <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1.5">
+            <div className="font-semibold text-amber-100 text-[12px]">🐳 Local Proof Server Required for Deployment</div>
+            <p className="text-amber-300/90 text-[11px] leading-relaxed">
+              Contract deployment generates Zero-Knowledge proofs, which requires the Midnight Docker
+              proof server running locally on <span className="text-amber-200 font-bold">port 6300</span>.
+            </p>
+            <p className="text-amber-300/80 text-[11px] leading-relaxed">
+              To deploy: clone the repo, run <code className="bg-black/30 px-1.5 py-0.5 rounded text-amber-100">docker compose up -d</code>,
+              then open <a href="http://localhost:5173" className="text-amber-200 underline underline-offset-2">localhost:5173</a>
+            </p>
+            <p className="text-amber-400/80 text-[10px]">
+              Alternatively, paste an existing contract address in the <span className="text-white">"Connect to Vault"</span> panel below to interact with a live vault.
+            </p>
+          </div>
+        </div>
+      )}
+
       {lastError && (
         <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-800/60 flex items-start gap-3 text-xs font-mono text-rose-200">
           <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
           <div>
             <div className="font-semibold text-rose-100">Deployment Notice</div>
-            <p className="text-rose-300/90 text-[11px] mt-0.5">{lastError}</p>
+            <p className="text-rose-300/90 text-[11px] mt-0.5 whitespace-pre-line">{lastError}</p>
           </div>
         </div>
       )}
@@ -110,13 +138,19 @@ export default function ContractDeployer({
           <div className="space-y-2.5">
             <button
               onClick={handleDeploy}
-              disabled={isDeploying}
-              className="w-full py-3 px-4 rounded-xl font-bold text-xs text-black bg-white hover:bg-slate-100 active:bg-slate-200 shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-mono uppercase tracking-widest"
+              disabled={isDeploying || !isLocalEnv}
+              title={!isLocalEnv ? 'Requires local Docker proof server on port 6300. Run from localhost:5173.' : undefined}
+              className="w-full py-3 px-4 rounded-xl font-bold text-xs text-black bg-white hover:bg-slate-100 active:bg-slate-200 shadow-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono uppercase tracking-widest"
             >
               {isDeploying ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                   <span>Proving & Deploying...</span>
+                </>
+              ) : !isLocalEnv ? (
+                <>
+                  <Zap className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Requires Local Docker</span>
                 </>
               ) : (
                 <>
