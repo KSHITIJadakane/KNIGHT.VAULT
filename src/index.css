@@ -248,3 +248,16 @@
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Haptic buzz holding keyframe */
+@keyframes haptic-buzz {
+  0%, 100% { transform: scale(0.95) translate(0, 0); }
+  20% { transform: scale(0.95) translate(-1px, 1px); }
+  40% { transform: scale(0.95) translate(1px, -1px); }
+  60% { transform: scale(0.95) translate(-1px, -1px); }
+  80% { transform: scale(0.95) translate(1px, 1px); }
+}
+
+.animate-haptic-buzz {
+  animation: haptic-buzz 0.08s linear infinite;
+}
