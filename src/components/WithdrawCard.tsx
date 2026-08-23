@@ -213,7 +213,7 @@ export default function WithdrawCard({
                 placeholder="0.00"
                 required
                 disabled={isProcessing}
-                className="w-full input-surface rounded-xl px-4 py-3 text-lg font-mono font-medium text-white pr-20 disabled:opacity-50 tracking-tight"
+                className="w-full input-surface rounded-xl px-4 py-3 text-lg font-mono font-medium text-white pr-20 disabled:opacity-50 tracking-tight [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400 font-semibold">
                 tNIGHT

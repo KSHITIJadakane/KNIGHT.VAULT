@@ -52,6 +52,18 @@
     transform: scale(0.975);
     transition: transform 0.12s ease-out;
   }
+
+  /* Hide number input spinners (up/down arrows) */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 }
 
 /* Institutional Card & Surface Panels */

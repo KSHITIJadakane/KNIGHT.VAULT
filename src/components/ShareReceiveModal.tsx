@@ -222,7 +222,7 @@ export default function ShareReceiveModal({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="e.g. 25"
-                className="flex-1 px-3 py-1.5 rounded-lg bg-[#181d26] border border-[#262f3f] focus:outline-none focus:border-emerald-500 text-sm font-mono text-slate-100 placeholder-slate-500"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-[#181d26] border border-[#262f3f] focus:outline-none focus:border-emerald-500 text-sm font-mono text-slate-100 placeholder-slate-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
               <div className="flex gap-1">
                 {['10', '50', '100'].map((preset) => (
