@@ -1,6 +1,6 @@
-# 🚀 Cloud Deployment Guide: Render (Frontend) + Railway (Backend)
+# 🚀 Cloud Deployment Guide: Vercel (Frontend) + Railway (Backend)
 
-This repository is fully configured for cloud deployment with zero server setup needed.
+This repository is pre-configured for 1-click deployment on **Vercel** and **Railway**.
 
 ---
 
@@ -8,43 +8,30 @@ This repository is fully configured for cloud deployment with zero server setup 
 
 | Component | Cloud Platform | Technology | Configuration Files |
 | :--- | :--- | :--- | :--- |
-| **Frontend (DApp UI)** | **Render** | Vite + React + Tailwind + ZK WASM | `render.yaml`, `public/_redirects` |
+| **Frontend (DApp UI)** | **Vercel** | Vite + React + Tailwind + ZK WASM | `vercel.json` |
 | **Backend (ProofServer)** | **Railway** | Docker `midnightntwrk/proof-server:latest` | `Dockerfile.railway`, `railway.json` |
 
 ---
 
-## 🛠️ Step 1: Deploy Backend (ProofServer) on Railway
+## 🛠️ Step 1: Backend ProofServer on Railway (Already Active)
 
-1. Go to [railway.app](https://railway.app) and sign in with GitHub.
-2. Click **"+ New Project"** &rarr; **"Deploy from GitHub repo"**.
-3. Select your repository: **`KSHITIJadakane/KNIGHT.VAULT`**.
-4. Railway will automatically detect `Dockerfile.railway` and `railway.json`.
-5. Under **Settings**:
-   - **Networking** &rarr; Click **"Generate Domain"** (e.g. `https://knight-vault-proofserver.up.railway.app`).
-   - Ensure the internal port is set to **`6300`**.
-6. Copy your public Railway URL (e.g., `https://knight-vault-proofserver.up.railway.app`).
+* **Public Domain**: `https://knight-vault-frontend-production.up.railway.app`
+* **Internal Port**: `6300`
 
 ---
 
-## 🌐 Step 2: Deploy Frontend on Render
+## 🌐 Step 2: Deploy Frontend on Vercel (1-Click)
 
-1. Go to [render.com](https://render.com) and sign in with GitHub.
-2. Click **"New +"** &rarr; **"Static Site"**.
-3. Connect your repository: **`KSHITIJadakane/KNIGHT.VAULT`**.
-4. Fill in the build settings:
-   - **Name**: `knight-vault`
-   - **Branch**: `main`
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub.
+2. Click **"Add New..."** &rarr; **"Project"**.
+3. Import your repository: **`KSHITIJadakane/KNIGHT.VAULT`**.
+4. Vercel will automatically detect `Vite` framework preset from `vercel.json`:
+   - **Framework Preset**: `Vite`
    - **Build Command**: `npm run build`
-   - **Publish Directory**: `dist`
-5. Under **Environment Variables**, add:
-   - `VITE_PROOF_SERVER_URI`: `https://YOUR-RAILWAY-DOMAIN.up.railway.app`
-6. Click **"Create Static Site"**.
-7. Render will build and deploy your DApp with automatic SSL and global CDN!
+   - **Output Directory**: `dist`
+5. Expand **Environment Variables** and add:
+   - **Name**: `VITE_PROOF_SERVER_URI`
+   - **Value**: `https://knight-vault-frontend-production.up.railway.app`
+6. Click **"Deploy"**!
 
----
-
-## 🔄 Instant Updates & Continuous Delivery (CI/CD)
-
-Whenever you push to the `main` branch:
-* **Railway** automatically redeploys the ProofServer container.
-* **Render** automatically runs `npm run build` and serves the latest frontend assets.
+Within ~45 seconds, your DApp will be live on a custom `.vercel.app` domain with global edge caching and instant updates on every `git push`.
