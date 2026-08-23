@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useWallet } from '../contexts/WalletContext';
-import { Shield, Copy, Check, LogOut, Terminal, Activity, ArrowUpRight, MonitorPlay, Zap } from 'lucide-react';
+import { Shield, Copy, Check, LogOut, Terminal, Activity, ArrowUpRight, MonitorPlay, Zap, DoorOpen } from 'lucide-react';
+import { playClickSound } from '../lib/sound';
 
-export default function Navbar() {
+interface NavbarProps {
+  activeContractAddress?: string | null;
+  onExitVault?: () => void;
+}
+
+export default function Navbar({ activeContractAddress, onExitVault }: NavbarProps) {
   const { isConnected, address, walletType, walletStatus, isConnecting, connect, connectSandbox, disconnect, session } = useWallet();
   const [copied, setCopied] = useState(false);
   const [proofServerOnline, setProofServerOnline] = useState<boolean | null>(null);
@@ -39,12 +45,26 @@ export default function Navbar() {
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const handleExitDoor = () => {
+    playClickSound();
+    onExitVault?.();
+    disconnect();
+  };
+
   return (
     <header className="sticky top-0 z-30 pt-3 px-3 sm:px-6 max-w-7xl mx-auto w-full animate-window-1">
       <div className="panel-surface rounded-2xl px-3 sm:px-5 h-14 sm:h-16 flex items-center justify-between gap-2 border border-white/[0.08] shadow-2xl bg-[#0e1117]/80 backdrop-blur-2xl">
-        {/* Left: Brand Identity */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 via-white/10 to-white/[0.02] border border-[#00f5a0]/30 flex items-center justify-center text-white font-mono font-bold text-sm shadow-sm">
+        {/* Left: Brand Identity (Clickable to return home/main page) */}
+        <button
+          type="button"
+          onClick={() => {
+            playClickSound();
+            onExitVault?.();
+          }}
+          className="flex items-center gap-3 flex-shrink-0 hover:opacity-90 transition-opacity text-left cursor-pointer group"
+          title={activeContractAddress ? "Exit Vault & Return to Main Page" : "KNIGHT.VAULT Protocol"}
+        >
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 via-white/10 to-white/[0.02] border border-[#00f5a0]/30 flex items-center justify-center text-white font-mono font-bold text-sm shadow-sm group-hover:border-[#00f5a0]/60 transition-colors">
             K
           </div>
           <div className="flex items-center gap-2">
@@ -55,44 +75,47 @@ export default function Navbar() {
               v0.20
             </span>
           </div>
-        </div>
+        </button>
 
         {/* Center/Right Status & Wallet controls */}
-        <div className="flex items-center gap-2 flex-shrink min-w-0">
-          {/* Proof Server Status Pill */}
-          <div
-            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-slate-300"
-            title={railwayProofServer ? `Railway Proof Server: ${railwayProofServer}` : isLocalDev ? 'Local Docker Proof Server (port 6300)' : 'No proof server configured'}
-          >
-            <Activity className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-400 text-[11px]">Engine:</span>
-            {!hasProofServer ? (
-              <span className="flex items-center gap-1.5 text-slate-500 font-medium text-[11px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                Not Configured
+        <div className="flex items-center gap-2">
+          {/* Quick Exit Vault Action (when inside an active vault) */}
+          {activeContractAddress && (
+            <button
+              type="button"
+              onClick={() => {
+                playClickSound();
+                onExitVault?.();
+              }}
+              title="Leave Vault and return to Main Page"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-rose-500/10 text-slate-300 hover:text-rose-300 border border-white/[0.08] hover:border-rose-500/30 text-xs font-mono transition-all font-medium"
+            >
+              <LogOut className="w-3.5 h-3.5 text-rose-400" />
+              <span className="hidden sm:inline">Exit Vault</span>
+            </button>
+          )}
+
+          {/* Proof Engine Status Badge */}
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs font-mono text-slate-300">
+            <div className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${
+                proofServerOnline === true
+                  ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
+                  : proofServerOnline === false
+                  ? 'bg-amber-400 shadow-[0_0_8px_#fbbf24]'
+                  : 'bg-slate-400 animate-pulse'
+              }`} />
+              <span className="text-[11px] text-slate-300">
+                {proofServerOnline === true
+                  ? (railwayProofServer ? 'Railway Active' : 'Prover :6300')
+                  : proofServerOnline === false
+                  ? 'Offline'
+                  : 'Prover...'}
               </span>
-            ) : proofServerOnline === true ? (
-              <span className="flex items-center gap-1.5 text-emerald-400 font-medium text-[11px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                {railwayProofServer ? 'Railway Active' : '6300 Active'}
-              </span>
-            ) : proofServerOnline === false ? (
-              <span className="flex items-center gap-1.5 text-amber-400 font-medium text-[11px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                {railwayProofServer ? 'Railway Offline' : 'Probing'}
-              </span>
-            ) : (
-              <span className="text-slate-400 text-[11px]">Connecting...</span>
-            )}
+            </div>
           </div>
 
-          {/* Network Selector Pill */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[11px] font-mono text-slate-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00f5a0]" />
-            <span className="uppercase tracking-wider">{session?.config?.networkId ?? 'Preprod'}</span>
-          </div>
-
-          {/* Presentation Deck Link */}
+          {/* Interactive Presentation Deck Link */}
           <a
             href="/presentation.html"
             target="_blank"
@@ -104,7 +127,7 @@ export default function Navbar() {
             <span className="font-medium">Deck</span>
           </a>
 
-          {/* Wallet Connection */}
+          {/* Wallet Connection & Exit Door */}
           {isConnected && address ? (
             <div className="flex items-center gap-1 bg-white/[0.04] border border-white/[0.09] rounded-xl p-1 text-xs max-w-full">
               <div className="flex items-center gap-1.5 px-2">
@@ -118,6 +141,7 @@ export default function Navbar() {
               </div>
 
               <button
+                type="button"
                 onClick={handleCopy}
                 title="Copy Address"
                 className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors"
@@ -126,8 +150,9 @@ export default function Navbar() {
               </button>
 
               <button
-                onClick={disconnect}
-                title="Disconnect"
+                type="button"
+                onClick={handleExitDoor}
+                title={activeContractAddress ? "Exit Vault & Disconnect to Main Page" : "Disconnect"}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/[0.08] transition-colors"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -136,6 +161,7 @@ export default function Navbar() {
           ) : (
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => connect('preprod')}
                 disabled={isConnecting}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-black bg-white hover:bg-slate-100 active:bg-slate-200 shadow-md transition-all disabled:opacity-50 font-mono tracking-tight"
@@ -154,6 +180,7 @@ export default function Navbar() {
               </button>
 
               <button
+                type="button"
                 onClick={connectSandbox}
                 disabled={isConnecting}
                 title="Launch Instant Demo Mode"
