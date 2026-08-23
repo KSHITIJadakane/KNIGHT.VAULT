@@ -203,7 +203,7 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
         const { ZswapChainState, LedgerParameters } = await import('@midnight-ntwrk/ledger-v8');
 
         if (action?.state) {
-          const zswap = action.zswapState ? ZswapChainState.deserialize(fromHex(action.zswapState)) : ZswapChainState.empty();
+          const zswap = action.zswapState ? ZswapChainState.deserialize(fromHex(action.zswapState)) : new ZswapChainState();
           const state = ContractState.deserialize(fromHex(action.state));
           setGlobalSandboxContractState(contractAddress, state);
           const params = action.transaction?.block?.ledgerParameters
@@ -215,7 +215,7 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
         // Fallback to local verified deployed state if indexer has not committed the block yet
         const cached = sandboxContractStateStore.get(contractAddress);
         if (cached) {
-          return [ZswapChainState.empty(), cached, LedgerParameters.initialParameters()];
+          return [new ZswapChainState(), cached, LedgerParameters.initialParameters()];
         }
         return base.queryZSwapAndContractState(contractAddress);
       } catch (err) {
@@ -223,7 +223,7 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
         const cached = sandboxContractStateStore.get(contractAddress);
         if (cached) {
           const { ZswapChainState, LedgerParameters } = await import('@midnight-ntwrk/ledger-v8');
-          return [ZswapChainState.empty(), cached, LedgerParameters.initialParameters()];
+          return [new ZswapChainState(), cached, LedgerParameters.initialParameters()];
         }
         return base.queryZSwapAndContractState(contractAddress);
       }
