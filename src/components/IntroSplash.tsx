@@ -28,35 +28,43 @@ export default function IntroSplash({ onComplete, onEntering }: IntroSplashProps
       const elapsed = currentTime - startTime;
       const progress = Math.min(1, elapsed / duration);
       
-      const currentVal = Math.floor(progress * 100);
+      // Deep parabolic ease-out curve (smooth deceleration)
+      const easeProgress = 1 - Math.pow(1 - progress, 2.5);
+      const currentVal = Math.floor(easeProgress * 100);
       setCount(currentVal);
-
-      // Cycle words rapidly based on percentage
-      const step = Math.min(
-        CYCLING_WORDS.length - 1,
-        Math.floor(progress * CYCLING_WORDS.length)
-      );
-      setWordIndex(step);
 
       if (progress < 1) {
         requestAnimationFrame(updateCounter);
       } else {
-        // Trigger synchronized site flight at 100%
-        if (onEntering) onEntering();
-        setIsEnteringSite(true);
+        // Trigger slow spatial entrance through the gate in sync with background
         setTimeout(() => {
-          onComplete();
-        }, 1100); // 1.1s upward flight
+          setIsEnteringSite(true);
+          onEntering?.();
+          setTimeout(() => {
+            onComplete();
+          }, 1600); // 1.6s slow camera flight
+        }, 400);
       }
     };
 
     requestAnimationFrame(updateCounter);
   }, [onComplete, onEntering]);
 
+  // Word cycling with deliberate editorial pacing
+  useEffect(() => {
+    const wordInterval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % CYCLING_WORDS.length);
+    }, 460);
+
+    return () => clearInterval(wordInterval);
+  }, []);
+
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col justify-between p-6 sm:p-12 bg-[#08090d] text-white select-none overflow-hidden will-change-transform ${
-        isEnteringSite ? 'animate-intro-exit' : ''
+      className={`fixed inset-0 z-[100] w-full h-full flex flex-col justify-between p-6 sm:p-12 md:p-16 bg-[#08090d] text-white transition-all duration-[1600ms] ease-[cubic-bezier(0.7,0,0.1,1)] select-none overflow-hidden will-change-transform ${
+        isEnteringSite
+          ? '-translate-y-full opacity-0 filter blur-sm'
+          : 'translate-y-0 opacity-100 filter blur-0'
       }`}
     >
       {/* Background Precision Grid */}
