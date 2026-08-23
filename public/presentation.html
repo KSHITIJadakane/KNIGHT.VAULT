@@ -1,218 +1,510 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KNIGHT.VAULT — Interactive Protocol Pitch Deck</title>
   
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Space Grotesk', 'sans-serif'],
-            mono: ['Fragment Mono', 'JetBrains Mono', 'monospace'],
-          },
-          colors: {
-            mint: '#00f5a0',
-            indigoAccent: '#818cf8',
-            obsidian: '#08090d',
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       background-color: #08090d;
-      color: #e2e8f0;
-      font-family: 'Inter', sans-serif;
+      color: #f1f5f9;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      width: 100vw;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       user-select: none;
+      position: relative;
     }
 
-    .slide-surface {
-      background: rgba(14, 17, 23, 0.85);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.03em;
     }
 
-    .slide-surface-hover:hover {
-      border-color: rgba(0, 245, 160, 0.35);
-      transform: translateY(-3px) scale(1.008);
-      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 30px -5px rgba(0, 245, 160, 0.15);
+    .font-mono {
+      font-family: 'Fragment Mono', monospace;
     }
 
-    /* Smooth Slide Transition Animation */
-    .slide-active {
+    /* Ambient Background Orbs */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .orb-mint {
+      position: absolute;
+      top: -15%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      border-radius: 9999px;
+      background: #00f5a0;
+      filter: blur(140px);
+      opacity: 0.08;
+    }
+
+    .orb-indigo {
+      position: absolute;
+      top: 30%;
+      right: -15%;
+      width: 55vw;
+      height: 55vw;
+      border-radius: 9999px;
+      background: #4338ca;
+      filter: blur(160px);
+      opacity: 0.11;
+    }
+
+    .orb-cyan {
+      position: absolute;
+      bottom: -15%;
+      left: 25%;
+      width: 45vw;
+      height: 45vw;
+      border-radius: 9999px;
+      background: #0284c7;
+      filter: blur(130px);
+      opacity: 0.07;
+    }
+
+    .grid-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image: radial-gradient(#ffffff 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* Header & Footer Bars */
+    header {
+      position: relative;
+      z-index: 30;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 9, 13, 0.85);
+      backdrop-filter: blur(20px);
+    }
+
+    footer {
+      position: relative;
+      z-index: 30;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 9, 13, 0.85);
+      backdrop-filter: blur(20px);
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(0, 245, 160, 0.2), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(0, 245, 160, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: inset 0 0 12px rgba(0, 245, 160, 0.2);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .accent-mint {
+      color: #00f5a0;
+    }
+
+    .accent-indigo {
+      color: #818cf8;
+    }
+
+    .accent-cyan {
+      color: #38bdf8;
+    }
+
+    .tag-pill {
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #cbd5e1;
+    }
+
+    /* Interactive Slide Counter & Controls */
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .counter-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .dot-track {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 6px;
+    }
+
+    .dot-btn {
+      height: 7px;
+      width: 7px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot-btn.active {
+      width: 22px;
+      background: #00f5a0;
+      box-shadow: 0 0 10px rgba(0, 245, 160, 0.6);
+    }
+
+    .nav-btn {
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f1f5f9;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .return-btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: rgba(0, 245, 160, 0.12);
+      border: 1px solid rgba(0, 245, 160, 0.35);
+      color: #00f5a0;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      margin-left: 8px;
+    }
+
+    .return-btn:hover {
+      background: rgba(0, 245, 160, 0.22);
+      box-shadow: 0 0 14px rgba(0, 245, 160, 0.25);
+    }
+
+    /* Main Slide Viewport */
+    main {
+      position: relative;
+      z-index: 20;
+      flex: 1;
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
       opacity: 1;
       transform: scale(1) translateY(0);
       filter: blur(0);
       pointer-events: auto;
-      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
     }
 
-    .slide-hidden-next {
+    .slide.hidden-next {
       opacity: 0;
-      transform: scale(0.95) translateY(20px);
+      transform: scale(0.96) translateY(24px);
       filter: blur(8px);
       pointer-events: none;
-      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
     }
 
-    .slide-hidden-prev {
+    .slide.hidden-prev {
       opacity: 0;
-      transform: scale(1.05) translateY(-20px);
+      transform: scale(1.04) translateY(-24px);
       filter: blur(8px);
       pointer-events: none;
-      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+    }
+
+    /* Glass Panels */
+    .glass-card {
+      background: rgba(14, 17, 23, 0.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.7);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(0, 245, 160, 0.35);
+      transform: translateY(-3px) scale(1.008);
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.85), 0 0 25px -4px rgba(0, 245, 160, 0.12);
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Typography & Lists */
+    h1 {
+      font-size: 52px;
+      font-weight: 800;
+      line-height: 1.05;
+      color: #ffffff;
+    }
+
+    h2 {
+      font-size: 34px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 18px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #94a3b8;
+    }
+
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    kbd {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    pre {
+      background: #040508;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 11px;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.5;
     }
   </style>
 </head>
-<body class="bg-[#08090d] text-slate-100 h-screen w-screen flex flex-col justify-between overflow-hidden relative">
+<body>
 
-  <!-- Ambient Glowing Background Mesh -->
-  <div class="fixed inset-0 pointer-events-none z-0">
-    <div class="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full blur-[140px] opacity-[0.08] bg-[#00f5a0]"></div>
-    <div class="absolute top-[30%] -right-[15%] w-[55vw] h-[55vw] rounded-full blur-[160px] opacity-[0.10] bg-[#4338ca]"></div>
-    <div class="absolute -bottom-[15%] left-[25%] w-[45vw] h-[45vw] rounded-full blur-[130px] opacity-[0.07] bg-[#0284c7]"></div>
-    <div class="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
+  <!-- Background Orbs -->
+  <div class="bg-mesh">
+    <div class="orb-mint"></div>
+    <div class="orb-indigo"></div>
+    <div class="orb-cyan"></div>
+    <div class="grid-pattern"></div>
   </div>
 
-  <!-- Header Navigation -->
-  <header class="relative z-30 px-6 py-4 flex items-center justify-between border-b border-white/[0.06] bg-black/40 backdrop-blur-xl">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 via-white/10 to-transparent border border-[#00f5a0]/30 flex items-center justify-center text-white font-mono font-bold text-sm shadow-inner">
-        K
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="font-display font-extrabold text-white tracking-tight text-sm sm:text-base">
-          KNIGHT<span class="text-[#00f5a0]">.</span>VAULT
-        </span>
-        <span class="text-[9px] px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-300 font-mono border border-white/10 uppercase tracking-widest">
-          PROTOCOL DECK
-        </span>
-      </div>
+  <!-- Header -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-badge font-mono">K</div>
+      <div class="brand-title font-display">KNIGHT<span class="accent-mint">.</span>VAULT</div>
+      <span class="tag-pill font-mono">Protocol Deck</span>
     </div>
 
-    <!-- Center Slide Progress Indicator -->
-    <div class="flex items-center gap-3 font-mono text-xs text-slate-400 bg-white/[0.03] px-3.5 py-1.5 rounded-full border border-white/[0.08]">
-      <span id="slideCounter" class="text-white font-bold text-[#00f5a0]">01</span>
+    <!-- Center Slide Counter -->
+    <div class="counter-pill font-mono">
+      <span id="slideNumber" class="accent-mint" style="font-weight: 700;">01</span>
       <span>/</span>
       <span>05</span>
-      <div id="dotContainer" class="flex items-center gap-1.5 ml-2"></div>
+      <div id="dotTrack" class="dot-track"></div>
     </div>
 
     <!-- Right Controls -->
-    <div class="flex items-center gap-2">
-      <button 
-        id="prevBtn" 
-        class="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
-        title="Previous Slide (Left Arrow)"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div class="controls-group font-mono">
+      <button id="prevBtn" class="nav-btn" title="Previous Slide (←)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
       </button>
-      <button 
-        id="nextBtn" 
-        class="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
-        title="Next Slide (Right Arrow or Spacebar)"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <button id="nextBtn" class="nav-btn" title="Next Slide (→)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
       </button>
-      <a 
-        href="/" 
-        class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#00f5a0]/10 hover:bg-[#00f5a0]/20 border border-[#00f5a0]/30 text-[#00f5a0] text-xs font-mono font-semibold transition-all shadow-sm ml-2"
-      >
-        <span>&larr; Return to Vault</span>
-      </a>
+      <a href="/" class="return-btn">← Return to Vault</a>
     </div>
   </header>
 
-  <!-- Main Slide Viewport Container -->
-  <main class="relative z-20 flex-1 flex items-center justify-center p-4 sm:p-8 max-w-6xl mx-auto w-full">
+  <!-- Main Slide Canvas -->
+  <main>
 
-    <!-- SLIDE 1: Title & Hero Architecture -->
-    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-active" data-index="0">
-      <div class="space-y-6">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00f5a0]/10 border border-[#00f5a0]/30 text-[#00f5a0] font-mono text-xs font-semibold">
-          <span class="w-2 h-2 rounded-full bg-[#00f5a0] animate-pulse"></span>
+    <!-- SLIDE 1: Hero Cover -->
+    <div class="slide active" data-slide="0">
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: inline-flex; align-items: center; gap: 8px; width: fit-content; padding: 6px 14px; border-radius: 9999px; background: rgba(0,245,160,0.1); border: 1px solid rgba(0,245,160,0.3); font-size: 11px; font-weight: 600;" class="accent-mint font-mono">
+          <span style="width: 6px; height: 6px; border-radius: 9999px; background: #00f5a0;"></span>
           <span>MIDNIGHT NETWORK // ZERO-KNOWLEDGE SETTLEMENT</span>
         </div>
 
-        <h1 class="text-4xl sm:text-6xl font-display font-extrabold text-white leading-[1.08] tracking-tight">
-          KNIGHT<span class="text-[#00f5a0]">.</span>VAULT
-        </h1>
+        <h1 class="font-display">KNIGHT<span class="accent-mint">.</span>VAULT</h1>
 
-        <p class="text-base sm:text-xl text-slate-300 max-w-3xl leading-relaxed font-mono">
-          Institutional Zero-Knowledge Custody, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Armored State Protection.
+        <p class="font-mono" style="font-size: 16px; color: #cbd5e1; max-width: 780px;">
+          Institutional Zero-Knowledge Custody, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Armored State Privacy.
         </p>
 
-        <!-- 4 Stat Badges Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-          <div class="slide-surface slide-surface-hover rounded-xl p-4">
-            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">TARGET CHAIN</div>
-            <div class="text-white font-bold font-mono text-sm sm:text-base">Midnight Preprod</div>
+        <!-- 4 Grid Cards -->
+        <div class="grid-4" style="margin-top: 10px;">
+          <div class="glass-card">
+            <div class="font-mono" style="font-size: 10px; color: #64748b; margin-bottom: 4px;">TARGET CHAIN</div>
+            <div class="font-mono" style="font-size: 14px; font-weight: 700; color: #ffffff;">Midnight Preprod</div>
           </div>
-          <div class="slide-surface slide-surface-hover rounded-xl p-4">
-            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">CONTRACT ENGINE</div>
-            <div class="text-[#00f5a0] font-bold font-mono text-sm sm:text-base">Compact v0.20+</div>
+          <div class="glass-card">
+            <div class="font-mono" style="font-size: 10px; color: #64748b; margin-bottom: 4px;">CIRCUIT ENGINE</div>
+            <div class="font-mono accent-mint" style="font-size: 14px; font-weight: 700;">Compact v0.20+</div>
           </div>
-          <div class="slide-surface slide-surface-hover rounded-xl p-4">
-            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">PROOF SERVER</div>
-            <div class="text-[#818cf8] font-bold font-mono text-sm sm:text-base">Docker :6300</div>
+          <div class="glass-card">
+            <div class="font-mono" style="font-size: 10px; color: #64748b; margin-bottom: 4px;">PROOF SERVER</div>
+            <div class="font-mono accent-indigo" style="font-size: 14px; font-weight: 700;">Docker :6300</div>
           </div>
-          <div class="slide-surface slide-surface-hover rounded-xl p-4">
-            <div class="text-[10px] font-mono uppercase text-slate-500 tracking-wider mb-1">USER GAS COST</div>
-            <div class="text-emerald-400 font-bold font-mono text-sm sm:text-base">0.00 NIGHT (Sponsored)</div>
+          <div class="glass-card">
+            <div class="font-mono" style="font-size: 10px; color: #64748b; margin-bottom: 4px;">USER GAS COST</div>
+            <div class="font-mono accent-cyan" style="font-size: 14px; font-weight: 700;">0.00 NIGHT (Sponsored)</div>
           </div>
         </div>
 
-        <div class="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-slate-400">
-          <div class="flex items-center gap-2">
-            <span>Use <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">&rarr;</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">SPACE</kbd> to advance</span>
-          </div>
-          <div class="text-slate-500">Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">F</kbd> for Fullscreen</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; font-size: 11px; color: #64748b;" class="font-mono">
+          <div>Press <kbd>→</kbd> or <kbd>SPACE</kbd> to navigate slides</div>
+          <div>Press <kbd>F</kbd> for Fullscreen</div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 2: The Privacy Dilemma -->
-    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="1">
-      <div class="space-y-6">
-        <div>
-          <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">01 / MARKET CONTEXT</div>
-          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">The Public Blockchain Privacy Trap</h2>
-        </div>
+    <!-- SLIDE 2: Problem vs Solution -->
+    <div class="slide hidden-next" data-slide="1">
+      <div>
+        <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">01 / MARKET CONTEXT</div>
+        <h2 class="font-display">The Public Blockchain Privacy Trap</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="slide-surface rounded-2xl p-6 border-rose-500/20 bg-rose-950/10 space-y-3">
-            <div class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider">⚠️ Transparent Chains (ETH, BTC, Solana)</div>
-            <ul class="text-xs sm:text-sm text-slate-300 space-y-2.5 font-mono leading-relaxed">
-              <li>• <b>Total Surveillance:</b> Every balance, vendor invoice, employee payroll, and transaction amount is publicly exposed globally.</li>
-              <li>• <b>KYC Gas Linkage:</b> Purchasing gas tokens links off-chain identities to every on-chain move.</li>
-              <li>• <b>Mixers are Banned:</b> Tornado Cash style mixers lack compliance and face universal regulatory blacklisting.</li>
+        <div class="grid-2">
+          <div class="glass-card" style="border-color: rgba(244,63,94,0.25); background: rgba(88,28,40,0.12);">
+            <div class="font-mono" style="font-size: 12px; font-weight: 700; color: #f43f5e; margin-bottom: 12px;">⚠️ Transparent Chains (ETH, BTC, Solana)</div>
+            <ul class="bullet-list font-mono">
+              <li><span>•</span> <span><b>Total Surveillance:</b> Balances, vendor invoices, employee payrolls, and transaction histories are publicly exposed.</span></li>
+              <li><span>•</span> <span><b>KYC Gas Linkage:</b> Purchasing native gas tokens de-anonymizes your wallet address.</span></li>
+              <li><span>•</span> <span><b>Mixers are Banned:</b> Legacy mixers lack compliance and face universal regulatory blacklisting.</span></li>
             </ul>
           </div>
 
-          <div class="slide-surface slide-surface-hover rounded-2xl p-6 border-[#00f5a0]/30 bg-[#00f5a0]/5 space-y-3">
-            <div class="text-xs font-mono text-[#00f5a0] font-bold uppercase tracking-wider">🛡️ KNIGHT.VAULT Solution</div>
-            <ul class="text-xs sm:text-sm text-slate-300 space-y-2.5 font-mono leading-relaxed">
-              <li>• <b>Witness Shielding:</b> Owner secret keys remain isolated in local memory. Only succinct ZK proofs touch the ledger.</li>
-              <li>• <b>Sponsored Dust Relay:</b> Zero-gas payer checkout eliminates faucet/gas friction entirely.</li>
-              <li>• <b>Verifiable Receipts:</b> Selective cryptographic disclosures enable institutional audits without public leakage.</li>
+          <div class="glass-card" style="border-color: rgba(0,245,160,0.3); background: rgba(0,245,160,0.04);">
+            <div class="font-mono accent-mint" style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">🛡️ KNIGHT.VAULT Solution</div>
+            <ul class="bullet-list font-mono">
+              <li><span>•</span> <span><b>Witness Shielding:</b> Secret keys never touch the ledger. Only succinct ZK proofs are verified.</span></li>
+              <li><span>•</span> <span><b>Sponsored Dust Relay:</b> Zero-gas payer checkout eliminates faucet and gas token friction.</span></li>
+              <li><span>•</span> <span><b>Verifiable Receipts:</b> Selective cryptographic disclosures enable institutional audits without public leakage.</span></li>
             </ul>
           </div>
         </div>
@@ -220,20 +512,18 @@
     </div>
 
     <!-- SLIDE 3: Compact Smart Contract -->
-    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="2">
-      <div class="space-y-6">
-        <div>
-          <div class="text-xs font-mono text-[#818cf8] uppercase tracking-widest font-semibold mb-1">02 / CORE CIRCUITS</div>
-          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">Compact v0.20 Smart Contract</h2>
-        </div>
+    <div class="slide hidden-next" data-slide="2">
+      <div>
+        <div class="font-mono accent-indigo" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">02 / CORE CIRCUITS</div>
+        <h2 class="font-display">Compact v0.20 Smart Contract</h2>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          <div class="lg:col-span-7 slide-surface rounded-2xl p-4 overflow-hidden">
-            <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06] text-xs font-mono text-slate-400">
+        <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: center;">
+          <div class="glass-card" style="padding: 14px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;" class="font-mono">
               <span>contract/src/payment.compact</span>
-              <span class="text-[#00f5a0] font-semibold">Verified Circuit</span>
+              <span class="accent-mint">Verified Circuit</span>
             </div>
-            <pre class="text-[11px] sm:text-xs font-mono text-slate-200 overflow-x-auto leading-relaxed bg-black/50 p-3.5 rounded-xl"><code>// payment.compact (Midnight stdlib v0.20)
+            <pre class="font-mono"><code>// payment.compact (Midnight stdlib v0.20)
 contract PaymentVault {
   ledger balance: Counter;
   ledger totalDeposited: Counter;
@@ -258,24 +548,18 @@ contract PaymentVault {
 }</code></pre>
           </div>
 
-          <div class="lg:col-span-5 space-y-3">
-            <div class="slide-surface slide-surface-hover rounded-xl p-4">
-              <div class="text-xs font-mono text-[#00f5a0] font-bold mb-1">1. receiveUnshielded()</div>
-              <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Accepts unshielded NIGHT tokens from mobile & web payers with automatic fee sponsorship.
-              </p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="glass-card" style="padding: 14px;">
+              <h3 class="accent-mint font-display" style="font-size: 13px;">1. receiveUnshielded()</h3>
+              <p style="font-size: 11.5px;" class="font-mono">Accepts unshielded NIGHT tokens from mobile & web payers with automatic fee sponsorship.</p>
             </div>
-            <div class="slide-surface slide-surface-hover rounded-xl p-4">
-              <div class="text-xs font-mono text-[#818cf8] font-bold mb-1">2. withdraw()</div>
-              <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Authorizes outflows via private witness proof generated locally by Docker ProofStation (:6300).
-              </p>
+            <div class="glass-card" style="padding: 14px;">
+              <h3 class="accent-indigo font-display" style="font-size: 13px;">2. withdraw()</h3>
+              <p style="font-size: 11.5px;" class="font-mono">Authorizes outflows via private witness proof generated locally by ProofStation (:6300).</p>
             </div>
-            <div class="slide-surface slide-surface-hover rounded-xl p-4">
-              <div class="text-xs font-mono text-cyan-400 font-bold mb-1">3. Deterministic Ledger</div>
-              <p class="text-xs font-mono text-slate-400 leading-relaxed">
-                Counter state updates stream live via Midnight GraphQL v4 subscription indexer.
-              </p>
+            <div class="glass-card" style="padding: 14px;">
+              <h3 class="accent-cyan font-display" style="font-size: 13px;">3. Deterministic Ledger</h3>
+              <p style="font-size: 11.5px;" class="font-mono">Counter state updates stream live via Midnight GraphQL v4 subscription indexer.</p>
             </div>
           </div>
         </div>
@@ -283,125 +567,88 @@ contract PaymentVault {
     </div>
 
     <!-- SLIDE 4: 4-Stage Runtime Pipeline -->
-    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="3">
-      <div class="space-y-6">
-        <div>
-          <div class="text-xs font-mono text-cyan-400 uppercase tracking-widest font-semibold mb-1">03 / RUNTIME PIPELINE</div>
-          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">4-Stage ZK Settlement Lifecycle</h2>
-        </div>
+    <div class="slide hidden-next" data-slide="3">
+      <div>
+        <div class="font-mono accent-cyan" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">03 / RUNTIME PIPELINE</div>
+        <h2 class="font-display">4-Stage ZK Settlement Lifecycle</h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
-            <div class="font-mono text-xs text-[#00f5a0] font-bold">01 / WITNESS</div>
-            <h3 class="font-display font-bold text-white text-base">Private Witness</h3>
-            <p class="text-xs font-mono text-slate-400 leading-relaxed">
-              Client runtime encapsulates secret key and parameters inside local memory. Never sent over RPC.
-            </p>
+        <div class="grid-4">
+          <div class="glass-card">
+            <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">01 / WITNESS</div>
+            <h3 class="font-display">Private Witness</h3>
+            <p style="font-size: 11px;" class="font-mono">Client runtime encapsulates secret key in local memory. Never sent over RPC.</p>
           </div>
 
-          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
-            <div class="font-mono text-xs text-[#818cf8] font-bold">02 / SYNTHESIS</div>
-            <h3 class="font-display font-bold text-white text-base">Proof Engine</h3>
-            <p class="text-xs font-mono text-slate-400 leading-relaxed">
-              Local ProofStation transforms circuit constraints into a succinct Zero-Knowledge proof transcript.
-            </p>
+          <div class="glass-card">
+            <div class="font-mono accent-indigo" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">02 / SYNTHESIS</div>
+            <h3 class="font-display">Proof Engine</h3>
+            <p style="font-size: 11px;" class="font-mono">ProofStation transforms circuit constraints into succinct ZK proof transcripts.</p>
           </div>
 
-          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
-            <div class="font-mono text-xs text-cyan-400 font-bold">03 / SPONSOR</div>
-            <h3 class="font-display font-bold text-white text-base">Relay Balancing</h3>
-            <p class="text-xs font-mono text-slate-400 leading-relaxed">
-              Fee balancer attaches required unshielded UTXO dust collateral without charging the sender.
-            </p>
+          <div class="glass-card">
+            <div class="font-mono accent-cyan" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">03 / SPONSOR</div>
+            <h3 class="font-display">Relay Balancing</h3>
+            <p style="font-size: 11px;" class="font-mono">Fee balancer attaches required unshielded UTXO collateral with zero user gas.</p>
           </div>
 
-          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2.5">
-            <div class="font-mono text-xs text-emerald-400 font-bold">04 / COMMIT</div>
-            <h3 class="font-display font-bold text-white text-base">Ledger Finality</h3>
-            <p class="text-xs font-mono text-slate-400 leading-relaxed">
-              Midnight validators verify proof validity and finalize state update to the public indexer.
-            </p>
+          <div class="glass-card">
+            <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">04 / COMMIT</div>
+            <h3 class="font-display">Ledger Finality</h3>
+            <p style="font-size: 11px;" class="font-mono">Validators verify proofs and update state. GraphQL indexer updates in real-time.</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- SLIDE 5: Roadmap & Developer Signature -->
-    <div class="slide absolute inset-0 m-auto flex flex-col justify-center max-w-5xl h-full p-4 slide-hidden-next" data-index="4">
-      <div class="space-y-6">
-        <div>
-          <div class="text-xs font-mono text-[#00f5a0] uppercase tracking-widest font-semibold mb-1">04 / CONCLUSION & ARCHITECT</div>
-          <h2 class="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">The Future of Confidential DeFi</h2>
-        </div>
+    <div class="slide hidden-next" data-slide="4">
+      <div>
+        <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 6px;">04 / CONCLUSION & ARCHITECT</div>
+        <h2 class="font-display">The Future of Confidential DeFi</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2">
-            <div class="text-xs font-mono text-[#00f5a0] font-bold">PHASE 1 (LIVE)</div>
-            <h3 class="font-display font-bold text-white text-base">Midnight Preprod</h3>
-            <p class="text-xs font-mono text-slate-400 leading-relaxed">
-              Full 1AM wallet connector, Compact v0.20 contract, sponsored dust balancing & local ProofStation.
-            </p>
+        <div class="grid-3" style="margin-bottom: 18px;">
+          <div class="glass-card">
+            <div class="font-mono accent-mint" style="font-size: 11px; font-weight: 700; margin-bottom: 4px;">PHASE 1 (LIVE)</div>
+            <h3 class="font-display">Midnight Preprod</h3>
+            <p style="font-size: 11px;" class="font-mono">Full 1AM wallet connector, Compact v0.20 contract, sponsored dust balancing & ProofStation.</p>
           </div>
 
-          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2">
-            <div class="text-xs font-mono text-[#818cf8] font-bold">PHASE 2 (NEXT)</div>
-            <h3 class="font-display font-bold text-white text-base">Multi-Sig & Vesting</h3>
-            <p class="text-xs font-mono text-slate-400 leading-relaxed">
-              m-of-n threshold witness approval, time-locked escrow schedules & regulatory viewing keys.
-            </p>
+          <div class="glass-card">
+            <div class="font-mono accent-indigo" style="font-size: 11px; font-weight: 700; margin-bottom: 4px;">PHASE 2 (NEXT)</div>
+            <h3 class="font-display">Multi-Sig & Vesting</h3>
+            <p style="font-size: 11px;" class="font-mono">m-of-n threshold witness approval, time-locked escrow schedules & regulatory viewing keys.</p>
           </div>
 
-          <div class="slide-surface slide-surface-hover rounded-xl p-5 space-y-2">
-            <div class="text-xs font-mono text-cyan-400 font-bold">PHASE 3</div>
-            <h3 class="font-display font-bold text-white text-base">Mainnet Protocol</h3>
-            <p class="text-xs font-mono text-slate-400 leading-relaxed">
-              Cardano Partnerchain bridge deployment, cross-chain shielded swaps & enterprise payment SDK.
-            </p>
+          <div class="glass-card">
+            <div class="font-mono accent-cyan" style="font-size: 11px; font-weight: 700; margin-bottom: 4px;">PHASE 3</div>
+            <h3 class="font-display">Mainnet Protocol</h3>
+            <p style="font-size: 11px;" class="font-mono">Cardano Partnerchain bridge deployment, cross-chain shielded swaps & enterprise payment SDK.</p>
           </div>
         </div>
 
-        <!-- Developer Signature Card -->
-        <div class="slide-surface rounded-2xl p-5 border-[#00f5a0]/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00f5a0]/20 to-indigo-500/20 border border-[#00f5a0]/30 flex items-center justify-center font-mono font-bold text-white text-sm shadow-inner flex-shrink-0">
-              KA
-            </div>
+        <!-- Developer Badge -->
+        <div class="glass-card" style="display: flex; align-items: center; justify-content: space-between; border-color: rgba(0,245,160,0.35);">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="logo-badge font-mono" style="width: 42px; height: 42px; font-size: 16px;">KA</div>
             <div>
-              <div class="flex items-center gap-2">
-                <h4 class="font-display font-bold text-white text-base">Kshitij Adakane</h4>
-                <span class="w-1.5 h-1.5 rounded-full bg-[#00f5a0]"></span>
-              </div>
-              <div class="text-xs font-mono text-slate-400">
-                Vibe Coder, Systems Builder &bull; Architect of <span class="text-[#00f5a0] font-semibold">KNIGHT.VAULT</span>
-              </div>
+              <div class="font-display" style="font-size: 16px; font-weight: 700; color: #ffffff;">Kshitij Adakane</div>
+              <div class="font-mono" style="font-size: 11px; color: #94a3b8;">Vibe Coder, Systems Builder &bull; Architect of <span class="accent-mint" style="font-weight: 700;">KNIGHT.VAULT</span></div>
             </div>
           </div>
 
-          <div class="flex items-center gap-3">
-            <a 
-              href="https://github.com/KSHITIJadakane/KNIGHT.VAULT" 
-              target="_blank" 
-              class="px-4 py-2 rounded-xl bg-[#00f5a0] hover:bg-[#00e090] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#00f5a0]/20"
-            >
-              View GitHub Repo &rarr;
-            </a>
-          </div>
+          <a href="https://github.com/KSHITIJadakane/KNIGHT.VAULT" target="_blank" style="padding: 10px 18px; border-radius: 10px; background: #00f5a0; color: #08090d; font-size: 11px; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em;" class="font-mono">
+            View on GitHub →
+          </a>
         </div>
       </div>
     </div>
 
   </main>
 
-  <!-- Footer Navigation Bar -->
-  <footer class="relative z-30 px-6 py-3 border-t border-white/[0.06] bg-black/40 backdrop-blur-xl flex items-center justify-between text-xs font-mono text-slate-400">
-    <div class="flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-[#00f5a0]"></span>
-      <span>Midnight Protocol OS &bull; Compact v0.20</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <span>Navigate: <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">&larr;</kbd> <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">&rarr;</kbd></span>
-      <span>Fullscreen: <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">F</kbd></span>
-    </div>
+  <!-- Footer -->
+  <footer class="font-mono">
+    <div>Midnight Protocol OS &bull; Compact v0.20</div>
+    <div>Use <kbd>←</kbd> <kbd>→</kbd> or <kbd>SPACE</kbd> &bull; Fullscreen: <kbd>F</kbd></div>
   </footer>
 
   <!-- Slide State Controller Script -->
@@ -409,28 +656,28 @@ contract PaymentVault {
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const totalSlides = slides.length;
-    const counterEl = document.getElementById('slideCounter');
+    const counterEl = document.getElementById('slideNumber');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const dotContainer = document.getElementById('dotContainer');
+    const dotTrack = document.getElementById('dotTrack');
 
-    // Create interactive navigation dots
+    // Create dot indicators
     slides.forEach((_, idx) => {
       const dot = document.createElement('button');
-      dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-[#00f5a0] w-5' : 'bg-white/20 hover:bg-white/40'}`;
+      dot.className = `dot-btn ${idx === 0 ? 'active' : ''}`;
       dot.addEventListener('click', () => goToSlide(idx));
-      dotContainer.appendChild(dot);
+      dotTrack.appendChild(dot);
     });
 
     function updateSlides(prevIndex, nextIndex) {
       slides.forEach((slide, idx) => {
-        slide.classList.remove('slide-active', 'slide-hidden-next', 'slide-hidden-prev');
+        slide.className = 'slide';
         if (idx === nextIndex) {
-          slide.classList.add('slide-active');
+          slide.classList.add('active');
         } else if (idx < nextIndex) {
-          slide.classList.add('slide-hidden-prev');
+          slide.classList.add('hidden-prev');
         } else {
-          slide.classList.add('slide-hidden-next');
+          slide.classList.add('hidden-next');
         }
       });
 
@@ -438,13 +685,12 @@ contract PaymentVault {
       prevBtn.disabled = nextIndex === 0;
       nextBtn.disabled = nextIndex === totalSlides - 1;
 
-      // Update dots
-      const dots = dotContainer.querySelectorAll('button');
+      const dots = dotTrack.querySelectorAll('.dot-btn');
       dots.forEach((dot, idx) => {
         if (idx === nextIndex) {
-          dot.className = 'w-5 h-2 rounded-full bg-[#00f5a0] transition-all duration-300';
+          dot.classList.add('active');
         } else {
-          dot.className = 'w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 transition-all duration-300';
+          dot.classList.remove('active');
         }
       });
     }
@@ -459,7 +705,6 @@ contract PaymentVault {
     prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
     nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
 
-    // Keyboard navigation
     window.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         goToSlide(currentSlide + 1);
@@ -474,7 +719,6 @@ contract PaymentVault {
       }
     });
 
-    // Initialize first slide state
     updateSlides(0, 0);
   </script>
 </body>
