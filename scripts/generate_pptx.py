@@ -1,4 +1,5 @@
 import sys
+import os
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -11,20 +12,22 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
     prs.slide_height = Inches(7.5)
     blank_layout = prs.slide_layouts[6]
 
-    # Institutional Palette (KNIGHT.VAULT Cyber Mint & Soft Indigo)
-    BG_COLOR = RGBColor(8, 9, 13)          # #08090d Dark Obsidian Canvas
-    PANEL_COLOR = RGBColor(14, 17, 23)     # #0e1117 Surface Card
-    PANEL_HIGHLIGHT = RGBColor(20, 25, 35) # #141923 Highlighted Card
+    # Institutional Palette (KNIGHT.VAULT Signature Palette)
+    BG_COLOR = RGBColor(8, 9, 13)          # #08090d Dark Obsidian
+    CARD_BG = RGBColor(14, 17, 23)         # #0e1117 Surface Card
+    CARD_BG_ALT = RGBColor(18, 22, 30)     # #12161e Elevated Card
     BORDER_COLOR = RGBColor(35, 42, 56)    # #232a38 Border
-    TEXT_MAIN = RGBColor(255, 255, 255)    # #ffffff Platinum Text
+    
+    TEXT_WHITE = RGBColor(255, 255, 255)   # #ffffff Pure White
+    TEXT_PLATINUM = RGBColor(241, 245, 249)# #f1f5f9 Crisp Text
     TEXT_MUTED = RGBColor(148, 163, 184)   # #94a3b8 Slate Muted
-    ACCENT_MINT = RGBColor(0, 245, 160)    # #00f5a0 Cyber Mint
-    ACCENT_INDIGO = RGBColor(129, 140, 248)# #818cf8 Soft Indigo
-    ACCENT_CYAN = RGBColor(6, 182, 212)    # #06b6d4 Cyan
-    ACCENT_ROSE = RGBColor(244, 63, 94)    # #f43f5e Rose
-    ACCENT_AMBER = RGBColor(245, 158, 11)  # #f59e0b Amber
-    ACCENT_GREEN = ACCENT_MINT
-    ACCENT_BLUE = ACCENT_INDIGO
+    TEXT_DIM = RGBColor(100, 116, 139)     # #64748b Subtle Label
+    
+    MINT = RGBColor(0, 245, 160)           # #00f5a0 Cyber Mint Primary
+    INDIGO = RGBColor(129, 140, 248)       # #818cf8 Soft Indigo
+    CYAN = RGBColor(56, 189, 248)          # #38bdf8 Electric Cyan
+    ROSE = RGBColor(244, 63, 94)           # #f43f5e Warning Rose
+    EMERALD = RGBColor(16, 185, 129)       # #10b981 Success
 
     def set_bg(slide):
         bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height)
@@ -33,8 +36,9 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
         bg.line.fill.background()
         return bg
 
-    def add_header(slide, title_text, category_text="KNIGHT.VAULT // ZERO-KNOWLEDGE PROTOCOL DECK"):
-        cat_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(11.7), Inches(0.35))
+    def add_header(slide, title_text, category_text="MIDNIGHT NETWORK // ZERO-KNOWLEDGE PROTOCOL"):
+        # Top Category Tag
+        cat_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(11.7), Inches(0.32))
         tf_cat = cat_box.text_frame
         tf_cat.word_wrap = True
         p_cat = tf_cat.paragraphs[0]
@@ -42,413 +46,409 @@ def create_top_tier_presentation(output_path="Midnight_Privacy_Payment_Vault_Pre
         p_cat.font.name = "Arial"
         p_cat.font.size = Pt(9.5)
         p_cat.font.bold = True
-        p_cat.font.color.rgb = ACCENT_MINT
+        p_cat.font.color.rgb = MINT
 
-        title_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.72), Inches(11.7), Inches(0.7))
+        # Main Slide Title
+        title_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.72), Inches(11.7), Inches(0.65))
         tf_title = title_box.text_frame
         tf_title.word_wrap = True
         p_title = tf_title.paragraphs[0]
         p_title.text = title_text
         p_title.font.name = "Arial"
-        p_title.font.size = Pt(20)
+        p_title.font.size = Pt(22)
         p_title.font.bold = True
-        p_title.font.color.rgb = TEXT_MAIN
+        p_title.font.color.rgb = TEXT_WHITE
 
-        line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.48), Inches(11.733), Inches(0.02))
+        # Divider Line with Mint Accent Pip
+        line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.42), Inches(11.733), Inches(0.015))
         line.fill.solid()
         line.fill.fore_color.rgb = BORDER_COLOR
         line.line.fill.background()
 
-    def add_card(slide, left, top, width, height, title, items, badge=None, accent_color=None, fill_color=PANEL_COLOR):
-        if accent_color is None:
-            accent_color = ACCENT_MINT
+        pip = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.42), Inches(1.2), Inches(0.025))
+        pip.fill.solid()
+        pip.fill.fore_color.rgb = MINT
+        pip.line.fill.background()
+
+    def add_card(slide, left, top, width, height, title, items, tag=None, accent_color=MINT, bg_color=CARD_BG):
+        # Card Surface Container
         card = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height))
         card.fill.solid()
-        card.fill.fore_color.rgb = fill_color
+        card.fill.fore_color.rgb = bg_color
         card.line.color.rgb = BORDER_COLOR
         card.line.width = Pt(1)
 
-        tb = slide.shapes.add_textbox(Inches(left + 0.25), Inches(top + 0.18), Inches(width - 0.5), Inches(0.4))
-        tf = tb.text_frame
-        tf.word_wrap = True
-        p = tf.paragraphs[0]
+        # Top Accent Tab
+        accent_tab = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left + 0.25), Inches(top), Inches(min(width - 0.5, 1.8)), Inches(0.04))
+        accent_tab.fill.solid()
+        accent_tab.fill.fore_color.rgb = accent_color
+        accent_tab.line.fill.background()
+
+        # Tag / Subtitle if provided
+        top_offset = 0.2
+        if tag:
+            tb_tag = slide.shapes.add_textbox(Inches(left + 0.25), Inches(top + top_offset), Inches(width - 0.5), Inches(0.28))
+            tf_tag = tb_tag.text_frame
+            p_t = tf_tag.paragraphs[0]
+            p_t.text = tag.upper()
+            p_t.font.name = "Arial"
+            p_t.font.size = Pt(8.5)
+            p_t.font.bold = True
+            p_t.font.color.rgb = accent_color
+            top_offset += 0.28
+
+        # Title
+        tb_title = slide.shapes.add_textbox(Inches(left + 0.25), Inches(top + top_offset), Inches(width - 0.5), Inches(0.45))
+        tf_title = tb_title.text_frame
+        tf_title.word_wrap = True
+        p = tf_title.paragraphs[0]
         p.text = title
         p.font.name = "Arial"
         p.font.size = Pt(13)
         p.font.bold = True
-        p.font.color.rgb = accent_color if accent_color else TEXT_MAIN
+        p.font.color.rgb = TEXT_WHITE
+        top_offset += 0.45
 
-        tb_items = slide.shapes.add_textbox(Inches(left + 0.25), Inches(top + 0.62), Inches(width - 0.5), Inches(height - 0.75))
+        # Bullets / Content
+        tb_items = slide.shapes.add_textbox(Inches(left + 0.25), Inches(top + top_offset), Inches(width - 0.5), Inches(height - top_offset - 0.15))
         tf_items = tb_items.text_frame
         tf_items.word_wrap = True
         
         for i, item in enumerate(items):
             p_item = tf_items.add_paragraph() if i > 0 else tf_items.paragraphs[0]
-            p_item.text = "• " + item
+            p_item.text = "•  " + item
             p_item.font.name = "Arial"
             p_item.font.size = Pt(10)
             p_item.font.color.rgb = TEXT_MUTED
-            p_item.space_after = Pt(6)
+            p_item.space_after = Pt(5)
 
-    # -------------------------------------------------------------
-    # SLIDE 1: Cover (Hero Title)
-    # -------------------------------------------------------------
+    # =========================================================================
+    # SLIDE 1: Hero Cover Slide (Institutional Keynote)
+    # =========================================================================
     s1 = prs.slides.add_slide(blank_layout)
     set_bg(s1)
 
-    tb1 = s1.shapes.add_textbox(Inches(1.0), Inches(1.5), Inches(11.3), Inches(3.2))
+    # Top Tag
+    tb_tag = s1.shapes.add_textbox(Inches(1.0), Inches(1.1), Inches(11.3), Inches(0.35))
+    tf_tag = tb_tag.text_frame
+    p0 = tf_tag.paragraphs[0]
+    p0.text = "MIDNIGHT NETWORK // ZERO-KNOWLEDGE SETTLEMENT PROTOCOL"
+    p0.font.name = "Arial"
+    p0.font.size = Pt(10.5)
+    p0.font.bold = True
+    p0.font.color.rgb = MINT
+
+    # Title & Subtitle
+    tb1 = s1.shapes.add_textbox(Inches(1.0), Inches(1.45), Inches(11.3), Inches(2.2))
     tf1 = tb1.text_frame
     tf1.word_wrap = True
 
-    p0 = tf1.paragraphs[0]
-    p0.text = "MIDNIGHT NETWORK // ZERO-KNOWLEDGE SETTLEMENT PROTOCOL"
-    p0.font.name = "Arial"
-    p0.font.size = Pt(11)
-    p0.font.bold = True
-    p0.font.color.rgb = ACCENT_MINT
-    p0.space_after = Pt(10)
-
-    p1 = tf1.add_paragraph()
+    p1 = tf1.paragraphs[0]
     p1.text = "KNIGHT.VAULT (v0.20)"
     p1.font.name = "Arial"
-    p1.font.size = Pt(38)
+    p1.font.size = Pt(40)
     p1.font.bold = True
-    p1.font.color.rgb = TEXT_MAIN
-    p1.space_after = Pt(12)
+    p1.font.color.rgb = TEXT_WHITE
+    p1.space_after = Pt(8)
 
     p2 = tf1.add_paragraph()
-    p2.text = "Institutional Zero-Knowledge Custody, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Armored Privacy"
+    p2.text = "Institutional Zero-Knowledge Custody, Compact Smart Contracts, ProofStation 0-Gas Balancing, and Armored Privacy."
     p2.font.name = "Arial"
     p2.font.size = Pt(14)
     p2.font.color.rgb = TEXT_MUTED
 
-    card_meta = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.0), Inches(4.9), Inches(11.3), Inches(1.6))
-    card_meta.fill.solid()
-    card_meta.fill.fore_color.rgb = PANEL_COLOR
-    card_meta.line.color.rgb = BORDER_COLOR
-    card_meta.line.width = Pt(1)
+    # 4-Column Stat Cards
+    stat_data = [
+        ("TARGET CHAIN", "Midnight Preprod", "Live Partnerchain v0.20", MINT),
+        ("CIRCUIT ENGINE", "Compact v0.20+", "Halo2 SNARK Synthesizer", INDIGO),
+        ("PROOF SERVER", "Docker :6300", "100% Client-Side Proving", CYAN),
+        ("USER GAS COST", "0.00 NIGHT", "Sponsored Dust Relay Flow", EMERALD)
+    ]
+    for i, (label, val, desc, col) in enumerate(stat_data):
+        card_x = 1.0 + i * 2.9
+        c = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(card_x), Inches(3.8), Inches(2.68), Inches(1.6))
+        c.fill.solid()
+        c.fill.fore_color.rgb = CARD_BG
+        c.line.color.rgb = BORDER_COLOR
+        c.line.width = Pt(1)
 
-    tb_m = s1.shapes.add_textbox(Inches(1.3), Inches(5.05), Inches(10.7), Inches(1.3))
-    tf_m = tb_m.text_frame
-    p_m1 = tf_m.paragraphs[0]
-    p_m1.text = "Core Innovation: Mathematical ZK Witness Auth + Sponsored Dust Transactions (Zero User Gas)"
-    p_m1.font.name = "Arial"
-    p_m1.font.size = Pt(12)
-    p_m1.font.bold = True
-    p_m1.font.color.rgb = ACCENT_MINT
+        tb_s = s1.shapes.add_textbox(Inches(card_x + 0.15), Inches(3.95), Inches(2.38), Inches(1.3))
+        tfs = tb_s.text_frame
+        p_l = tfs.paragraphs[0]
+        p_l.text = label
+        p_l.font.name = "Arial"
+        p_l.font.size = Pt(8.5)
+        p_l.font.bold = True
+        p_l.font.color.rgb = TEXT_DIM
+        p_l.space_after = Pt(4)
 
-    p_m2 = tf_m.add_paragraph()
-    p_m2.text = "Architected & Engineered by: Kshitij Adakane (Vibe Coder, Systems Builder & Applied AI/ML)"
-    p_m2.font.name = "Arial"
-    p_m2.font.size = Pt(11)
-    p_m2.font.bold = True
-    p_m2.font.color.rgb = ACCENT_INDIGO
+        p_v = tfs.add_paragraph()
+        p_v.text = val
+        p_v.font.name = "Arial"
+        p_v.font.size = Pt(13)
+        p_v.font.bold = True
+        p_v.font.color.rgb = col
+        p_v.space_after = Pt(2)
 
-    p_m3 = tf_m.add_paragraph()
-    p_m3.text = "Stack: Compact v0.20+ | Docker ProofStation (:6300) | Midnight.js SDK | React 18 | Vite | Tailwind Kinetic UI"
-    p_m3.font.name = "Arial"
-    p_m3.font.size = Pt(10)
-    p_m3.font.color.rgb = TEXT_MUTED
-    p_m2.space_before = Pt(6)
+        p_d = tfs.add_paragraph()
+        p_d.text = desc
+        p_d.font.name = "Arial"
+        p_d.font.size = Pt(9)
+        p_d.font.color.rgb = TEXT_MUTED
 
-    # -------------------------------------------------------------
-    # SLIDE 2: Executive Summary & The Market Gap
-    # -------------------------------------------------------------
+    # Architect Signature Bottom Banner
+    sig_card = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.0), Inches(5.65), Inches(11.333), Inches(1.2))
+    sig_card.fill.solid()
+    sig_card.fill.fore_color.rgb = CARD_BG_ALT
+    sig_card.line.color.rgb = BORDER_COLOR
+    sig_card.line.width = Pt(1)
+
+    tb_sig = s1.shapes.add_textbox(Inches(1.25), Inches(5.75), Inches(10.8), Inches(0.95))
+    tf_sig = tb_sig.text_frame
+    p_s1 = tf_sig.paragraphs[0]
+    p_s1.text = "Architected & Engineered by: Kshitij Adakane (Vibe Coder, Systems Builder & Applied AI/ML)"
+    p_s1.font.name = "Arial"
+    p_s1.font.size = Pt(11)
+    p_s1.font.bold = True
+    p_s1.font.color.rgb = MINT
+    p_s1.space_after = Pt(3)
+
+    p_s2 = tf_sig.add_paragraph()
+    p_s2.text = "Stack: Compact Circuits • Halo2 Proofs • Midnight.js SDK • 1AM Wallet • React 18 • Vite • Tailwind Kinetic UI"
+    p_s2.font.name = "Arial"
+    p_s2.font.size = Pt(9.5)
+    p_s2.font.color.rgb = TEXT_MUTED
+
+    # =========================================================================
+    # SLIDE 2: The Public Blockchain Privacy Trap vs KNIGHT.VAULT
+    # =========================================================================
     s2 = prs.slides.add_slide(blank_layout)
     set_bg(s2)
-    add_header(s2, "Executive Summary: The Trillion-Dollar Web3 Privacy Gap")
+    add_header(s2, "The Trillion-Dollar Web3 Privacy Gap", "01 / MARKET CONTEXT & PROBLEM")
 
-    add_card(s2, 0.8, 1.7, 5.6, 5.2, "⚠️ The Critical Market Problem", [
-        "Total Public Exposure: Ethereum & Bitcoin broadcast every transaction, balance, sender, and recipient to the world.",
-        "Enterprise Adoption Blocked: Corporations cannot use public blockchains for payroll, vendor invoices, or supply chains without leaking competitive secrets.",
-        "Gas-Trail De-Anonymization: Buying native gas tokens (ETH, SOL) links off-chain KYC to every subsequent on-chain interaction.",
-        "Illicit Mixers vs True Compliance: Legacy privacy coins (Monero) or mixing pools face regulatory bans because they lack selective disclosure mechanisms."
-    ], accent_color=ACCENT_ROSE)
+    add_card(s2, 0.8, 1.8, 5.7, 5.0, "⚠️ Transparent Chains (ETH, BTC, Solana)", [
+        "Total Financial Exposure: All balances, employee payrolls, treasury movements, and vendor invoices are publicly browsable forever.",
+        "Gas-Trail De-Anonymization: Purchasing native gas tokens creates an irreversible KYC link to every on-chain activity.",
+        "Regulatory Backlash on Mixers: Legacy mixing pools lack selective compliance disclosures and face universal government bans.",
+        "Enterprise Blockade: Fortune 500 companies cannot execute business settlements on public blockchains without leaking corporate secrets."
+    ], tag="THE TRANSPARENCY TRAP", accent_color=ROSE)
 
-    add_card(s2, 6.9, 1.7, 5.6, 5.2, "🛡️ How Midnight Vault Solves This", [
-        "Dual State Architecture: Retains public verifiable accounting while keeping secrets 100% private in client memory.",
-        "Zero-Knowledge Authorization: Prove ownership of contract payout rights without ever disclosing the underlying private key.",
-        "Sponsored Zero-Gas Relay: ProofStation and 1AM wallet balance fees in DUST — end users pay 0 NIGHT for gas.",
-        "Enterprise-Grade Compliance Ready: Selective disclosure (disclose()) architecture allows audit trails for approved parties without global leak."
-    ], accent_color=ACCENT_GREEN)
+    add_card(s2, 6.833, 1.8, 5.7, 5.0, "🛡️ KNIGHT.VAULT Solution", [
+        "Witness Isolation: Owner secret keys and withdrawal authorizations remain isolated in local client memory. Only succinct ZK proofs touch chain state.",
+        "Sponsored Dust Relay: Payers check out seamlessly without acquiring testnet gas tokens or solving faucet captchas.",
+        "Deterministic Ledger Accounting: Public counters track verified settlement totals while protecting individual transactor identities.",
+        "Selective Verifiable Receipts: QR cryptographic receipts allow instant auditability without deanonymizing balances."
+    ], tag="THE ZERO-KNOWLEDGE SHIELD", accent_color=MINT)
 
-    # -------------------------------------------------------------
-    # SLIDE 3: Key Features Matrix
-    # -------------------------------------------------------------
+    # =========================================================================
+    # SLIDE 3: Compact v0.20 Smart Contract & Architecture
+    # =========================================================================
     s3 = prs.slides.add_slide(blank_layout)
     set_bg(s3)
-    add_header(s3, "Key Features: What Makes Midnight Vault Exceptional")
+    add_header(s3, "Compact v0.20 Smart Contract Architecture", "02 / ZERO-KNOWLEDGE CIRCUITS")
 
-    add_card(s3, 0.8, 1.7, 3.6, 2.5, "🔐 Non-Custodial ZK Vault", [
-        "1-Click Deploy of autonomous smart contracts on Midnight Preprod.",
-        "Contract owner generated via client-side cryptographic randomness.",
-        "Secret witness never touches any server or network packet."
-    ], accent_color=ACCENT_BLUE)
+    # Left Code Box
+    c_box = s3.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(6.8), Inches(5.0))
+    c_box.fill.solid()
+    c_box.fill.fore_color.rgb = CARD_BG
+    c_box.line.color.rgb = BORDER_COLOR
+    c_box.line.width = Pt(1)
 
-    add_card(s3, 4.85, 1.7, 3.6, 2.5, "⚡ Zero Gas (Sponsorship Flow)", [
-        "Integrated with 1AM Wallet DApp Connector API.",
-        "balanceUnsealedTransaction injects DUST sponsor fees automatically.",
-        "Frictionless onboarding with 0 token prerequisites."
-    ], accent_color=ACCENT_AMBER)
+    tb_code = s3.shapes.add_textbox(Inches(1.0), Inches(1.95), Inches(6.4), Inches(4.7))
+    tf_code = tb_code.text_frame
+    tf_code.word_wrap = True
+    
+    code_lines = [
+        ("// payment.compact (Midnight Network stdlib v0.20)", TEXT_DIM),
+        ("contract PaymentVault {", TEXT_WHITE),
+        ("  ledger balance: Counter;", MINT),
+        ("  ledger totalDeposited: Counter;", MINT),
+        ("  ledger ownerCommitment: Bytes<32>;", MINT),
+        ("", TEXT_WHITE),
+        ("  // Public Payer Inflow (Zero User Gas)", TEXT_DIM),
+        ("  export circuit receiveUnshielded(amount: Uint<64>): Void {", CYAN),
+        ("    balance.increment(amount);", TEXT_PLATINUM),
+        ("    totalDeposited.increment(amount);", TEXT_PLATINUM),
+        ("  }", CYAN),
+        ("", TEXT_WHITE),
+        ("  // Confidential Withdrawal (ZK Owner Auth)", TEXT_DIM),
+        ("  export circuit withdraw(amount: Uint<64>, recipient: ...): Void {", INDIGO),
+        ("    witness ownerSecretKey: Bytes<32>;", MINT),
+        ("    assert persistentCommit(ownerSecretKey) == ownerCommitment;", MINT),
+        ("    balance.decrement(amount);", TEXT_PLATINUM),
+        ("    sendUnshielded(amount, recipient);", TEXT_PLATINUM),
+        ("  }", INDIGO),
+        ("}", TEXT_WHITE)
+    ]
+    for i, (line_text, col) in enumerate(code_lines):
+        p_c = tf_code.add_paragraph() if i > 0 else tf_code.paragraphs[0]
+        p_c.text = line_text
+        p_c.font.name = "Consolas"
+        p_c.font.size = Pt(8.5)
+        p_c.font.color.rgb = col
+        p_c.space_after = Pt(1.5)
 
-    add_card(s3, 8.9, 1.7, 3.6, 2.5, "💻 On-Device Proof Engine", [
-        "Connects to Docker Proof Server on localhost:6300.",
-        "Generates Groth16 / ZK-SNARK polynomial proofs in 2-4 seconds.",
-        "100% cryptographic sovereignty for end users."
-    ], accent_color=ACCENT_GREEN)
+    # Right 3 Architecture Cards
+    add_card(s3, 7.8, 1.8, 4.733, 1.55, "1. receiveUnshielded()", [
+        "Inflow entrypoint. Increments public ledger balance.",
+        "Compatible with sponsored dust transactions for zero-gas checkouts."
+    ], tag="INFLOW CIRCUIT", accent_color=CYAN)
 
-    add_card(s3, 0.8, 4.4, 3.6, 2.5, "📡 Patched Indexer v4", [
-        "GraphQL Indexer client patched to eliminate Preprod null-offset bugs.",
-        "Real-time state polling and instant UI reactive updates.",
-        "Comprehensive settlement session audit log."
-    ], accent_color=ACCENT_CYAN)
+    add_card(s3, 7.8, 3.52, 4.733, 1.55, "2. withdraw()", [
+        "Outflow entrypoint. Verifies secret key via private witness proof.",
+        "Funds transferred unshielded to designated recipient address."
+    ], tag="OUTFLOW CIRCUIT", accent_color=INDIGO)
 
-    add_card(s3, 4.85, 4.4, 3.6, 2.5, "🎨 Institutional Craft UI", [
-        "Audited with Impeccable Design System (0 anti-patterns).",
-        "Deep matte slate aesthetic (#0b0d11) with crisp structural borders.",
-        "Tabular numerals (tnum) for precision financial readability."
-    ], accent_color=TEXT_MAIN)
+    add_card(s3, 7.8, 5.25, 4.733, 1.55, "3. Deterministic Ledger", [
+        "On-chain Counter types provide clean state isolation.",
+        "Live indexing via Midnight GraphQL v4 websocket subscriptions."
+    ], tag="PUBLIC STATE", accent_color=MINT)
 
-    add_card(s3, 8.9, 4.4, 3.6, 2.5, "🛡️ Domain-Separated Key", [
-        "persistentHash([pad(32, 'payment:owner:v1'), sk])",
-        "Prevents cross-contract signature and witness replay attacks.",
-        "Cryptographic domain isolation by design."
-    ], accent_color=ACCENT_ROSE)
-
-    # -------------------------------------------------------------
-    # SLIDE 4: Competitive Analysis Matrix
-    # -------------------------------------------------------------
+    # =========================================================================
+    # SLIDE 4: 4-Stage Runtime Settlement Lifecycle
+    # =========================================================================
     s4 = prs.slides.add_slide(blank_layout)
     set_bg(s4)
-    add_header(s4, "Competitive Matrix: Why Midnight Vault Wins")
+    add_header(s4, "4-Stage Zero-Knowledge Settlement Pipeline", "03 / RUNTIME EXECUTION LIFECYCLE")
 
-    add_card(s4, 0.8, 1.7, 2.7, 5.2, "Ethereum / EVM", [
-        "State Privacy: ❌ None (100% Public)",
-        "Gas Cost: ❌ High ($2-$50/tx)",
-        "Gas KYC Link: ❌ Permanent",
-        "Compliance: ❌ Total Leak",
-        "Smart Contracts: ✅ Turing Complete",
-        "ZK Verification: ⚠️ Very Expensive"
-    ], accent_color=ACCENT_ROSE)
+    pipeline_cards = [
+        ("STAGE 01", "Private Witness", [
+            "Client runtime encapsulates secret key and transaction parameters.",
+            "Witness data stays in local memory and is never broadcast across network."
+        ], MINT),
+        ("STAGE 02", "Halo2 Synthesis", [
+            "Local Docker ProofStation (:6300) runs proving key synthesis.",
+            "Generates succinct Zero-Knowledge proof transcript in seconds."
+        ], INDIGO),
+        ("STAGE 03", "Relay Balancing", [
+            "ProofStation attaches required unshielded UTXO dust collateral.",
+            "Eliminates user gas fees completely without requiring faucet tokens."
+        ], CYAN),
+        ("STAGE 04", "Ledger Finality", [
+            "Midnight Partnerchain validators verify proof validity.",
+            "GraphQL indexer captures state transition and updates vault liquidity live."
+        ], EMERALD)
+    ]
+    for i, (stage_tag, title, items, col) in enumerate(pipeline_cards):
+        add_card(s4, 0.8 + i * 2.98, 1.8, 2.78, 5.0, title, items, tag=stage_tag, accent_color=col)
 
-    add_card(s4, 3.75, 1.7, 2.7, 5.2, "Tornado / Mixers", [
-        "State Privacy: ⚠️ Obfuscation only",
-        "Gas Cost: ❌ High",
-        "Gas KYC Link: ❌ Public funding link",
-        "Compliance: ❌ Regulatory Bans",
-        "Smart Contracts: ❌ Static Pools",
-        "ZK Verification: ⚠️ Basic Snarks"
-    ], accent_color=ACCENT_AMBER)
-
-    add_card(s4, 6.7, 1.7, 2.7, 5.2, "Monero (XMR)", [
-        "State Privacy: ✅ Full Obfuscation",
-        "Gas Cost: ✅ Low",
-        "Gas KYC Link: ✅ Unlinked",
-        "Compliance: ❌ Zero Auditing",
-        "Smart Contracts: ❌ No Programmability",
-        "ZK Verification: ⚠️ Ring Signatures"
-    ], accent_color=ACCENT_CYAN)
-
-    add_card(s4, 9.65, 1.7, 2.85, 5.2, "Midnight Vault (Ours)", [
-        "State Privacy: ✅ ZK Dual-State",
-        "Gas Cost: ✅ 0 (Sponsored Dust)",
-        "Gas KYC Link: ✅ No Trail",
-        "Compliance: ✅ Selective Disclosure",
-        "Smart Contracts: ✅ Compact Language",
-        "ZK Verification: ✅ Local Proof Engine"
-    ], accent_color=ACCENT_GREEN, fill_color=PANEL_HIGHLIGHT)
-
-    # -------------------------------------------------------------
-    # SLIDE 5: Full-Stack Architecture & Data Flow
-    # -------------------------------------------------------------
+    # =========================================================================
+    # SLIDE 5: Security Benchmark Matrix
+    # =========================================================================
     s5 = prs.slides.add_slide(blank_layout)
     set_bg(s5)
-    add_header(s5, "Architecture Topology: 4-Tier Distributed Pipeline")
+    add_header(s5, "Security & Privacy Benchmark Matrix", "04 / COMPARATIVE ANALYSIS")
 
-    add_card(s5, 0.8, 1.7, 2.7, 5.2, "1. Frontend Layer", [
-        "React 18 + Vite SPA",
-        "1AM / Lace Connector API",
-        "In-Memory Private State Store",
-        "WASM Ledger runtime",
-        "Interactive Progress Modal",
-        "Live ProofServer Probe"
-    ], accent_color=ACCENT_BLUE)
+    matrix_headers = ["FEATURE / CAPABILITY", "TRADITIONAL PUBLIC VAULT", "KNIGHT.VAULT (MIDNIGHT)"]
+    matrix_rows = [
+        ("Owner Identity Visibility", "Publicly linkable to wallet address", "Shielded via private ZK witness key", MINT),
+        ("Payer Friction", "Requires native gas token in every wallet", "Zero-gas sponsored checkout flow", MINT),
+        ("Auditability & Compliance", "Scrapes block explorer (zero privacy)", "Selective cryptographic QR receipts", MINT),
+        ("Smart Contract Engine", "EVM Bytecode (Transparent Execution)", "Compact v0.20+ (ZK Circuit Compilation)", MINT),
+        ("Proving Architecture", "N/A (No Client Proving)", "100% Local ProofStation (Docker :6300)", MINT)
+    ]
 
-    add_card(s5, 3.75, 1.7, 2.7, 5.2, "2. Proof Engine", [
-        "Docker on Port 6300",
-        "midnight-proof-server",
-        "Off-chain circuit evaluation",
-        "ZK-SNARK generation",
-        "No private keys transmitted",
-        "Deterministic outputs"
-    ], accent_color=ACCENT_AMBER)
+    # Table Container
+    t_box = s5.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(1.8), Inches(11.733), Inches(5.0))
+    t_box.fill.solid()
+    t_box.fill.fore_color.rgb = CARD_BG
+    t_box.line.color.rgb = BORDER_COLOR
+    t_box.line.width = Pt(1)
 
-    add_card(s5, 6.7, 1.7, 2.7, 5.2, "3. Sponsorship Layer", [
-        "1AM Wallet Background Relay",
-        "ProofStation Dust Engine",
-        "balanceUnsealedTransaction",
-        "Automatic fee injection",
-        "Cryptographic TX signing",
-        "Zero-NIGHT user expense"
-    ], accent_color=ACCENT_GREEN)
+    # Table Headers
+    tb_th = s5.shapes.add_textbox(Inches(1.1), Inches(2.0), Inches(11.1), Inches(0.4))
+    tf_th = tb_th.text_frame
+    p_th = tf_th.paragraphs[0]
+    p_th.text = f"{matrix_headers[0]:<35} {matrix_headers[1]:<35} {matrix_headers[2]}"
+    p_th.font.name = "Consolas"
+    p_th.font.size = Pt(10)
+    p_th.font.bold = True
+    p_th.font.color.rgb = MINT
 
-    add_card(s5, 9.65, 1.7, 2.85, 5.2, "4. Midnight Node", [
-        "Preprod Partnerchain",
-        "AURA / GRANDPA Consensus",
-        "Cardano Settlement Layer",
-        "WASM Runtime Verification",
-        "GraphQL Indexer v4",
-        "Contract State Persistence"
-    ], accent_color=ACCENT_CYAN)
+    # Separator
+    sep = s5.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.1), Inches(2.45), Inches(11.1), Inches(0.015))
+    sep.fill.solid()
+    sep.fill.fore_color.rgb = BORDER_COLOR
+    sep.line.fill.background()
 
-    # -------------------------------------------------------------
-    # SLIDE 6: Smart Contract Deep Dive (Compact Circuit Mechanics)
-    # -------------------------------------------------------------
+    # Rows
+    for i, (feat, pub_val, zkp_val, col) in enumerate(matrix_rows):
+        row_y = 2.65 + i * 0.75
+        r_box = s5.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.1), Inches(row_y), Inches(11.1), Inches(0.62))
+        r_box.fill.solid()
+        r_box.fill.fore_color.rgb = CARD_BG_ALT
+        r_box.line.color.rgb = BORDER_COLOR
+        r_box.line.width = Pt(0.5)
+
+        tb_r = s5.shapes.add_textbox(Inches(1.25), Inches(row_y + 0.12), Inches(10.8), Inches(0.4))
+        tf_r = tb_r.text_frame
+        p_r = tf_r.paragraphs[0]
+        p_r.text = f"• {feat:<30} | {pub_val:<34} | ✓ {zkp_val}"
+        p_r.font.name = "Consolas"
+        p_r.font.size = Pt(9.5)
+        p_r.font.color.rgb = TEXT_PLATINUM
+
+    # =========================================================================
+    # SLIDE 6: Roadmap & Developer Summary (Kshitij Adakane)
+    # =========================================================================
     s6 = prs.slides.add_slide(blank_layout)
     set_bg(s6)
-    add_header(s6, "Smart Contract Deep Dive: payment.compact")
+    add_header(s6, "Production Roadmap & Architect Profile", "05 / PROTOCOL FUTURE & TEAM")
 
-    add_card(s6, 0.8, 1.7, 5.6, 5.2, "Public Ledger Variables & Circuits", [
-        "export ledger balance: Uint<128>: Current on-chain liquidity available in the vault.",
-        "export ledger totalDeposited & totalWithdrawn: Cumulative accounting metrics.",
-        "export circuit deposit(amount): Calls receiveUnshielded(default, disclose(amount)) to pull tNIGHT from caller.",
-        "export circuit withdraw(amount, recipient): Calls sendUnshielded() to dispatch tokens to chosen address."
-    ], accent_color=ACCENT_BLUE)
+    add_card(s6, 0.8, 1.8, 3.75, 3.2, "Phase 1: Preprod (Live)", [
+        "Full 1AM connector integration.",
+        "Compact v0.20 contract deployed on Preprod.",
+        "Sponsored dust balancing engine.",
+        "ProofStation client-side proving (:6300)."
+    ], tag="LIVE PRODUCTION", accent_color=MINT)
 
-    add_card(s6, 6.9, 1.7, 5.6, 5.2, "Private Witnesses & Mathematical Proofs", [
-        "witness ownerKey(): Bytes<32>: Local witness function executed only inside client proof engine.",
-        "pure circuit deriveKey(sk): Computes persistentHash with domain tag 'payment:owner:v1'.",
-        "assert(deriveKey(ownerKey()) == owner): The core ZK proof constraint — verifies authorization without revealing sk.",
-        "disclose(): Explicit boundary control — guarantees private values remain unrevealed unless intended."
-    ], accent_color=ACCENT_GREEN)
+    add_card(s6, 4.78, 1.8, 3.75, 3.2, "Phase 2: Multi-Sig & Vesting", [
+        "m-of-n threshold witness approval circuits.",
+        "Time-locked payment releases.",
+        "Regulatory viewing keys for tax & compliance.",
+        "Native Midnight mobile SDK."
+    ], tag="NEXT MILESTONE", accent_color=INDIGO)
 
-    # -------------------------------------------------------------
-    # SLIDE 7: End-to-End Transaction Pipeline
-    # -------------------------------------------------------------
-    s7 = prs.slides.add_slide(blank_layout)
-    set_bg(s7)
-    add_header(s7, "Step-by-Step Transaction Execution Lifecycle")
+    add_card(s6, 8.78, 1.8, 3.75, 3.2, "Phase 3: Mainnet Ecosystem", [
+        "Cardano Partnerchain bridge deployment.",
+        "Cross-chain shielded atomic swaps.",
+        "Decentralized merchant payment widget.",
+        "Zero-knowledge escrow dispute resolution."
+    ], tag="ENTERPRISE SCALE", accent_color=CYAN)
 
-    steps_7 = [
-        ("Step 1: Parameter Assembly", "Browser constructs unproven transaction object. Validates token format (e.g. 50 tNIGHT = 50,000,000 Stars bigint).", 0.8, 1.7),
-        ("Step 2: On-Device ZK Proving", "Circuits and private witness executed locally via Docker Proof Server (port 6300). Generates Groth16 proof in ~2-3s.", 6.9, 1.7),
-        ("Step 3: Dust Fee Balancing", "1AM Wallet balanceUnsealedTransaction injects ProofStation sponsor fees. Zero gas cost deducted from user wallet.", 0.8, 4.4),
-        ("Step 4: Block Inclusion & Indexing", "Transaction broadcast to Midnight node. Patched GraphQL Indexer polls state update and refreshes UI.", 6.9, 4.4),
-    ]
-    for title, desc, left, top in steps_7:
-        add_card(s7, left, top, 5.6, 2.5, title, [desc])
+    # Master Architect Card
+    arch_box = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(5.25), Inches(11.733), Inches(1.55))
+    arch_box.fill.solid()
+    arch_box.fill.fore_color.rgb = CARD_BG_ALT
+    arch_box.line.color.rgb = BORDER_COLOR
+    arch_box.line.width = Pt(1)
 
-    # -------------------------------------------------------------
-    # SLIDE 8: Live Product Walkthrough & User Flow
-    # -------------------------------------------------------------
-    s8 = prs.slides.add_slide(blank_layout)
-    set_bg(s8)
-    add_header(s8, "User Experience & Operational Flow")
+    tb_a = s6.shapes.add_textbox(Inches(1.1), Inches(5.4), Inches(11.1), Inches(1.2))
+    tf_a = tb_a.text_frame
+    p_a1 = tf_a.paragraphs[0]
+    p_a1.text = "KNIGHT.VAULT Protocol Architect: Kshitij Adakane"
+    p_a1.font.name = "Arial"
+    p_a1.font.size = Pt(13)
+    p_a1.font.bold = True
+    p_a1.font.color.rgb = MINT
+    p_a1.space_after = Pt(4)
 
-    add_card(s8, 0.8, 1.7, 3.6, 5.2, "1. Connect & Deploy", [
-        "Click 'Connect 1AM' — auto-detects wallet in 300ms.",
-        "View live Proof Server status (green 6300 indicator).",
-        "Click 'Deploy New Vault' — generates secret key and publishes contract to Preprod in ~8 seconds.",
-        "Auto-saves active contract address in workspace session."
-    ], accent_color=ACCENT_BLUE)
+    p_a2 = tf_a.add_paragraph()
+    p_a2.text = "Vibe Coder, Systems Builder & Applied AI/ML • Automotive & Embedded Systems Engineering • Applied Mathematics"
+    p_a2.font.name = "Arial"
+    p_a2.font.size = Pt(10)
+    p_a2.font.color.rgb = TEXT_WHITE
+    p_a2.space_after = Pt(4)
 
-    add_card(s8, 4.85, 1.7, 3.6, 5.2, "2. Fund the Vault", [
-        "Select token preset: 10, 50, 100, or custom tNIGHT.",
-        "Review transparent fee preview: 0.00 NIGHT (Sponsored).",
-        "Click 'Deposit NIGHT' — modal visually tracks Assembly ➔ Proving ➔ Balancing ➔ Finalization.",
-        "Vault balance updates in real time."
-    ], accent_color=ACCENT_AMBER)
-
-    add_card(s8, 8.9, 1.7, 3.6, 5.2, "3. ZK Private Payout", [
-        "Specify recipient address (or choose 'Self Address').",
-        "Input withdrawal amount.",
-        "Click 'Execute Private Payout' — Proof Server proves owner witness in ZK.",
-        "Tokens transfer instantly to recipient; audit trail logs record."
-    ], accent_color=ACCENT_GREEN)
-
-    # -------------------------------------------------------------
-    # SLIDE 9: Real-World Business & Enterprise Applications
-    # -------------------------------------------------------------
-    s9 = prs.slides.add_slide(blank_layout)
-    set_bg(s9)
-    add_header(s9, "Market Applications: Beyond Simple Payments")
-
-    add_card(s9, 0.8, 1.7, 5.6, 2.5, "🏢 Confidential Corporate Payroll", [
-        "Companies deposit aggregate payroll funds into a vault.",
-        "Employees claim salaries with ZK identity proofs.",
-        "No competitor can see employee salary amounts or team size."
-    ], accent_color=ACCENT_BLUE)
-
-    add_card(s9, 6.9, 1.7, 5.6, 2.5, "💼 Private Supply Chain Escrow", [
-        "Buyers lock supplier purchase payments in smart vaults.",
-        "Funds release automatically upon off-chain Oracle milestone attestations.",
-        "Protects pricing terms and trade volume confidentiality."
-    ], accent_color=ACCENT_AMBER)
-
-    add_card(s9, 0.8, 4.4, 5.6, 2.5, "🗳️ Private DAO Governance & Grants", [
-        "Disburse grant funding to open-source contributors anonymously.",
-        "Prevents targeted harassment or bribery of grant recipients.",
-        "Public verifiable treasury balance with private payouts."
-    ], accent_color=ACCENT_GREEN)
-
-    add_card(s9, 6.9, 4.4, 5.6, 2.5, "⚖️ Regulated Institutional Settlement", [
-        "Selective disclosure allows generating auditor viewing keys on demand.",
-        "Satisfies SEC / MiCA compliance while shielding public surveillance.",
-        "The gold standard for enterprise DeFi."
-    ], accent_color=ACCENT_CYAN)
-
-    # -------------------------------------------------------------
-    # SLIDE 10: Technical Roadmap & Future Horizons
-    # -------------------------------------------------------------
-    s10 = prs.slides.add_slide(blank_layout)
-    set_bg(s10)
-    add_header(s10, "Technical Roadmap & Scaling Horizons")
-
-    add_card(s10, 0.8, 1.7, 3.6, 5.2, "Phase 1: Present (Complete)", [
-        "✅ Compact v0.20+ contract authoring.",
-        "✅ Docker Proof Server integration.",
-        "✅ 1AM Wallet DApp connector.",
-        "✅ Patched GraphQL Indexer client.",
-        "✅ 0-Anti-Pattern Impeccable UI.",
-        "✅ Full live testnet deployment."
-    ], accent_color=ACCENT_GREEN)
-
-    add_card(s10, 4.85, 1.7, 3.6, 5.2, "Phase 2: Advanced Circuits", [
-        "⏳ Time-Lock Vesting (blockTimeGte).",
-        "⏳ Multi-Signer Threshold Approval.",
-        "⏳ Shielded ZSwap Token Transfer integration.",
-        "⏳ Whitelist Merkle Tree membership proofs.",
-        "⏳ Multi-Token Native Fungible support."
-    ], accent_color=ACCENT_AMBER)
-
-    add_card(s10, 8.9, 1.7, 3.6, 5.2, "Phase 3: Production Mainnet", [
-        "🔮 Midnight Mainnet readiness.",
-        "🔮 Mobile SDK & Android Passkey proving.",
-        "🔮 Hardware wallet (Ledger) ZK signing.",
-        "🔮 SDK Package publish to NPM.",
-        "🔮 Institutional Auditor viewing keys."
-    ], accent_color=ACCENT_CYAN)
-
-    # -------------------------------------------------------------
-    # SLIDE 11: Summary & Conclusion
-    # -------------------------------------------------------------
-    s11 = prs.slides.add_slide(blank_layout)
-    set_bg(s11)
-    add_header(s11, "Summary: Why Midnight Vault Wins 1st Place")
-
-    add_card(s11, 0.8, 1.7, 11.733, 5.2, "🏆 The Winning Edge", [
-        "1. Complete End-to-End Implementation: Not a mock or prototype — a fully compiling, provable, and functional DApp on Midnight Preprod.",
-        "2. Frictionless User Experience: Sponsoring gas fees via 1AM ProofStation creates an experience indistinguishable from Web2 speed.",
-        "3. Cryptographic Privacy by Design: Private witness architecture ensures secrets never leave user memory.",
-        "4. Institutional Craft Floor UI: Clean, data-dense, matte dark aesthetic built with zero AI slop or generic tropes.",
-        "5. Scalable Foundation: Ready for corporate payroll, escrow, DAO grants, and enterprise settlement."
-    ], accent_color=ACCENT_GREEN, fill_color=PANEL_HIGHLIGHT)
+    p_a3 = tf_a.add_paragraph()
+    p_a3.text = "Open Source Repository: https://github.com/KSHITIJadakane/KNIGHT.VAULT • Built for Midnight Network Hackathon"
+    p_a3.font.name = "Arial"
+    p_a3.font.size = Pt(9.5)
+    p_a3.font.color.rgb = TEXT_MUTED
 
     prs.save(output_path)
     print(f"[SUCCESS] Top-Tier Pitch Deck saved to: {output_path}")
 
 if __name__ == "__main__":
-    out = "Midnight_Privacy_Payment_Vault_Presentation.pptx"
-    if len(sys.argv) > 1:
-        out = sys.argv[1]
+    out = sys.argv[1] if len(sys.argv) > 1 else "Midnight_Privacy_Payment_Vault_Presentation.pptx"
     create_top_tier_presentation(out)
