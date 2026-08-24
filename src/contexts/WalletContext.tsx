@@ -91,19 +91,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!detected) {
-        // Offer graceful transition to Sandbox Demo if no wallet extension is found
-        const proceedWithDemo = confirm(
-          'No Midnight Lace browser wallet extension detected.\n\nWould you like to connect in Instant Demo Mode (with ProofServer)?'
-        );
-        if (proceedWithDemo) {
-          const sess = await createSandboxWalletSession('/zk/payment', proofServerUri);
-          setSession(sess);
-          setAddress(sess.unshieldedAddress);
-          setWalletType('sandbox');
-          setIsConnected(true);
-          return sess;
-        }
-        return;
+        // Graceful instant transition to Sandbox Demo if no wallet extension is found on device
+        console.log('[WalletConnect] No extension detected on device, auto-connecting Sandbox Demo...');
+        const sess = await createSandboxWalletSession('/zk/payment', proofServerUri);
+        setSession(sess);
+        setAddress(sess.unshieldedAddress);
+        setWalletType('sandbox');
+        setIsConnected(true);
+        return sess;
       }
 
       const { wallet, type } = detected;

@@ -46,13 +46,42 @@ export function makeCompiledContract(ownerSecretKey?: Uint8Array) {
 }
 
 // Low-level deploy with progress tracking
-export async function deployPayment(
+export async function deployPaymentContract(
   session: ConnectedSession,
-  ownerKeyBytes?: Uint8Array,
+  ownerSecretKey?: Uint8Array,
   onStepChange?: (step: TxStep, message: string) => void,
 ): Promise<{ contractAddress: string; ownerSecretKeyHex: string }> {
-  const ownerKey = ownerKeyBytes ?? crypto.getRandomValues(new Uint8Array(32));
+  // Generate random 32-byte owner key if not provided
+  const ownerKey = ownerSecretKey || crypto.getRandomValues(new Uint8Array(32));
   const ownerSecretKeyHex = toHex(ownerKey);
+
+  // In Sandbox Demo mode (e.g. Mobile Phones or browser test without Docker)
+  if (session.config?.isSandbox) {
+    onStepChange?.('preparing', 'Configuring Zero-Knowledge vault contract parameters...');
+    await new Promise((r) => setTimeout(r, 450));
+
+    onStepChange?.('proving', 'Generating initial deployment ZK proof...');
+    await new Promise((r) => setTimeout(r, 650));
+
+    onStepChange?.('submitting', 'Broadcasting zero-gas deployment to Midnight Network...');
+    await new Promise((r) => setTimeout(r, 500));
+
+    onStepChange?.('indexing', 'Awaiting block finalization and indexer registration...');
+    const contractAddress = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')}`;
+
+    saveSandboxState(contractAddress, {
+      balance: 0n,
+      totalDeposited: 0n,
+      totalWithdrawn: 0n,
+      ownerHex: ownerSecretKeyHex,
+    });
+
+    await new Promise((r) => setTimeout(r, 400));
+    onStepChange?.('success', `Vault deployed successfully at ${contractAddress.slice(0, 10)}...`);
+    return { contractAddress, ownerSecretKeyHex };
+  }
 
   onStepChange?.('preparing', 'Checking ZK runtime and proof server...');
 
@@ -136,20 +165,18 @@ export async function deployPayment(
     ownerHex: toHex(ownerKey),
   }, rawContractHex);
 
-  if (session.config?.isSandbox) {
-    await new Promise((r) => setTimeout(r, 600));
-  } else {
-    try {
-      // Poll indexer up to 15 attempts (30s)
-      await pollForState(session.config.indexerUri, contractAddress, undefined, 15, 2000);
-    } catch (indexErr) {
-      console.warn('[deployPayment] Proceeding with on-chain deployed state while indexer catches up:', indexErr);
-    }
+  try {
+    // Poll indexer up to 15 attempts (30s)
+    await pollForState(session.config.indexerUri, contractAddress, undefined, 15, 2000);
+  } catch (indexErr) {
+    console.warn('[deployPayment] Proceeding with on-chain deployed state while indexer catches up:', indexErr);
   }
 
   onStepChange?.('success', `Vault deployed successfully at ${contractAddress.slice(0, 10)}...`);
   return { contractAddress, ownerSecretKeyHex };
 }
+
+export const deployPayment = deployPaymentContract;
 
 // Store for sandbox demo mode instances with localStorage & server sync
 const sandboxStateStore = new Map<string, PaymentVaultState>();
@@ -248,6 +275,38 @@ export async function depositPayment(
   onStepChange?: (step: TxStep, message: string) => void,
 ): Promise<string> {
   onStepChange?.('preparing', `Preparing deposit of ${starsToNight(amountStars)} tNIGHT...`);
+
+  // In Sandbox / Demo Mode (e.g. Mobile Phones, QR Scans, Browser Demo):
+  // Provide seamless, deterministic zero-gas transaction simulation with all realistic steps
+  if (session.config?.isSandbox) {
+    await new Promise((r) => setTimeout(r, 450));
+    onStepChange?.('proving', 'Building ZK proof for receiveUnshielded circuit...');
+    await new Promise((r) => setTimeout(r, 700));
+
+    onStepChange?.('submitting', 'Balancing fees & broadcasting transaction to Midnight...');
+    await new Promise((r) => setTimeout(r, 500));
+
+    onStepChange?.('indexing', 'Awaiting block finalization and indexer update...');
+    const prev = getSandboxState(contractAddress) ?? {
+      balance: 0n,
+      totalDeposited: 0n,
+      totalWithdrawn: 0n,
+      ownerHex: '',
+    };
+    saveSandboxState(contractAddress, {
+      ...prev,
+      balance: prev.balance + amountStars,
+      totalDeposited: prev.totalDeposited + amountStars,
+    });
+
+    await new Promise((r) => setTimeout(r, 450));
+    const mockTxId = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')}`;
+    return mockTxId;
+  }
+
+  // Real 1AM / Lace on-chain transaction path
   // Ensure WASM runtimes are initialized before compact-runtime calls
   await ensureWasmReady();
   const compiledContract = makeCompiledContract();
@@ -303,15 +362,12 @@ export async function depositPayment(
     totalDeposited: prev.totalDeposited + amountStars,
   });
 
-  if (!session.config?.isSandbox) {
-    try {
-      await pollForState(session.config.indexerUri, contractAddress, undefined, 8, 1500);
-    } catch (idxErr) {
-      console.warn('[depositPayment] Indexer sync in progress:', idxErr);
-    }
-  } else {
-    await new Promise((r) => setTimeout(r, 600));
+  try {
+    await pollForState(session.config.indexerUri, contractAddress, undefined, 8, 1500);
+  } catch (idxErr) {
+    console.warn('[depositPayment] Indexer sync in progress:', idxErr);
   }
+
   return txId;
 }
 
@@ -325,6 +381,42 @@ export async function withdrawPayment(
   onStepChange?: (step: TxStep, message: string) => void,
 ): Promise<string> {
   onStepChange?.('preparing', `Authorizing withdrawal of ${starsToNight(amountStars)} tNIGHT...`);
+
+  // In Sandbox / Demo Mode:
+  if (session.config?.isSandbox) {
+    const prev = getSandboxState(contractAddress) ?? {
+      balance: 0n,
+      totalDeposited: 0n,
+      totalWithdrawn: 0n,
+      ownerHex: '',
+    };
+
+    if (prev.balance < amountStars) {
+      throw new Error(`Insufficient vault balance. Vault has ${starsToNight(prev.balance)} tNIGHT, requested ${starsToNight(amountStars)} tNIGHT.`);
+    }
+
+    await new Promise((r) => setTimeout(r, 450));
+    onStepChange?.('proving', 'Verifying secret witness and generating ZK proof...');
+    await new Promise((r) => setTimeout(r, 700));
+
+    onStepChange?.('submitting', 'Submitting shielded settlement transaction...');
+    await new Promise((r) => setTimeout(r, 500));
+
+    onStepChange?.('indexing', 'Finalizing payout and updating indexer...');
+    saveSandboxState(contractAddress, {
+      ...prev,
+      balance: prev.balance - amountStars,
+      totalWithdrawn: prev.totalWithdrawn + amountStars,
+    });
+
+    await new Promise((r) => setTimeout(r, 450));
+    const mockTxId = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')}`;
+    return mockTxId;
+  }
+
+  // Real 1AM / Lace on-chain transaction path
   // Ensure WASM runtimes are initialized before compact-runtime calls
   await ensureWasmReady();
   const compiledContract = makeCompiledContract(ownerSecretKeyHex ? fromHex(ownerSecretKeyHex) : undefined);
@@ -392,15 +484,12 @@ export async function withdrawPayment(
     totalWithdrawn: prevW.totalWithdrawn + amountStars,
   });
 
-  if (!session.config?.isSandbox) {
-    try {
-      await pollForState(session.config.indexerUri, contractAddress, undefined, 8, 1500);
-    } catch (idxErr) {
-      console.warn('[withdrawPayment] Indexer sync in progress:', idxErr);
-    }
-  } else {
-    await new Promise((r) => setTimeout(r, 600));
+  try {
+    await pollForState(session.config.indexerUri, contractAddress, undefined, 8, 1500);
+  } catch (idxErr) {
+    console.warn('[withdrawPayment] Indexer sync in progress:', idxErr);
   }
+
   return txId;
 }
 
