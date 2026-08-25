@@ -155,11 +155,15 @@ export default function App() {
   useEffect(() => {
     if (!activeContractAddress) return;
 
-    // 1. Initial and periodic refresh every 1200ms
-    refreshVaultState();
-    const interval = setInterval(refreshVaultState, 1200);
+    // Derive compact ntfy topic (must be ≤64 chars — same formula as ntfyTopic() in payment.ts)
+    const topicAddr = activeContractAddress.toLowerCase().replace(/[^a-f0-9]/g, '').slice(-30);
+    const ntfyTopicId = `kv_${topicAddr}`;
 
-    // 2. Cross-tab BroadcastChannel listener
+    // 1. Initial and periodic refresh every 1500ms
+    refreshVaultState();
+    const interval = setInterval(refreshVaultState, 1500);
+
+    // 2. Cross-tab BroadcastChannel listener (instant same-device sync)
     let bc: BroadcastChannel | null = null;
     try {
       if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
@@ -172,20 +176,18 @@ export default function App() {
       }
     } catch {}
 
-    // 3. Real-time Server-Sent Events (SSE) stream for zero-delay instant push
+    // 3. Real-time SSE stream (zero-delay push from phone to laptop anywhere via ntfy.sh)
     let eventSource: EventSource | null = null;
     try {
-      if (typeof window !== 'undefined' && 'EventSource' in window) {
-        const clean = activeContractAddress.toLowerCase().replace(/[^a-z0-9]/g, '');
-        eventSource = new EventSource(`https://ntfy.sh/knightvault_state_${clean}/sse`);
+      if (typeof window !== 'undefined' && 'EventSource' in window && ntfyTopicId) {
+        eventSource = new EventSource(`https://ntfy.sh/${ntfyTopicId}/sse`);
         eventSource.onmessage = (e) => {
           try {
-            const data = JSON.parse(e.data);
-            if (data?.message) {
-              refreshVaultState();
-            }
+            const parsed = JSON.parse(e.data);
+            if (parsed?.message) refreshVaultState();
           } catch {}
         };
+        eventSource.onerror = () => {}; // suppress SSE errors silently
       }
     } catch {}
 

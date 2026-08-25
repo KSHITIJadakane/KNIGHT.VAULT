@@ -188,9 +188,17 @@ function isLocalDev(): boolean {
   return host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.');
 }
 
+// ntfy.sh topics must be ≤64 chars. We derive a compact, deterministic topic from address.
+// Uses last 30 hex chars of address (unique enough for all practical purposes).
+function ntfyTopic(address: string): string {
+  const clean = address.toLowerCase().replace(/[^a-f0-9]/g, '');
+  const suffix = clean.slice(-30); // last 30 hex chars → 30 chars, well within limit
+  return `kv_${suffix}`; // e.g. kv_b39403863135043dd25227be50038f89 (34 chars max)
+}
+
 export function saveSandboxState(address: string, state: PaymentVaultState, rawContractStateHex?: string) {
   sandboxStateStore.set(address, state);
-  const cleanAddr = address.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const topic = ntfyTopic(address);
   const serialized = {
     balance: state.balance.toString(),
     totalDeposited: state.totalDeposited.toString(),
@@ -229,8 +237,8 @@ export function saveSandboxState(address: string, state: PaymentVaultState, rawC
 
   // 3. Global real-time instant pubsub (enables phone-to-laptop live sync anywhere)
   try {
-    if (typeof window !== 'undefined' && cleanAddr) {
-      fetch(`https://ntfy.sh/knightvault_state_${cleanAddr}`, {
+    if (typeof window !== 'undefined' && topic) {
+      fetch(`https://ntfy.sh/${topic}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(serialized),
@@ -241,7 +249,7 @@ export function saveSandboxState(address: string, state: PaymentVaultState, rawC
 
 export async function fetchServerSandboxState(address: string): Promise<PaymentVaultState | null> {
   if (!address) return null;
-  const cleanAddr = address.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const topic = ntfyTopic(address);
 
   const parseAndSave = async (data: any): Promise<PaymentVaultState | null> => {
     if (!data || data.balance === undefined) return null;
@@ -268,8 +276,8 @@ export async function fetchServerSandboxState(address: string): Promise<PaymentV
 
   // 1. Check Global Real-Time PubSub network (ultra-fast multi-device sync)
   try {
-    if (typeof window !== 'undefined' && cleanAddr) {
-      const pubsubRes = await fetch(`https://ntfy.sh/knightvault_state_${cleanAddr}/json?poll=1`, {
+    if (typeof window !== 'undefined' && topic) {
+      const pubsubRes = await fetch(`https://ntfy.sh/${topic}/json?poll=1`, {
         headers: { 'Accept': 'application/json' },
       });
       if (pubsubRes.ok) {
