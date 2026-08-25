@@ -151,12 +151,49 @@ export default function App() {
     }
   }, [session, activeContractAddress]);
 
-  // Auto-sync polling every 2.5 seconds so PC and Phone update hand-in-hand
+  // Real-time synchronization across devices and tabs (Instant Phone ⇄ Laptop Sync)
   useEffect(() => {
     if (!activeContractAddress) return;
+
+    // 1. Initial and periodic refresh every 1200ms
     refreshVaultState();
-    const interval = setInterval(refreshVaultState, 2500);
-    return () => clearInterval(interval);
+    const interval = setInterval(refreshVaultState, 1200);
+
+    // 2. Cross-tab BroadcastChannel listener
+    let bc: BroadcastChannel | null = null;
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        bc = new BroadcastChannel('knightvault_sync');
+        bc.onmessage = (event) => {
+          if (event.data?.address && event.data.address.toLowerCase() === activeContractAddress.toLowerCase()) {
+            refreshVaultState();
+          }
+        };
+      }
+    } catch {}
+
+    // 3. Real-time Server-Sent Events (SSE) stream for zero-delay instant push
+    let eventSource: EventSource | null = null;
+    try {
+      if (typeof window !== 'undefined' && 'EventSource' in window) {
+        const clean = activeContractAddress.toLowerCase().replace(/[^a-z0-9]/g, '');
+        eventSource = new EventSource(`https://ntfy.sh/knightvault_state_${clean}/sse`);
+        eventSource.onmessage = (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (data?.message) {
+              refreshVaultState();
+            }
+          } catch {}
+        };
+      }
+    } catch {}
+
+    return () => {
+      clearInterval(interval);
+      if (bc) bc.close();
+      if (eventSource) eventSource.close();
+    };
   }, [activeContractAddress, refreshVaultState]);
 
   const handleContractSelected = (address: string, secretKeyHex?: string) => {

@@ -190,13 +190,16 @@ function isLocalDev(): boolean {
 
 export function saveSandboxState(address: string, state: PaymentVaultState, rawContractStateHex?: string) {
   sandboxStateStore.set(address, state);
+  const cleanAddr = address.toLowerCase().replace(/[^a-z0-9]/g, '');
   const serialized = {
     balance: state.balance.toString(),
     totalDeposited: state.totalDeposited.toString(),
     totalWithdrawn: state.totalWithdrawn.toString(),
     ownerHex: state.ownerHex,
     rawContractStateHex: rawContractStateHex || (typeof localStorage !== 'undefined' ? localStorage.getItem('sb_contract_raw_' + address) || undefined : undefined),
+    updatedAt: Date.now(),
   };
+
   try {
     localStorage.setItem('sb_vault_' + address, JSON.stringify(serialized));
     if (rawContractStateHex) {
@@ -204,7 +207,16 @@ export function saveSandboxState(address: string, state: PaymentVaultState, rawC
     }
   } catch {}
   
-  // Real-time broadcast to server sync API so Laptop and Mobile phone sync instantly
+  // 1. Cross-tab real-time BroadcastChannel
+  try {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      const bc = new BroadcastChannel('knightvault_sync');
+      bc.postMessage({ address, state: serialized });
+      bc.close();
+    }
+  } catch {}
+
+  // 2. Vercel & Local API broadcast
   try {
     if (typeof window !== 'undefined') {
       fetch('/api/sandbox-state', {
@@ -214,39 +226,86 @@ export function saveSandboxState(address: string, state: PaymentVaultState, rawC
       }).catch(() => {});
     }
   } catch {}
+
+  // 3. Global real-time instant pubsub (enables phone-to-laptop live sync anywhere)
+  try {
+    if (typeof window !== 'undefined' && cleanAddr) {
+      fetch(`https://ntfy.sh/knightvault_state_${cleanAddr}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(serialized),
+      }).catch(() => {});
+    }
+  } catch {}
 }
 
 export async function fetchServerSandboxState(address: string): Promise<PaymentVaultState | null> {
+  if (!address) return null;
+  const cleanAddr = address.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  const parseAndSave = async (data: any): Promise<PaymentVaultState | null> => {
+    if (!data || data.balance === undefined) return null;
+    const state: PaymentVaultState = {
+      balance: BigInt(data.balance),
+      totalDeposited: BigInt(data.totalDeposited || data.balance),
+      totalWithdrawn: BigInt(data.totalWithdrawn || '0'),
+      ownerHex: data.ownerHex || '',
+    };
+    sandboxStateStore.set(address, state);
+    try {
+      localStorage.setItem('sb_vault_' + address, JSON.stringify(data));
+    } catch {}
+    if (data.rawContractStateHex) {
+      try {
+        localStorage.setItem('sb_contract_raw_' + address, data.rawContractStateHex);
+        const { ContractState } = await import('@midnight-ntwrk/compact-runtime');
+        const { setGlobalSandboxContractState } = await import('./midnight');
+        setGlobalSandboxContractState(address, ContractState.deserialize(fromHex(data.rawContractStateHex)));
+      } catch {}
+    }
+    return state;
+  };
+
+  // 1. Check Global Real-Time PubSub network (ultra-fast multi-device sync)
   try {
-    if (typeof window !== 'undefined' && address) {
-      const res = await fetch(`/api/sandbox-state?address=${encodeURIComponent(address)}`);
-      if (!res.ok) return null;
-      const contentType = res.headers.get('content-type') ?? '';
-      if (!contentType.includes('application/json')) return null;
-      const data = await res.json();
-      if (data && data.balance !== undefined) {
-        const state: PaymentVaultState = {
-          balance: BigInt(data.balance),
-          totalDeposited: BigInt(data.totalDeposited),
-          totalWithdrawn: BigInt(data.totalWithdrawn),
-          ownerHex: data.ownerHex || '',
-        };
-        sandboxStateStore.set(address, state);
-        try {
-          localStorage.setItem('sb_vault_' + address, JSON.stringify(data));
-        } catch {}
-        if (data.rawContractStateHex) {
-          try {
-            localStorage.setItem('sb_contract_raw_' + address, data.rawContractStateHex);
-            const { ContractState } = await import('@midnight-ntwrk/compact-runtime');
-            const { setGlobalSandboxContractState } = await import('./midnight');
-            setGlobalSandboxContractState(address, ContractState.deserialize(fromHex(data.rawContractStateHex)));
-          } catch {}
+    if (typeof window !== 'undefined' && cleanAddr) {
+      const pubsubRes = await fetch(`https://ntfy.sh/knightvault_state_${cleanAddr}/json?poll=1`, {
+        headers: { 'Accept': 'application/json' },
+      });
+      if (pubsubRes.ok) {
+        const text = await pubsubRes.text();
+        if (text) {
+          const lines = text.trim().split('\n');
+          for (let i = lines.length - 1; i >= 0; i--) {
+            try {
+              const item = JSON.parse(lines[i]);
+              const payload = typeof item.message === 'string' ? JSON.parse(item.message) : item.message || item;
+              if (payload && payload.balance !== undefined) {
+                return await parseAndSave(payload);
+              }
+            } catch {}
+          }
         }
-        return state;
       }
     }
   } catch {}
+
+  // 2. Check Vercel / Local API
+  try {
+    if (typeof window !== 'undefined') {
+      const res = await fetch(`/api/sandbox-state?address=${encodeURIComponent(address)}`);
+      if (res.ok) {
+        const contentType = res.headers.get('content-type') ?? '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json();
+          if (data && data.balance !== undefined) {
+            return await parseAndSave(data);
+          }
+        }
+      }
+    }
+  } catch {}
+
   return null;
 }
 
