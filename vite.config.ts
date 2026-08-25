@@ -65,7 +65,9 @@ export default defineConfig({
 
           if (req.method === 'GET') {
             const url = new URL(req.url ?? '', `http://${req.headers.host || 'localhost'}`);
-            const address = url.pathname.replace(/^\//, '');
+            const queryAddr = url.searchParams.get('address') || url.searchParams.get('id');
+            const pathAddr = url.pathname.replace(/^\//, '');
+            const address = (queryAddr || pathAddr || '').toLowerCase().trim();
             res.setHeader('Content-Type', 'application/json');
             if (address && vaultStateDb.has(address)) {
               res.end(JSON.stringify(vaultStateDb.get(address)));

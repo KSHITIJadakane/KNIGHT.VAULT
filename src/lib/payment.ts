@@ -203,24 +203,23 @@ export function saveSandboxState(address: string, state: PaymentVaultState, rawC
       localStorage.setItem('sb_contract_raw_' + address, rawContractStateHex);
     }
   } catch {}
-  // Broadcast to local dev server so PC and mobile sync in real-time (dev only)
-  if (isLocalDev()) {
-    try {
+  
+  // Real-time broadcast to server sync API so Laptop and Mobile phone sync instantly
+  try {
+    if (typeof window !== 'undefined') {
       fetch('/api/sandbox-state', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address, state: serialized }),
       }).catch(() => {});
-    } catch {}
-  }
+    }
+  } catch {}
 }
 
 export async function fetchServerSandboxState(address: string): Promise<PaymentVaultState | null> {
-  // The /api/sandbox-state endpoint only exists in local Vite dev server — skip on deployed site
-  if (!isLocalDev()) return null;
   try {
-    if (typeof window !== 'undefined') {
-      const res = await fetch(`/api/sandbox-state/${address}`);
+    if (typeof window !== 'undefined' && address) {
+      const res = await fetch(`/api/sandbox-state?address=${encodeURIComponent(address)}`);
       if (!res.ok) return null;
       const contentType = res.headers.get('content-type') ?? '';
       if (!contentType.includes('application/json')) return null;
@@ -233,6 +232,9 @@ export async function fetchServerSandboxState(address: string): Promise<PaymentV
           ownerHex: data.ownerHex || '',
         };
         sandboxStateStore.set(address, state);
+        try {
+          localStorage.setItem('sb_vault_' + address, JSON.stringify(data));
+        } catch {}
         if (data.rawContractStateHex) {
           try {
             localStorage.setItem('sb_contract_raw_' + address, data.rawContractStateHex);

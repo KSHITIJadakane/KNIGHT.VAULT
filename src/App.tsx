@@ -18,6 +18,7 @@ import {
   getSandboxState,
   PaymentVaultState,
   pollForState,
+  starsToNight,
   TxStep,
 } from './lib/payment';
 import { 
@@ -101,12 +102,30 @@ export default function App() {
   const refreshVaultState = useCallback(async () => {
     if (!activeContractAddress) return;
     try {
+      const serverState = await fetchServerSandboxState(activeContractAddress);
+      if (serverState) {
+        setVaultState((prev) => {
+          if (prev && serverState.totalDeposited > prev.totalDeposited) {
+            const diffStars = serverState.totalDeposited - prev.totalDeposited;
+            const diffNight = starsToNight(diffStars);
+            const timestampStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            setActivityHistory((hist) => [
+              {
+                id: `remote-dep-${Date.now()}`,
+                type: 'deposit',
+                amount: diffNight,
+                timestamp: timestampStr,
+                status: 'confirmed',
+              },
+              ...hist,
+            ]);
+          }
+          return { ...serverState };
+        });
+        return;
+      }
+
       if (session?.config?.isSandbox || !session) {
-        const serverState = await fetchServerSandboxState(activeContractAddress);
-        if (serverState) {
-          setVaultState({ ...serverState });
-          return;
-        }
         const sbState = getSandboxState(activeContractAddress);
         if (sbState) setVaultState({ ...sbState });
         return;
